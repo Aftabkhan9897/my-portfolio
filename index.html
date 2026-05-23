@@ -368,25 +368,13 @@
         </div>
     </div>
 
-    <script>
-        // --- 1. CONFIGURATION (SUPABASE) ---
-        // I have pre-filled your exact URL here so it's ready to go.
-        const SUPABASE_URL = "https://rxkdpaipierhdwxrfdev.supabase.co"; 
-        
-        // PASTE YOUR PUBLISHABLE KEY HERE between the quotes!
-        const SUPABASE_ANON_KEY = "sb_publishable_kvyQaqzFkBni-41PYLZTDg_Jd4D3GLX";
-        
-        // --- 2. INTERNAL STATE ---
-        const STATE = {
-            profile: null,
-            categories: [],
-            projects: [],
-            activeCat: null,
-            isAdmin: false,
-            currentSlideshow: [],
-            slideIdx: 0,
-            dbActive: false
-        };
+  // --- 1. CONFIGURATION (SUPABASE) ---
+const SUPABASE_URL = "https://rxkdpaipierhdwxrfdev.supabase.co"; 
+const SUPABASE_ANON_KEY = "sb_publishable_kvyQaqzFkBni-41PYLZTDg_Jd4D3GLX";
+
+// --- 2. INITIALIZATION (The missing link) ---
+// This connects your variables to the actual Supabase database
+const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
         // --- 3. DATABASE ENGINE (SUPABASE CLIENT) ---
         let supabaseClient = null;
