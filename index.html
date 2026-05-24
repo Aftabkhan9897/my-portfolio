@@ -5,34 +5,42 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Live Portfolio | Analytics Powered</title>
     
-    <!-- Google Analytics 4 (GA4) Placeholder -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-      // Replace G-XXXXXXXXXX with your actual GA4 Measurement ID
-      gtag('config', 'G-XXXXXXXXXX');
-    </script>
-
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Supabase Client -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
-        body { font-family: 'Inter', sans-serif; background-color: #080808; color: #e5e7eb; overflow-x: hidden; margin: 0; }
-        .glass-card { background: rgba(23, 23, 23, 0.7); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid rgba(255, 255, 255, 0.08); }
-        .glass-modal { background: rgba(10, 10, 10, 0.98); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px); border: 1px solid rgba(255, 255, 255, 0.1); }
+        :root {
+            --bg-color: #050505;
+        }
+        body { font-family: 'Inter', sans-serif; background-color: var(--bg-color); color: #e5e7eb; overflow-x: hidden; margin: 0; overscroll-behavior: none; }
         
-        .accent-glow { position: fixed; border-radius: 50%; filter: blur(120px); z-index: -1; opacity: 0.15; pointer-events: none; }
+        /* Hardware Accelerated Containment */
+        .view-section { display: none; opacity: 0; contain: paint layout; }
+        .view-section.active { display: block; opacity: 1; animation: fadeUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
         
-        .view-section { display: none; opacity: 0; transform: translateY(10px); transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1); }
-        .view-section.active { display: block; opacity: 1; transform: translateY(0); }
+        @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 
-        .modal-overlay { position: fixed; inset: 0; z-index: 100; display: none; align-items: center; justify-content: center; background: rgba(0,0,0,0.85); backdrop-filter: blur(6px); opacity: 0; transition: opacity 0.3s ease; }
+        /* Premium Glassmorphism */
+        .glass-card { background: rgba(15, 17, 21, 0.6); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.05); transform-style: preserve-3d; }
+        
+        /* Mobile-First Bottom Sheet Modals */
+        .modal-overlay { position: fixed; inset: 0; z-index: 100; display: none; align-items: center; justify-content: center; background: rgba(0,0,0,0.85); backdrop-filter: blur(8px); opacity: 0; transition: opacity 0.3s ease; }
         .modal-overlay.active { display: flex; opacity: 1; }
+        
+        .glass-modal { background: rgba(10, 10, 10, 0.98); border: 1px solid rgba(255, 255, 255, 0.1); transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1); transform: translateY(100px) scale(0.95); }
+        .modal-overlay.active .glass-modal { transform: translateY(0) scale(1); }
+
+        @media (max-width: 768px) {
+            .glass-modal { position: absolute; bottom: 0; width: 100%; max-height: 90vh !important; border-radius: 24px 24px 0 0 !important; border-bottom: none; transform: translateY(100%); }
+            .modal-overlay.active .glass-modal { transform: translateY(0); }
+            /* Ergonomic Thumb-zone Close Button */
+            .mobile-close-btn { top: auto !important; bottom: 20px !important; right: 20px !important; background: #ef4444 !important; color: white !important; box-shadow: 0 10px 25px -5px rgba(239, 68, 68, 0.4) !important; }
+        }
+
+        /* Ambient Parallax Glows */
+        .accent-glow { position: fixed; border-radius: 50%; filter: blur(120px); z-index: -1; opacity: 0.15; pointer-events: none; will-change: transform; }
         
         .admin-element { display: none !important; }
         .admin-active .admin-element { display: inline-flex !important; }
@@ -41,32 +49,26 @@
         .hide-scroll::-webkit-scrollbar { display: none; }
         .hide-scroll { -ms-overflow-style: none; scrollbar-width: none; }
         
-        .hover-lift { transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
-        .hover-lift:hover { transform: translateY(-6px) scale(1.02); border-color: #10b981; box-shadow: 0 20px 40px -10px rgba(16, 185, 129, 0.15); }
+        /* 3D Hover Physics */
+        .hover-lift { transition: box-shadow 0.4s ease, border-color 0.4s ease; will-change: transform; }
+        .hover-lift:hover { border-color: rgba(16, 185, 129, 0.5); box-shadow: 0 20px 40px -10px rgba(16, 185, 129, 0.2); }
         
         canvas.slideshow-canvas { width: 100%; height: 100%; object-fit: contain; }
-        
         .rich-editor { min-height: 150px; outline: none; }
         .rich-editor:empty:before { content: attr(placeholder); color: #4b5563; }
-        
         body.modal-open { overflow: hidden; }
 
-        /* Shimmer Loading Skeleton */
-        .skeleton {
-            background: #1f2937;
-            background: linear-gradient(90deg, #1f2937 25%, #374151 50%, #1f2937 75%);
-            background-size: 200% 100%;
-            animation: shimmer 1.5s infinite linear;
-            border-radius: 1rem;
-        }
-        @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+        /* View Transitions API */
+        ::view-transition-old(root), ::view-transition-new(root) { animation-duration: 0.4s; }
+        
+        .decode-text { font-variant-numeric: tabular-nums; }
     </style>
 </head>
 <body class="antialiased relative min-h-screen flex flex-col pb-safe">
 
-    <!-- Ambient Orbs -->
-    <div class="accent-glow bg-emerald-500 w-96 h-96 -top-20 -left-20"></div>
-    <div class="accent-glow bg-cyan-600 w-80 h-80 bottom-0 right-0"></div>
+    <!-- Ambient Parallax Orbs -->
+    <div id="glow-1" class="accent-glow bg-emerald-500 w-96 h-96 -top-20 -left-20"></div>
+    <div id="glow-2" class="accent-glow bg-cyan-600 w-[30rem] h-[30rem] bottom-0 right-0 opacity-10"></div>
 
     <!-- Toast UI -->
     <div id="toast" class="fixed bottom-6 left-1/2 -translate-x-1/2 px-6 py-3 rounded-full bg-emerald-600 text-white font-medium shadow-2xl z-[9999] opacity-0 pointer-events-none transition-all duration-300">
@@ -75,13 +77,14 @@
 
     <div class="max-w-6xl mx-auto px-6 py-8 md:py-12 w-full flex-1 flex flex-col relative z-10">
         
+        <!-- Header -->
         <header class="flex justify-between items-center mb-10 md:mb-16">
-            <h1 id="nav-logo" class="text-2xl font-black text-white tracking-tighter uppercase">PORT<span class="text-emerald-500">FOLIO</span></h1>
-            <div class="flex items-center gap-4">
-                <button onclick="openModal('modal-analytics')" class="admin-element px-4 py-2 bg-gray-800 hover:bg-gray-700 text-emerald-400 rounded-full text-sm font-bold transition-all shadow-lg border border-gray-700">
-                    <i class="fas fa-chart-bar mr-1"></i> Analytics
+            <h1 id="nav-logo" class="text-2xl font-black text-white tracking-tighter uppercase decode-text">PORT<span class="text-emerald-500">FOLIO</span></h1>
+            <div class="flex items-center gap-3 md:gap-4">
+                <button onclick="openModal('modal-analytics')" class="admin-element px-4 py-2 bg-gray-900 hover:bg-gray-800 text-emerald-400 rounded-full text-sm font-bold transition-all shadow-lg border border-gray-800">
+                    <i class="fas fa-chart-bar md:mr-1"></i> <span class="hidden md:inline">Analytics</span>
                 </button>
-                <button id="btn-contact" onclick="trackEvent('contact_click', {location: 'header'})" class="px-6 py-2 bg-white text-black rounded-full text-sm font-bold hover:bg-emerald-500 hover:text-white transition-all hidden">Contact</button>
+                <button id="btn-contact" onclick="openContactModal()" class="px-5 md:px-6 py-2 bg-white text-black rounded-full text-sm font-bold hover:bg-emerald-500 hover:text-white transition-all shadow-lg hidden">Contact</button>
             </div>
         </header>
 
@@ -92,52 +95,49 @@
                     <i class="fas fa-pen text-xs"></i>
                 </button>
                 
-                <div class="flex-1 text-center md:text-left">
+                <div class="flex-1 text-center md:text-left z-10">
                     <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 mb-6">
                         <div class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></div>
                         <h2 class="text-emerald-500 font-bold tracking-widest text-xs uppercase" id="hero-prefix">Available for work</h2>
                     </div>
                     
-                    <h3 class="text-4xl md:text-7xl font-extrabold text-white mb-6 leading-tight tracking-tight" id="hero-title">Crafting Digital <br> Experiences.</h3>
+                    <h3 class="text-4xl md:text-7xl font-extrabold text-white mb-6 leading-tight tracking-tight decode-text" id="hero-title">Crafting Digital <br> Experiences.</h3>
                     <p class="text-gray-400 text-base md:text-lg mb-8 md:mb-10 max-w-xl leading-relaxed mx-auto md:mx-0 font-light" id="hero-bio">Design-driven development focused on clean aesthetics and high performance.</p>
                     
                     <div class="flex flex-wrap gap-4 justify-center md:justify-start items-center">
-                        <button onclick="handleHeroCTA()" id="hero-cta" class="px-8 md:px-10 py-3 md:py-4 bg-emerald-600 rounded-full font-bold text-white shadow-xl shadow-emerald-900/30 hover:shadow-emerald-500/40 hover:-translate-y-1 transition-all duration-300">
+                        <button onclick="handleHeroCTA()" id="hero-cta" class="px-8 md:px-10 py-3 md:py-4 bg-gradient-to-r from-emerald-500 to-emerald-600 rounded-full font-bold text-white shadow-xl shadow-emerald-900/30 hover:shadow-emerald-500/40 hover:-translate-y-1 transition-all duration-300">
                         Download Resume</button>
                         <div id="social-links" class="flex gap-3"></div>
                     </div>
                 </div>
 
-                <div class="w-48 h-48 md:w-80 md:h-80 relative shrink-0 mt-6 md:mt-0">
-                    <div class="absolute inset-0 bg-emerald-500 rounded-full blur-[50px] md:blur-[70px] opacity-20 group-hover:opacity-40 transition-opacity duration-700"></div>
+                <div class="w-48 h-48 md:w-80 md:h-80 relative shrink-0 mt-6 md:mt-0 z-10">
+                    <div class="absolute inset-0 bg-emerald-500 rounded-full blur-[60px] opacity-20 group-hover:opacity-40 transition-opacity duration-700"></div>
                     <img id="hero-img" src="https://placehold.co/600x600/171717/white?text=User" class="w-full h-full object-cover rounded-full border-[4px] md:border-[6px] border-[#121212] relative z-10 shadow-2xl transition-transform duration-700 hover:scale-105">
                 </div>
             </section>
 
             <div class="flex justify-center mt-10 md:mt-12">
-                <button onclick="switchView('view-categories')" class="px-6 md:px-8 py-3 md:py-4 glass-card text-white font-bold rounded-2xl hover:bg-white/10 transition-all flex items-center gap-3 group shadow-lg hover:shadow-emerald-900/20 hover:border-emerald-500/30">
-                    View Portfolio <i class="fas fa-arrow-right text-emerald-500 group-hover:translate-x-1 transition-transform"></i>
+                <button onclick="switchView('view-categories')" class="px-8 py-4 glass-card text-white font-bold rounded-full hover:bg-white/10 transition-all flex items-center gap-3 group shadow-lg hover:shadow-emerald-900/20 hover:border-emerald-500/30">
+                    View Portfolio <i class="fas fa-arrow-right text-emerald-500 group-hover:translate-x-2 transition-transform"></i>
                 </button>
             </div>
         </main>
 
-        <!-- VIEW: WORKSPACES (CATEGORIES) -->
+        <!-- VIEW: WORKSPACES -->
         <main id="view-categories" class="view-section">
             <div class="flex justify-between items-end mb-8 md:mb-12">
                 <div>
                     <button onclick="switchView('view-home')" class="text-gray-500 hover:text-white mb-4 flex items-center gap-2 transition-colors"><i class="fas fa-arrow-left"></i> Back to Profile</button>
-                    <h2 class="text-3xl md:text-4xl font-bold text-white tracking-tight">Workspaces</h2>
+                    <h2 class="text-3xl md:text-5xl font-bold text-white tracking-tight decode-text">Workspaces</h2>
                 </div>
-                <button onclick="openCategoryModal()" class="admin-element px-4 md:px-6 py-2.5 md:py-3 bg-emerald-600 hover:bg-emerald-500 rounded-xl text-xs md:text-sm font-bold transition-all shadow-lg shadow-emerald-900/30 flex items-center gap-2 hover:-translate-y-1">
+                <button onclick="openCategoryModal()" class="admin-element px-4 md:px-6 py-2.5 md:py-3 bg-emerald-600 hover:bg-emerald-500 rounded-xl text-xs md:text-sm font-bold transition-all shadow-lg flex items-center gap-2 hover:-translate-y-1">
                     <i class="fas fa-plus"></i> <span class="hidden md:inline">New Workspace</span>
                 </button>
             </div>
             
-            <div id="grid-categories" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                <!-- Loading Skeletons -->
-                <div class="glass-card p-6 rounded-3xl h-48 flex flex-col justify-end"><div class="skeleton h-16 w-16 mb-4 rounded-2xl"></div><div class="skeleton h-6 w-3/4 mb-2"></div><div class="skeleton h-4 w-1/2"></div></div>
-                <div class="glass-card p-6 rounded-3xl h-48 flex flex-col justify-end hidden sm:flex"><div class="skeleton h-16 w-16 mb-4 rounded-2xl"></div><div class="skeleton h-6 w-3/4 mb-2"></div><div class="skeleton h-4 w-1/2"></div></div>
-                <div class="glass-card p-6 rounded-3xl h-48 flex flex-col justify-end hidden lg:flex"><div class="skeleton h-16 w-16 mb-4 rounded-2xl"></div><div class="skeleton h-6 w-3/4 mb-2"></div><div class="skeleton h-4 w-1/2"></div></div>
+            <div id="grid-categories" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 perspective-grid">
+                <!-- Injected via JS -->
             </div>
         </main>
 
@@ -146,15 +146,15 @@
             <div class="flex justify-between items-end mb-8 md:mb-12">
                 <div>
                     <button onclick="switchView('view-categories')" class="text-gray-500 hover:text-white mb-4 flex items-center gap-2 transition-colors"><i class="fas fa-arrow-left"></i> Back to Workspaces</button>
-                    <h2 id="active-cat-name" class="text-3xl md:text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-cyan-400 tracking-tight">Projects</h2>
+                    <h2 id="active-cat-name" class="text-3xl md:text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-cyan-400 tracking-tight decode-text">Projects</h2>
                 </div>
-                <button onclick="openProjectModal()" class="admin-element px-4 md:px-6 py-2.5 md:py-3 bg-emerald-600 hover:bg-emerald-500 rounded-xl text-xs md:text-sm font-bold transition-all shadow-lg shadow-emerald-900/30 flex items-center gap-2 hover:-translate-y-1">
+                <button onclick="openProjectModal()" class="admin-element px-4 md:px-6 py-2.5 md:py-3 bg-emerald-600 hover:bg-emerald-500 rounded-xl text-xs md:text-sm font-bold transition-all shadow-lg flex items-center gap-2 hover:-translate-y-1">
                     <i class="fas fa-upload"></i> <span class="hidden md:inline">Upload Project</span>
                 </button>
             </div>
             
-            <div id="grid-projects" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
-                <!-- Loaded Dynamically -->
+            <div id="grid-projects" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8 perspective-grid">
+                <!-- Injected via JS -->
             </div>
         </main>
 
@@ -167,10 +167,27 @@
         </button>
     </div>
 
-    <!-- MODAL: PROJECT DETAILS (PLAY STORE STYLE) -->
+    <!-- MODAL: CONTACT SHEET -->
+    <div id="modal-contact" class="modal-overlay">
+        <div class="glass-modal p-8 md:p-10 rounded-[2rem] w-full max-w-sm mx-4 text-center border border-white/10 relative">
+            <button onclick="closeModals()" class="absolute top-6 right-6 w-8 h-8 rounded-full bg-white/5 text-gray-400 flex items-center justify-center hover:text-white hover:bg-white/10 transition-all mobile-close-btn"><i class="fas fa-times"></i></button>
+            
+            <div class="w-20 h-20 bg-gradient-to-tr from-emerald-500 to-cyan-500 rounded-full flex items-center justify-center mx-auto mb-6 shadow-xl shadow-emerald-500/20">
+                <i class="fas fa-paper-plane text-white text-3xl"></i>
+            </div>
+            <h3 class="text-2xl font-black text-white mb-2 tracking-tight">Let's Connect</h3>
+            <p class="text-gray-400 text-sm mb-8">Reach out via any of the platforms below.</p>
+            
+            <div id="contact-options" class="flex flex-col gap-3">
+                <!-- Injected via JS based on Profile Settings -->
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: PROJECT DETAILS (PLAY STORE) -->
     <div id="modal-details" class="modal-overlay">
-        <div class="glass-modal w-full max-w-4xl h-full md:h-auto md:max-h-[90vh] md:rounded-[2rem] overflow-hidden flex flex-col relative shadow-2xl border-0 md:border md:border-white/10">
-            <button onclick="closeModals()" class="absolute top-4 md:top-6 right-4 md:right-6 z-50 w-10 h-10 rounded-full bg-black/60 backdrop-blur text-white flex items-center justify-center hover:bg-red-500 transition-all hover:scale-110 shadow-lg">
+        <div class="glass-modal w-full max-w-4xl h-full md:h-auto md:max-h-[90vh] md:rounded-[2rem] overflow-hidden flex flex-col relative shadow-2xl border-0 md:border border-white/10">
+            <button onclick="closeModals()" class="absolute top-4 md:top-6 right-4 md:right-6 z-50 w-10 h-10 rounded-full bg-black/60 backdrop-blur text-white flex items-center justify-center hover:bg-red-500 transition-all hover:scale-110 shadow-lg mobile-close-btn">
                 <i class="fas fa-times"></i>
             </button>
             
@@ -178,7 +195,12 @@
                 <div class="p-6 md:p-12 flex flex-col md:flex-row gap-6 md:gap-8 items-start">
                     <img id="det-icon" src="" class="w-20 h-20 md:w-32 md:h-32 rounded-2xl md:rounded-3xl object-cover shadow-2xl border border-white/5 shrink-0 bg-black">
                     <div class="flex-1 w-full">
-                        <h2 id="det-title" class="text-2xl md:text-5xl font-black text-white mb-4 tracking-tight">Project Title</h2>
+                        <h2 id="det-title" class="text-3xl md:text-5xl font-black text-white mb-2 tracking-tight decode-text">Project Title</h2>
+                        <div class="flex items-center gap-4 mb-6 text-sm">
+                            <span class="text-emerald-500 font-bold"><i class="fas fa-check-circle"></i> Verified Showcase</span>
+                            <span class="text-gray-500 flex items-center gap-1 bg-white/5 px-2 py-1 rounded-md"><i class="fas fa-eye text-emerald-400"></i> <span id="det-views">0</span> views</span>
+                        </div>
+
                         <div class="flex flex-wrap gap-3 md:gap-4 items-center w-full">
                             <a id="det-link" target="_blank" onclick="trackEvent('external_link', {type: 'project'})" class="flex-1 md:flex-none justify-center px-6 md:px-8 py-3 bg-emerald-600 text-white rounded-xl font-bold hover:bg-emerald-500 transition-colors shadow-lg shadow-emerald-900/30 flex items-center gap-2 hover:-translate-y-1">
                                 Launch Project <i class="fas fa-external-link-alt text-sm"></i>
@@ -190,13 +212,12 @@
                     </div>
                 </div>
 
-                <!-- Canvas Slideshow Container -->
+                <!-- Canvas Slideshow -->
                 <div class="px-6 md:px-12 mb-6">
-                    <div id="swipe-container" class="aspect-video bg-black rounded-2xl md:rounded-3xl overflow-hidden border border-white/5 shadow-inner relative select-none">
+                    <div id="swipe-container" class="aspect-video bg-black rounded-2xl md:rounded-3xl overflow-hidden border border-white/5 shadow-inner relative select-none cursor-ew-resize">
                         <canvas id="slideshow-canvas" class="w-full h-full absolute inset-0"></canvas>
                         <div class="absolute bottom-4 left-0 right-0 flex justify-center gap-2" id="slideshow-dots"></div>
                     </div>
-                    <p class="text-center text-xs text-gray-600 mt-2 md:hidden"><i class="fas fa-arrows-alt-h"></i> Swipe to explore</p>
                 </div>
 
                 <div class="px-6 md:px-12 mb-10">
@@ -214,36 +235,35 @@
     <!-- MODAL: ANALYTICS DASHBOARD -->
     <div id="modal-analytics" class="modal-overlay">
         <div class="glass-modal p-6 md:p-8 rounded-[2rem] w-full max-w-3xl max-h-[85vh] overflow-y-auto hide-scroll border border-white/10 relative">
-            <button onclick="closeModals()" class="absolute top-6 right-6 w-8 h-8 rounded-full bg-white/5 text-gray-400 flex items-center justify-center hover:text-white hover:bg-white/10 transition-all hover:scale-110"><i class="fas fa-times"></i></button>
+            <button onclick="closeModals()" class="absolute top-6 right-6 w-8 h-8 rounded-full bg-white/5 text-gray-400 flex items-center justify-center hover:text-white hover:bg-white/10 transition-all mobile-close-btn"><i class="fas fa-times"></i></button>
             <h3 class="text-2xl font-bold text-white mb-2"><i class="fas fa-chart-line text-emerald-500 mr-2"></i> Performance Analytics</h3>
-            <p class="text-sm text-gray-400 mb-8">Internal tracking dashboard. Data is synced in real-time.</p>
+            <p class="text-sm text-gray-400 mb-8">Internal tracking dashboard. Live globally synced data.</p>
             
             <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-                <div class="bg-black/40 border border-white/5 p-4 rounded-2xl flex flex-col items-center justify-center text-center hover:border-emerald-500/30 transition-colors">
+                <div class="bg-black/40 border border-white/5 p-4 rounded-2xl flex flex-col items-center justify-center text-center">
                     <i class="fas fa-eye text-2xl text-blue-400 mb-2"></i>
                     <span class="text-3xl font-black text-white" id="stat-views">0</span>
-                    <span class="text-xs text-gray-500 uppercase font-bold tracking-wider">Total Views</span>
+                    <span class="text-[10px] text-gray-500 uppercase font-bold tracking-wider">Total Views</span>
                 </div>
-                <div class="bg-black/40 border border-white/5 p-4 rounded-2xl flex flex-col items-center justify-center text-center hover:border-emerald-500/30 transition-colors">
+                <div class="bg-black/40 border border-white/5 p-4 rounded-2xl flex flex-col items-center justify-center text-center">
                     <i class="fas fa-file-download text-2xl text-emerald-400 mb-2"></i>
                     <span class="text-3xl font-black text-white" id="stat-cv">0</span>
-                    <span class="text-xs text-gray-500 uppercase font-bold tracking-wider">CV Downloads</span>
+                    <span class="text-[10px] text-gray-500 uppercase font-bold tracking-wider">CV Downloads</span>
                 </div>
-                <div class="bg-black/40 border border-white/5 p-4 rounded-2xl flex flex-col items-center justify-center text-center hover:border-emerald-500/30 transition-colors">
+                <div class="bg-black/40 border border-white/5 p-4 rounded-2xl flex flex-col items-center justify-center text-center">
                     <i class="fas fa-envelope text-2xl text-purple-400 mb-2"></i>
                     <span class="text-3xl font-black text-white" id="stat-contact">0</span>
-                    <span class="text-xs text-gray-500 uppercase font-bold tracking-wider">Contact Clicks</span>
+                    <span class="text-[10px] text-gray-500 uppercase font-bold tracking-wider">Contact Clicks</span>
                 </div>
-                <div class="bg-black/40 border border-white/5 p-4 rounded-2xl flex flex-col items-center justify-center text-center hover:border-emerald-500/30 transition-colors">
+                <div class="bg-black/40 border border-white/5 p-4 rounded-2xl flex flex-col items-center justify-center text-center">
                     <i class="fas fa-mouse-pointer text-2xl text-pink-400 mb-2"></i>
                     <span class="text-3xl font-black text-white" id="stat-interactions">0</span>
-                    <span class="text-xs text-gray-500 uppercase font-bold tracking-wider">Interactions</span>
+                    <span class="text-[10px] text-gray-500 uppercase font-bold tracking-wider">Project Clicks</span>
                 </div>
             </div>
 
             <h4 class="text-sm font-bold text-gray-300 uppercase tracking-widest mb-4">Top Performing Projects</h4>
             <div id="stat-top-projects" class="space-y-3 bg-black/20 p-4 rounded-2xl border border-white/5">
-                <!-- Dynamically injected -->
                 <p class="text-sm text-gray-500 text-center py-4">Waiting for data...</p>
             </div>
         </div>
@@ -251,106 +271,76 @@
 
     <!-- MODAL: ADMIN LOGIN -->
     <div id="modal-login" class="modal-overlay">
-        <div class="glass-modal p-8 md:p-10 rounded-3xl w-full max-w-sm mx-4 text-center border border-white/10">
+        <div class="glass-modal p-8 md:p-10 rounded-3xl w-full max-w-sm mx-4 text-center border border-white/10 relative">
+            <button onclick="closeModals()" class="absolute top-4 right-4 w-8 h-8 rounded-full bg-white/5 text-gray-400 flex items-center justify-center hover:text-white hover:bg-white/10 transition-all mobile-close-btn"><i class="fas fa-times"></i></button>
             <div class="w-16 h-16 bg-emerald-500/10 rounded-full flex items-center justify-center mx-auto mb-6">
                 <i class="fas fa-lock text-emerald-500 text-2xl"></i>
             </div>
             <h3 class="text-2xl font-bold text-white mb-2">Admin Unlock</h3>
             <p class="text-gray-500 text-sm mb-8">Enter access code to enable editing.</p>
             <input type="password" id="admin-pass" class="w-full bg-black/50 border border-white/10 rounded-xl px-6 py-4 text-center text-white focus:border-emerald-500 outline-none mb-6 tracking-widest transition-colors" placeholder="••••••••">
-            <div class="flex gap-4">
-                <button onclick="closeModals()" class="flex-1 py-3 md:py-4 rounded-xl font-bold text-gray-400 hover:text-white transition-colors bg-white/5 hover:bg-white/10">Cancel</button>
-                <button onclick="verifyAdmin()" class="flex-1 py-3 md:py-4 bg-emerald-600 hover:bg-emerald-500 rounded-xl font-bold text-white transition-colors shadow-lg hover:-translate-y-1">Unlock</button>
-            </div>
+            <button onclick="verifyAdmin()" class="w-full py-4 bg-emerald-600 hover:bg-emerald-500 rounded-xl font-bold text-white transition-colors shadow-lg hover:-translate-y-1">Unlock System</button>
         </div>
     </div>
 
     <!-- MODAL: PROFILE EDITOR -->
     <div id="modal-profile" class="modal-overlay">
         <div class="glass-modal p-6 md:p-8 rounded-3xl w-full max-w-2xl max-h-[85vh] overflow-y-auto hide-scroll border border-white/10 relative">
-            <button onclick="closeModals()" class="absolute top-4 md:top-6 right-4 md:right-6 w-8 h-8 rounded-full bg-white/5 text-gray-400 flex items-center justify-center hover:text-white hover:bg-white/10 transition-all hover:scale-110"><i class="fas fa-times"></i></button>
-            <h3 class="text-xl md:text-2xl font-bold text-white mb-6 md:mb-8 flex items-center gap-3"><i class="fas fa-user-edit text-emerald-500"></i> Identity Settings</h3>
+            <button onclick="closeModals()" class="absolute top-4 md:top-6 right-4 md:right-6 w-8 h-8 rounded-full bg-white/5 text-gray-400 flex items-center justify-center hover:text-white hover:bg-white/10 transition-all mobile-close-btn"><i class="fas fa-times"></i></button>
+            <h3 class="text-xl md:text-2xl font-bold text-white mb-6 flex items-center gap-3"><i class="fas fa-user-edit text-emerald-500"></i> Identity Settings</h3>
             
-            <div class="space-y-5 md:space-y-6">
+            <div class="space-y-6">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                        <label class="text-xs text-gray-500 uppercase font-bold mb-2 block">Logo Text</label>
-                        <input type="text" id="edit-logo" class="w-full bg-black/50 border border-white/10 rounded-lg px-4 py-3 text-sm text-white focus:border-emerald-500 outline-none transition-colors">
-                    </div>
-                    <div>
-                        <label class="text-xs text-gray-500 uppercase font-bold mb-2 block">Greeting Prefix</label>
-                        <input type="text" id="edit-prefix" class="w-full bg-black/50 border border-white/10 rounded-lg px-4 py-3 text-sm text-white focus:border-emerald-500 outline-none transition-colors">
-                    </div>
+                    <div><label class="text-xs text-gray-500 uppercase font-bold mb-2 block">Logo Text</label><input type="text" id="edit-logo" class="w-full bg-black/50 border border-white/10 rounded-lg px-4 py-3 text-sm text-white focus:border-emerald-500 outline-none"></div>
+                    <div><label class="text-xs text-gray-500 uppercase font-bold mb-2 block">Greeting Prefix</label><input type="text" id="edit-prefix" class="w-full bg-black/50 border border-white/10 rounded-lg px-4 py-3 text-sm text-white focus:border-emerald-500 outline-none"></div>
                 </div>
-                <div>
-                    <label class="text-xs text-gray-500 uppercase font-bold mb-2 block">Main Heading</label>
-                    <input type="text" id="edit-title" class="w-full bg-black/50 border border-white/10 rounded-lg px-4 py-3 text-sm text-white focus:border-emerald-500 outline-none transition-colors">
-                </div>
+                <div><label class="text-xs text-gray-500 uppercase font-bold mb-2 block">Main Heading</label><input type="text" id="edit-title" class="w-full bg-black/50 border border-white/10 rounded-lg px-4 py-3 text-sm text-white focus:border-emerald-500 outline-none"></div>
                 <div>
                     <div class="flex justify-between items-center mb-2">
                         <label class="text-xs text-gray-500 uppercase font-bold">Short Bio</label>
                         <button onclick="aiEnhance(this, 'edit-bio', 'bio')" class="text-emerald-500 text-xs font-bold hover:text-emerald-400 transition-colors"><i class="fas fa-magic"></i> AI</button>
                     </div>
-                    <textarea id="edit-bio" rows="3" class="w-full bg-black/50 border border-white/10 rounded-lg px-4 py-3 text-sm text-white focus:border-emerald-500 outline-none transition-colors"></textarea>
-                </div>
-                <div>
-                    <label class="text-xs text-gray-500 uppercase font-bold mb-2 block">Profile Image</label>
-                    <input type="file" id="edit-img" accept="image/*" class="w-full text-xs text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-emerald-400 file:font-bold file:bg-emerald-500/10 hover:file:bg-emerald-500/20 cursor-pointer">
+                    <textarea id="edit-bio" rows="3" class="w-full bg-black/50 border border-white/10 rounded-lg px-4 py-3 text-sm text-white focus:border-emerald-500 outline-none"></textarea>
                 </div>
                 
+                <!-- Expanded Contact Options -->
                 <div class="p-4 md:p-5 bg-black/30 rounded-2xl border border-white/5">
-                    <h4 class="text-xs font-bold text-gray-300 mb-3 md:mb-4 uppercase">Social Links</h4>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
-                        <div class="flex items-center gap-2 md:gap-3">
-                            <i class="fab fa-github text-lg w-5 md:w-6 text-center text-gray-400"></i>
-                            <input type="url" id="edit-github" class="flex-1 bg-black/50 border border-white/10 rounded-lg px-3 py-2 text-xs md:text-sm text-white focus:border-emerald-500 outline-none transition-colors" placeholder="GitHub URL">
-                        </div>
-                        <div class="flex items-center gap-2 md:gap-3">
-                            <i class="fab fa-linkedin text-lg w-5 md:w-6 text-center text-blue-500"></i>
-                            <input type="url" id="edit-linkedin" class="flex-1 bg-black/50 border border-white/10 rounded-lg px-3 py-2 text-xs md:text-sm text-white focus:border-emerald-500 outline-none transition-colors" placeholder="LinkedIn URL">
-                        </div>
-                        <div class="flex items-center gap-2 md:gap-3">
-                            <i class="fab fa-twitter text-lg w-5 md:w-6 text-center text-blue-400"></i>
-                            <input type="url" id="edit-twitter" class="flex-1 bg-black/50 border border-white/10 rounded-lg px-3 py-2 text-xs md:text-sm text-white focus:border-emerald-500 outline-none transition-colors" placeholder="Twitter URL">
-                        </div>
-                        <div class="flex items-center gap-2 md:gap-3">
-                            <i class="fab fa-instagram text-lg w-5 md:w-6 text-center text-pink-500"></i>
-                            <input type="url" id="edit-instagram" class="flex-1 bg-black/50 border border-white/10 rounded-lg px-3 py-2 text-xs md:text-sm text-white focus:border-emerald-500 outline-none transition-colors" placeholder="Instagram URL">
-                        </div>
+                    <h4 class="text-xs font-bold text-emerald-400 mb-4 uppercase"><i class="fas fa-address-book"></i> Direct Contact Info</h4>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div><label class="text-[10px] text-gray-500 uppercase font-bold mb-1 block">WhatsApp Number</label><input type="text" id="edit-whatsapp" class="w-full bg-black/50 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:border-emerald-500 outline-none" placeholder="+1234567890"></div>
+                        <div><label class="text-[10px] text-gray-500 uppercase font-bold mb-1 block">Phone Number</label><input type="text" id="edit-phone" class="w-full bg-black/50 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:border-emerald-500 outline-none" placeholder="+1234567890"></div>
+                        <div class="md:col-span-2"><label class="text-[10px] text-gray-500 uppercase font-bold mb-1 block">Email Address</label><input type="email" id="edit-email" class="w-full bg-black/50 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:border-emerald-500 outline-none" placeholder="you@domain.com"></div>
+                    </div>
+                </div>
+
+                <!-- Social Links Options -->
+                <div class="p-4 md:p-5 bg-black/30 rounded-2xl border border-white/5">
+                    <h4 class="text-xs font-bold text-emerald-400 mb-4 uppercase"><i class="fas fa-hashtag"></i> Social Links</h4>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="flex items-center gap-3"><i class="fab fa-github text-gray-400 w-4 text-center"></i><input type="url" id="edit-github" class="w-full bg-black/50 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:border-emerald-500 outline-none" placeholder="GitHub URL"></div>
+                        <div class="flex items-center gap-3"><i class="fab fa-linkedin text-blue-500 w-4 text-center"></i><input type="url" id="edit-linkedin" class="w-full bg-black/50 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:border-emerald-500 outline-none" placeholder="LinkedIn URL"></div>
+                        <div class="flex items-center gap-3"><i class="fab fa-twitter text-blue-400 w-4 text-center"></i><input type="url" id="edit-twitter" class="w-full bg-black/50 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:border-emerald-500 outline-none" placeholder="Twitter URL"></div>
+                        <div class="flex items-center gap-3"><i class="fab fa-instagram text-pink-500 w-4 text-center"></i><input type="url" id="edit-instagram" class="w-full bg-black/50 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:border-emerald-500 outline-none" placeholder="Instagram URL"></div>
                     </div>
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                        <label class="text-xs text-gray-500 uppercase font-bold mb-2 block">Hero Button Text</label>
-                        <input type="text" id="edit-btn-main" class="w-full bg-black/50 border border-white/10 rounded-lg px-4 py-3 text-sm text-white focus:border-emerald-500 outline-none transition-colors">
-                    </div>
-                    <div>
-                        <label class="text-xs text-gray-500 uppercase font-bold mb-2 block">Nav Contact Link</label>
-                        <input type="url" id="edit-btn-contact" class="w-full bg-black/50 border border-white/10 rounded-lg px-4 py-3 text-sm text-white focus:border-emerald-500 outline-none transition-colors">
-                    </div>
+                    <div><label class="text-xs text-gray-500 uppercase font-bold mb-2 block">Hero Button Text</label><input type="text" id="edit-btn-main" class="w-full bg-black/50 border border-white/10 rounded-lg px-4 py-3 text-sm text-white focus:border-emerald-500 outline-none"></div>
+                    <div><label class="text-xs text-gray-500 uppercase font-bold mb-2 block">Profile Image</label><input type="file" id="edit-img" accept="image/*" class="w-full text-xs text-gray-500 file:mr-2 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-emerald-400 file:bg-emerald-500/10 cursor-pointer border border-white/5 rounded-lg p-1"></div>
                 </div>
 
                 <div class="p-4 md:p-5 bg-emerald-900/10 rounded-2xl border border-emerald-500/20 border-dashed">
-                    <h4 class="text-xs font-bold text-emerald-400 mb-3 md:mb-4 uppercase"><i class="fas fa-file-pdf"></i> Resume Setup</h4>
+                    <h4 class="text-xs font-bold text-emerald-400 mb-3 uppercase"><i class="fas fa-file-pdf"></i> Resume Setup</h4>
                     <div class="space-y-4">
                         <div>
-                            <label class="block text-[10px] md:text-xs font-bold text-gray-400 uppercase mb-2 flex justify-between">
-                                Upload PDF <span class="text-emerald-500">Max 750KB</span>
-                            </label>
-                            <input type="file" id="edit-cv" accept=".pdf" class="w-full text-gray-400 text-xs md:text-sm file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-emerald-600/20 file:text-emerald-400 hover:file:bg-emerald-600/30 cursor-pointer border border-white/5 rounded-lg p-1 bg-black/50">
+                            <label class="block text-[10px] font-bold text-gray-400 uppercase mb-2 flex justify-between">Upload PDF <span class="text-emerald-500">Max 750KB</span></label>
+                            <input type="file" id="edit-cv" accept=".pdf" class="w-full text-gray-400 text-xs file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-emerald-600/20 file:text-emerald-400 cursor-pointer border border-white/5 rounded-lg p-1">
                         </div>
-                        <div>
-                            <label class="block text-[10px] md:text-xs font-bold text-gray-400 uppercase mb-2">OR External CV Link</label>
-                            <input type="url" id="edit-cv-link" class="w-full bg-black/50 border border-white/10 rounded-lg px-4 py-3 text-sm text-white focus:border-emerald-500 outline-none transition-colors">
-                        </div>
+                        <div><label class="block text-[10px] font-bold text-gray-400 uppercase mb-2">OR External CV Link</label><input type="url" id="edit-cv-link" class="w-full bg-black/50 border border-white/10 rounded-lg px-4 py-3 text-sm text-white focus:border-emerald-500 outline-none"></div>
                     </div>
                 </div>
 
-                <div class="pt-6 border-t border-white/5 flex gap-3 md:gap-4">
-                    <button onclick="closeModals()" class="flex-1 py-3 md:py-4 font-bold text-gray-400 hover:text-white transition-colors bg-white/5 rounded-xl hover:bg-white/10 text-sm md:text-base">Cancel</button>
-                    <button onclick="saveProfile()" id="save-prof-btn" class="flex-1 py-3 md:py-4 bg-emerald-600 hover:bg-emerald-500 rounded-xl font-bold text-white transition-colors shadow-lg shadow-emerald-900/20 text-sm md:text-base">Save Profile</button>
-                </div>
+                <button onclick="saveProfile()" id="save-prof-btn" class="w-full py-4 bg-emerald-600 hover:bg-emerald-500 rounded-xl font-bold text-white transition-colors shadow-lg">Save Identity Profile</button>
             </div>
         </div>
     </div>
@@ -358,32 +348,17 @@
     <!-- MODAL: CATEGORY EDITOR -->
     <div id="modal-cat" class="modal-overlay">
         <div class="glass-modal p-6 md:p-8 rounded-3xl w-full max-w-md mx-4 border border-white/10 relative">
-            <button onclick="closeModals()" class="absolute top-4 md:top-6 right-4 md:right-6 w-8 h-8 rounded-full bg-white/5 text-gray-400 flex items-center justify-center hover:text-white hover:bg-white/10 transition-all"><i class="fas fa-times"></i></button>
-            <h3 class="text-xl md:text-2xl font-bold text-white mb-6 md:mb-8"><i class="fas fa-folder text-emerald-500 mr-2"></i> Workspace Config</h3>
-            <div class="space-y-4 md:space-y-5">
+            <button onclick="closeModals()" class="absolute top-4 md:top-6 right-4 md:right-6 w-8 h-8 rounded-full bg-white/5 text-gray-400 flex items-center justify-center hover:text-white hover:bg-white/10 transition-all mobile-close-btn"><i class="fas fa-times"></i></button>
+            <h3 class="text-xl md:text-2xl font-bold text-white mb-6"><i class="fas fa-folder text-emerald-500 mr-2"></i> Workspace Config</h3>
+            <div class="space-y-5">
                 <input type="hidden" id="cat-id">
                 <div class="flex gap-4">
-                    <div class="flex-1">
-                        <label class="text-xs text-gray-500 uppercase font-bold mb-2 block">Workspace Name</label>
-                        <input type="text" id="cat-name" class="w-full bg-black/50 border border-white/10 rounded-lg px-4 py-3 text-sm text-white focus:border-emerald-500 outline-none transition-colors">
-                    </div>
-                    <div class="w-24">
-                        <label class="text-xs text-gray-500 uppercase font-bold mb-2 block">Rank</label>
-                        <input type="number" id="cat-order" value="99" min="1" max="999" class="w-full bg-black/50 border border-white/10 rounded-lg px-4 py-3 text-sm text-white focus:border-emerald-500 outline-none transition-colors text-center" title="1 = First">
-                    </div>
+                    <div class="flex-1"><label class="text-xs text-gray-500 uppercase font-bold mb-2 block">Name</label><input type="text" id="cat-name" class="w-full bg-black/50 border border-white/10 rounded-lg px-4 py-3 text-sm text-white focus:border-emerald-500 outline-none"></div>
+                    <div class="w-24"><label class="text-xs text-gray-500 uppercase font-bold mb-2 block">Rank</label><input type="number" id="cat-order" value="99" class="w-full bg-black/50 border border-white/10 rounded-lg px-4 py-3 text-sm text-white focus:border-emerald-500 outline-none text-center"></div>
                 </div>
-                <div>
-                    <label class="text-xs text-gray-500 uppercase font-bold mb-2 block">Short Description</label>
-                    <textarea id="cat-desc" rows="2" class="w-full bg-black/50 border border-white/10 rounded-lg px-4 py-3 text-sm text-white focus:border-emerald-500 outline-none transition-colors"></textarea>
-                </div>
-                <div>
-                    <label class="text-xs text-gray-500 uppercase font-bold mb-2 block">Cover Image</label>
-                    <input type="file" id="cat-file" accept="image/*" class="w-full text-xs text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-emerald-400 file:font-bold file:bg-emerald-500/10 hover:file:bg-emerald-500/20 cursor-pointer">
-                </div>
-                <div class="flex gap-3 md:gap-4 pt-4 md:pt-6 mt-2 md:mt-4 border-t border-white/5">
-                    <button onclick="closeModals()" class="flex-1 py-3 md:py-4 font-bold text-gray-400 hover:text-white transition-colors bg-white/5 rounded-xl hover:bg-white/10 text-sm md:text-base">Cancel</button>
-                    <button onclick="saveCategory()" id="save-cat-btn" class="flex-1 py-3 md:py-4 bg-emerald-600 hover:bg-emerald-500 rounded-xl font-bold text-white transition-colors shadow-lg text-sm md:text-base">Save</button>
-                </div>
+                <div><label class="text-xs text-gray-500 uppercase font-bold mb-2 block">Description</label><textarea id="cat-desc" rows="2" class="w-full bg-black/50 border border-white/10 rounded-lg px-4 py-3 text-sm text-white focus:border-emerald-500 outline-none"></textarea></div>
+                <div><label class="text-xs text-gray-500 uppercase font-bold mb-2 block">Cover Image</label><input type="file" id="cat-file" accept="image/*" class="w-full text-xs text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-emerald-400 file:bg-emerald-500/10 cursor-pointer"></div>
+                <button onclick="saveCategory()" id="save-cat-btn" class="w-full py-4 bg-emerald-600 hover:bg-emerald-500 rounded-xl font-bold text-white transition-colors shadow-lg">Save Workspace</button>
             </div>
         </div>
     </div>
@@ -391,60 +366,42 @@
     <!-- MODAL: PROJECT EDITOR -->
     <div id="modal-proj" class="modal-overlay">
         <div class="glass-modal p-6 md:p-8 rounded-3xl w-full max-w-3xl max-h-[85vh] overflow-y-auto hide-scroll border border-white/10 relative">
-            <button onclick="closeModals()" class="absolute top-4 md:top-6 right-4 md:right-6 w-8 h-8 rounded-full bg-white/5 text-gray-400 flex items-center justify-center hover:text-white hover:bg-white/10 transition-all"><i class="fas fa-times"></i></button>
-            <h3 class="text-xl md:text-2xl font-bold text-white mb-6 md:mb-8"><i class="fas fa-layer-group text-emerald-500 mr-2"></i> Project Config</h3>
-            <div class="space-y-5 md:space-y-6">
+            <button onclick="closeModals()" class="absolute top-4 md:top-6 right-4 md:right-6 w-8 h-8 rounded-full bg-white/5 text-gray-400 flex items-center justify-center hover:text-white hover:bg-white/10 transition-all mobile-close-btn"><i class="fas fa-times"></i></button>
+            <h3 class="text-xl md:text-2xl font-bold text-white mb-6"><i class="fas fa-layer-group text-emerald-500 mr-2"></i> Project Config</h3>
+            <div class="space-y-6">
                 <input type="hidden" id="proj-id">
                 
                 <div class="flex flex-col md:flex-row gap-4">
-                    <div class="flex-1">
-                        <label class="text-xs text-gray-500 uppercase font-bold mb-2 block">Project Title</label>
-                        <input type="text" id="proj-name" class="w-full bg-black/50 border border-white/10 rounded-lg px-4 py-3 text-sm text-white focus:border-emerald-500 outline-none transition-colors">
-                    </div>
-                    <div class="w-full md:w-32">
-                        <label class="text-xs text-gray-500 uppercase font-bold mb-2 block">Display Rank</label>
-                        <input type="number" id="proj-order" value="99" min="1" max="999" class="w-full bg-black/50 border border-white/10 rounded-lg px-4 py-3 text-sm text-white focus:border-emerald-500 outline-none transition-colors text-center" title="1 = First">
-                    </div>
+                    <div class="flex-1"><label class="text-xs text-gray-500 uppercase font-bold mb-2 block">Project Title</label><input type="text" id="proj-name" class="w-full bg-black/50 border border-white/10 rounded-lg px-4 py-3 text-sm text-white focus:border-emerald-500 outline-none"></div>
+                    <div class="w-full md:w-32"><label class="text-xs text-gray-500 uppercase font-bold mb-2 block">Rank (1=First)</label><input type="number" id="proj-order" value="99" class="w-full bg-black/50 border border-white/10 rounded-lg px-4 py-3 text-sm text-white focus:border-emerald-500 outline-none text-center"></div>
                 </div>
 
-                <div>
-                    <label class="text-xs text-gray-500 uppercase font-bold mb-2 block">Live Link</label>
-                    <input type="url" id="proj-link-in" class="w-full bg-black/50 border border-white/10 rounded-lg px-4 py-3 text-sm text-white focus:border-emerald-500 outline-none transition-colors" placeholder="https://...">
-                </div>
+                <div><label class="text-xs text-gray-500 uppercase font-bold mb-2 block">Live Link</label><input type="url" id="proj-link-in" class="w-full bg-black/50 border border-white/10 rounded-lg px-4 py-3 text-sm text-white focus:border-emerald-500 outline-none" placeholder="https://..."></div>
                 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 bg-black/30 rounded-xl border border-white/5">
+                    <div><label class="text-[10px] text-gray-400 uppercase font-bold mb-2 block">App Icon</label><input type="file" id="proj-icon-file" accept="image/*" class="w-full text-xs text-gray-500 file:mr-2 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-emerald-400 file:bg-emerald-500/10 cursor-pointer"></div>
                     <div>
-                        <label class="text-[10px] md:text-xs text-gray-400 uppercase font-bold mb-2 block">App Icon (Square)</label>
-                        <input type="file" id="proj-icon-file" accept="image/*" class="w-full text-xs text-gray-500 file:mr-2 md:file:mr-4 file:py-1.5 md:file:py-2 file:px-3 md:file:px-4 file:rounded-lg file:border-0 file:text-emerald-400 file:font-bold file:bg-emerald-500/10 hover:file:bg-emerald-500/20 cursor-pointer">
-                    </div>
-                    <div>
-                        <label class="text-[10px] md:text-xs text-gray-400 uppercase font-bold mb-2 flex justify-between items-center">
-                            <span>Gallery (Multiple)</span>
-                            <button onclick="document.getElementById('proj-clear-gallery').value='true'; showToast('Gallery marked for clearing.', 'info');" class="text-red-400 hover:text-red-300">Reset</button>
-                        </label>
+                        <label class="text-[10px] text-gray-400 uppercase font-bold mb-2 flex justify-between items-center"><span>Gallery (Multiple)</span><button onclick="document.getElementById('proj-clear-gallery').value='true'; showToast('Gallery marked for clearing.', 'info');" class="text-red-400 hover:text-red-300">Reset</button></label>
                         <input type="hidden" id="proj-clear-gallery" value="false">
-                        <input type="file" id="proj-gallery-files" accept="image/*" multiple class="w-full text-xs text-gray-500 file:mr-2 md:file:mr-4 file:py-1.5 md:file:py-2 file:px-3 md:file:px-4 file:rounded-lg file:border-0 file:text-emerald-400 file:font-bold file:bg-emerald-500/10 hover:file:bg-emerald-500/20 cursor-pointer">
+                        <input type="file" id="proj-gallery-files" accept="image/*" multiple class="w-full text-xs text-gray-500 file:mr-2 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-emerald-400 file:bg-emerald-500/10 cursor-pointer">
                     </div>
                 </div>
 
                 <div>
                     <div class="flex justify-between items-center mb-2">
                         <label class="text-xs text-gray-500 uppercase font-bold">Deep Description</label>
-                        <button onclick="aiEnhance(this, 'proj-editor', 'rich')" class="text-emerald-500 text-xs font-bold hover:text-emerald-400 transition-colors"><i class="fas fa-magic"></i> AI Enhance</button>
+                        <button onclick="aiEnhance(this, 'proj-editor', 'rich')" class="text-emerald-500 text-xs font-bold hover:text-emerald-400"><i class="fas fa-magic"></i> AI</button>
                     </div>
                     <div class="border border-white/10 rounded-xl overflow-hidden bg-black/50 focus-within:border-emerald-500 transition-colors">
                         <div class="p-2 border-b border-white/10 flex gap-2 bg-white/5 overflow-x-auto hide-scroll">
-                            <button onclick="execCmd('bold')" class="w-8 h-8 shrink-0 text-gray-400 hover:text-white hover:bg-white/10 rounded transition-colors"><i class="fas fa-bold"></i></button>
-                            <button onclick="execCmd('italic')" class="w-8 h-8 shrink-0 text-gray-400 hover:text-white hover:bg-white/10 rounded transition-colors"><i class="fas fa-italic"></i></button>
-                            <button onclick="execCmd('insertUnorderedList')" class="w-8 h-8 shrink-0 text-gray-400 hover:text-white hover:bg-white/10 rounded transition-colors"><i class="fas fa-list-ul"></i></button>
+                            <button onclick="execCmd('bold')" class="w-8 h-8 text-gray-400 hover:text-white hover:bg-white/10 rounded"><i class="fas fa-bold"></i></button>
+                            <button onclick="execCmd('italic')" class="w-8 h-8 text-gray-400 hover:text-white hover:bg-white/10 rounded"><i class="fas fa-italic"></i></button>
+                            <button onclick="execCmd('insertUnorderedList')" class="w-8 h-8 text-gray-400 hover:text-white hover:bg-white/10 rounded"><i class="fas fa-list-ul"></i></button>
                         </div>
-                        <div id="proj-editor" contenteditable="true" class="p-4 text-white rich-editor text-sm leading-relaxed" placeholder="Tell the story of this project..."></div>
+                        <div id="proj-editor" contenteditable="true" class="p-4 text-white rich-editor text-sm leading-relaxed"></div>
                     </div>
                 </div>
-                <div class="flex gap-3 md:gap-4 pt-4 md:pt-6 mt-2 md:mt-4 border-t border-white/5">
-                    <button onclick="closeModals()" class="flex-1 py-3 md:py-4 font-bold text-gray-400 hover:text-white transition-colors bg-white/5 rounded-xl hover:bg-white/10 text-sm md:text-base">Cancel</button>
-                    <button onclick="saveProject()" id="save-proj-btn" class="flex-1 py-3 md:py-4 bg-emerald-600 hover:bg-emerald-500 rounded-xl font-bold text-white transition-colors shadow-lg text-sm md:text-base">Save Project</button>
-                </div>
+                <button onclick="saveProject()" id="save-proj-btn" class="w-full py-4 bg-emerald-600 hover:bg-emerald-500 rounded-xl font-bold text-white transition-colors shadow-lg">Save Project</button>
             </div>
         </div>
     </div>
@@ -452,17 +409,16 @@
     <!-- MODAL: SECURE DELETE -->
     <div id="modal-confirm-delete" class="modal-overlay">
         <div class="glass-modal p-6 md:p-8 rounded-3xl w-full max-w-sm mx-4 text-center border border-red-900/50 shadow-2xl shadow-red-900/20 relative">
-            <button onclick="closeModals()" class="absolute top-4 md:top-6 right-4 md:right-6 w-8 h-8 rounded-full bg-white/5 text-gray-400 flex items-center justify-center hover:text-white hover:bg-white/10 transition-all"><i class="fas fa-times"></i></button>
-            <div class="w-12 h-12 md:w-16 md:h-16 bg-red-500/10 rounded-full flex items-center justify-center mx-auto mb-4 md:mb-6">
-                <i class="fas fa-exclamation-triangle text-xl md:text-2xl text-red-500"></i>
+            <button onclick="closeModals()" class="absolute top-4 right-4 w-8 h-8 rounded-full bg-white/5 text-gray-400 flex items-center justify-center hover:text-white hover:bg-white/10 transition-all mobile-close-btn"><i class="fas fa-times"></i></button>
+            <div class="w-16 h-16 bg-red-500/10 rounded-full flex items-center justify-center mx-auto mb-6">
+                <i class="fas fa-exclamation-triangle text-2xl text-red-500"></i>
             </div>
-            <h3 class="text-xl md:text-2xl font-bold text-white mb-2">Confirm Purge</h3>
-            <p class="text-gray-500 text-xs md:text-sm mb-6">This action cannot be undone. Enter admin password to authorize.</p>
+            <h3 class="text-2xl font-bold text-white mb-2">Confirm Purge</h3>
+            <p class="text-gray-500 text-sm mb-6">This action cannot be undone. Enter password to authorize.</p>
             
             <input type="hidden" id="del-id">
-            <input type="password" id="del-pwd" class="w-full bg-black/50 border border-red-900/50 rounded-xl px-4 py-3 text-center text-sm md:text-base text-white focus:border-red-500 outline-none mb-6 tracking-widest transition-colors" placeholder="••••••••">
-            
-            <button onclick="executeDelete()" id="btn-execute-del" class="w-full py-3 md:py-4 bg-red-600 hover:bg-red-500 rounded-xl font-bold text-white transition-colors shadow-lg text-sm md:text-base">Authorize Deletion</button>
+            <input type="password" id="del-pwd" class="w-full bg-black/50 border border-red-900/50 rounded-xl px-6 py-4 text-center text-white focus:border-red-500 outline-none mb-6 tracking-widest" placeholder="••••••••">
+            <button onclick="executeDelete()" id="btn-execute-del" class="w-full py-4 bg-red-600 hover:bg-red-500 rounded-xl font-bold text-white transition-colors shadow-lg">Authorize Deletion</button>
         </div>
     </div>
 
@@ -473,7 +429,7 @@
 
         // --- 2. INITIALIZATION & STATE ---
         let supabaseClient = null;
-        let STATE = {
+        var STATE = {
             profile: null,
             categories: [],
             projects: [],
@@ -485,50 +441,45 @@
             analytics: { views: 0, cvDownloads: 0, contacts: 0, projectClicks: {} }
         };
 
-        if (window.supabase && SUPABASE_URL && SUPABASE_ANON_KEY && !SUPABASE_ANON_KEY.includes("PASTE_YOUR")) {
-            try {
-                supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-                STATE.dbActive = true;
-            } catch (e) {
-                console.error("Supabase init failed", e);
-            }
+        if (window.supabase) {
+            supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+            STATE.dbActive = true;
         }
 
-        // --- 3. ANALYTICS ENGINE ---
-        // Generates a session ID to prevent spamming page views
+        // --- 3. ANALYTICS ENGINE (PERSISTENT & GLOBAL) ---
+        // Track unique session page view
         if(!sessionStorage.getItem('session_tracked')) {
             sessionStorage.setItem('session_tracked', 'true');
-            setTimeout(() => trackEvent('page_view', { source: 'direct' }), 2000);
+            setTimeout(() => trackEvent('page_view'), 1000);
         }
 
         window.trackEvent = async (eventName, params = {}) => {
-            // 1. Send to Google Analytics 4 (if configured)
-            if(typeof gtag === 'function') {
-                gtag('event', eventName, params);
-            }
-            
-            // 2. Internal Database Tracking (For Admin Dashboard)
+            if(typeof gtag === 'function') gtag('event', eventName, params);
             if(!STATE.dbActive) return;
-            
-            // Debounce to prevent spam
-            if(params._debounced) return; 
 
             try {
-                let a = STATE.analytics;
-                if(eventName === 'page_view') a.views++;
-                if(eventName === 'cv_download') a.cvDownloads++;
-                if(eventName === 'contact_click') a.contacts++;
+                let a = STATE.analytics || { views: 0, cvDownloads: 0, contacts: 0, projectClicks: {} };
+                
+                // Session gating for project views to prevent spam
                 if(eventName === 'project_view' && params.proj_id) {
+                    const viewed = JSON.parse(sessionStorage.getItem('viewed_projs') || '[]');
+                    if(viewed.includes(params.proj_id)) return; // Already counted this session
+                    
+                    viewed.push(params.proj_id);
+                    sessionStorage.setItem('viewed_projs', JSON.stringify(viewed));
+                    
                     a.projectClicks[params.proj_id] = (a.projectClicks[params.proj_id] || 0) + 1;
-                }
+                    
+                    // Live UI update for public viewing
+                    const counterEl = document.getElementById(`det-views`);
+                    if(counterEl) counterEl.textContent = a.projectClicks[params.proj_id];
+                } else if(eventName === 'page_view') a.views++;
+                else if(eventName === 'cv_download') a.cvDownloads++;
+                else if(eventName === 'contact_click') a.contacts++;
 
-                // Silently upsert to Supabase
-                await supabaseClient.from('portfolio_data').upsert({ 
-                    id: 'analytics_main', 
-                    content: a,
-                    updated_at: new Date()
-                });
-            } catch(e) { /* Silent fail for analytics */ }
+                STATE.analytics = a;
+                await supabaseClient.from('portfolio_data').upsert({ id: 'analytics_main', content: a, updated_at: new Date() });
+            } catch(e) { console.error("Analytics Error", e); }
         };
 
         const renderAnalytics = () => {
@@ -556,10 +507,10 @@
                 tpContainer.innerHTML = '<p class="text-sm text-gray-500 text-center py-4">No project clicks yet.</p>';
             } else {
                 tpContainer.innerHTML = topProjects.slice(0, 5).map((p, idx) => `
-                    <div class="flex justify-between items-center p-2 hover:bg-white/5 rounded-lg transition-colors">
+                    <div class="flex justify-between items-center p-3 bg-black/30 rounded-xl mb-2">
                         <div class="flex items-center gap-3">
-                            <span class="text-gray-500 font-bold w-4">${idx+1}.</span>
-                            <span class="text-sm text-white font-medium truncate max-w-[150px] md:max-w-[300px]">${p.name}</span>
+                            <span class="text-gray-500 font-black w-4">${idx+1}.</span>
+                            <span class="text-sm text-white font-medium truncate max-w-[200px]">${safeText(p.name)}</span>
                         </div>
                         <span class="text-xs bg-emerald-500/20 text-emerald-400 px-2 py-1 rounded-md font-bold">${p.count} clicks</span>
                     </div>
@@ -567,7 +518,9 @@
             }
         };
 
-        // --- 4. CORE UTILITIES ---
+        // --- 4. LIQUID UI & CORE UTILITIES ---
+        const haptic = () => { if(navigator.vibrate) navigator.vibrate(15); };
+
         const showToast = (msg, isErr = false) => {
             const t = document.getElementById('toast');
             if(!t) return;
@@ -575,32 +528,32 @@
             t.style.backgroundColor = isErr ? '#ef4444' : '#059669';
             t.style.opacity = '1';
             t.style.transform = 'translate(-50%, 0) scale(1)';
-            setTimeout(() => { 
-                t.style.opacity = '0'; 
-                t.style.transform = 'translate(-50%, 20px) scale(0.95)';
-            }, 3000);
+            setTimeout(() => { t.style.opacity = '0'; t.style.transform = 'translate(-50%, 20px) scale(0.95)'; }, 3000);
         };
 
         const switchView = (id) => {
-            document.querySelectorAll('.view-section').forEach(v => v.classList.remove('active'));
-            const el = document.getElementById(id);
-            if(el) {
-                el.classList.add('active');
-                window.scrollTo({top: 0, behavior: 'smooth'});
-            }
+            haptic();
+            const doTransition = () => {
+                document.querySelectorAll('.view-section').forEach(v => v.classList.remove('active'));
+                const el = document.getElementById(id);
+                if(el) { el.classList.add('active'); window.scrollTo({top: 0, behavior: 'smooth'}); }
+                
+                // Matrix Decode Effect on titles
+                document.querySelectorAll(`${id} .decode-text`).forEach(decodeTextEffect);
+            };
+
+            if (document.startViewTransition) { document.startViewTransition(doTransition); } 
+            else { doTransition(); }
         };
 
         const closeModals = () => {
             document.querySelectorAll('.modal-overlay').forEach(m => m.classList.remove('active'));
             document.body.classList.remove('modal-open');
             clearInterval(window.slideTimer);
-            const passEl = document.getElementById('admin-pass');
-            if(passEl) passEl.value = '';
-            const delEl = document.getElementById('del-pwd');
-            if(delEl) delEl.value = '';
         };
 
         const openModal = (id) => {
+            haptic();
             const el = document.getElementById(id);
             if(el) {
                 if(id === 'modal-analytics') renderAnalytics();
@@ -609,39 +562,90 @@
             }
         };
 
+        window.openContactModal = () => {
+            trackEvent('contact_click');
+            const p = STATE.profile || {};
+            const cOpts = document.getElementById('contact-options');
+            cOpts.innerHTML = '';
+            
+            let hasOptions = false;
+            if (p.contact?.whatsapp) {
+                cOpts.innerHTML += `<a href="https://wa.me/${p.contact.whatsapp.replace(/[^0-9]/g, '')}" target="_blank" class="w-full py-4 bg-[#25D366]/20 text-[#25D366] hover:bg-[#25D366] hover:text-white rounded-xl font-bold transition-colors flex items-center justify-center gap-3"><i class="fab fa-whatsapp text-xl"></i> WhatsApp</a>`;
+                hasOptions = true;
+            }
+            if (p.contact?.email) {
+                cOpts.innerHTML += `<a href="mailto:${p.contact.email}" class="w-full py-4 bg-blue-500/20 text-blue-400 hover:bg-blue-500 hover:text-white rounded-xl font-bold transition-colors flex items-center justify-center gap-3"><i class="fas fa-envelope text-xl"></i> Email</a>`;
+                hasOptions = true;
+            }
+            if (p.contact?.phone) {
+                cOpts.innerHTML += `<a href="tel:${p.contact.phone}" class="w-full py-4 bg-gray-700/50 text-white hover:bg-gray-600 rounded-xl font-bold transition-colors flex items-center justify-center gap-3"><i class="fas fa-phone text-xl"></i> Call</a>`;
+                hasOptions = true;
+            }
+            if (!hasOptions) cOpts.innerHTML = `<p class="text-gray-500 text-sm">No contact details provided.</p>`;
+            
+            openModal('modal-contact');
+        };
+
+        // Matrix Decode Effect
+        const decodeTextEffect = (el) => {
+            const original = el.innerText;
+            const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%&*";
+            let iterations = 0;
+            const interval = setInterval(() => {
+                el.innerText = original.split("").map((letter, index) => {
+                    if(index < iterations || letter === ' ') return original[index];
+                    return letters[Math.floor(Math.random() * letters.length)];
+                }).join("");
+                if(iterations >= original.length) clearInterval(interval);
+                iterations += 1/3;
+            }, 20);
+        };
+
+        // 3D Tilt Effect
+        const applyTilt = () => {
+            document.querySelectorAll('.hover-lift').forEach(card => {
+                card.onmousemove = (e) => {
+                    const rect = card.getBoundingClientRect();
+                    const x = e.clientX - rect.left;
+                    const y = e.clientY - rect.top;
+                    const centerX = rect.width / 2;
+                    const centerY = rect.height / 2;
+                    const rotateX = ((y - centerY) / centerY) * -5;
+                    const rotateY = ((x - centerX) / centerX) * 5;
+                    card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.02, 1.02, 1.02)`;
+                };
+                card.onmouseleave = () => { card.style.transform = `perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)`; };
+            });
+        };
+
+        // Ambient Parallax on Scroll
+        window.addEventListener('scroll', () => {
+            const scrollY = window.scrollY;
+            const glow1 = document.getElementById('glow-1');
+            const glow2 = document.getElementById('glow-2');
+            if(glow1) glow1.style.transform = `translate3d(0, ${scrollY * 0.3}px, 0)`;
+            if(glow2) glow2.style.transform = `translate3d(0, ${scrollY * -0.15}px, 0)`;
+        });
+
         // Mobile swipe logic for Slideshow
-        let touchstartX = 0;
-        let touchendX = 0;
+        let touchstartX = 0; let touchendX = 0;
         const swipeContainer = document.getElementById('swipe-container');
         if(swipeContainer) {
-            swipeContainer.addEventListener('touchstart', e => touchstartX = e.changedTouches[0].screenX);
-            swipeContainer.addEventListener('touchend', e => {
-                touchendX = e.changedTouches[0].screenX;
-                handleSwipe();
-            });
+            swipeContainer.addEventListener('touchstart', e => touchstartX = e.changedTouches[0].screenX, {passive: true});
+            swipeContainer.addEventListener('touchend', e => { touchendX = e.changedTouches[0].screenX; handleSwipe(); }, {passive: true});
         }
         function handleSwipe() {
             if(!STATE.currentSlideshow || STATE.currentSlideshow.length <= 1) return;
-            const threshold = 50;
-            if (touchendX < touchstartX - threshold) {
-                // Swipe Left (Next)
-                STATE.slideIdx = (STATE.slideIdx + 1) % STATE.currentSlideshow.length;
-                renderSlideFrame();
-            }
-            if (touchendX > touchstartX + threshold) {
-                // Swipe Right (Prev)
-                STATE.slideIdx = (STATE.slideIdx - 1 + STATE.currentSlideshow.length) % STATE.currentSlideshow.length;
-                renderSlideFrame();
-            }
+            if (touchendX < touchstartX - 50) { STATE.slideIdx = (STATE.slideIdx + 1) % STATE.currentSlideshow.length; renderSlideFrame(); haptic(); }
+            if (touchendX > touchstartX + 50) { STATE.slideIdx = (STATE.slideIdx - 1 + STATE.currentSlideshow.length) % STATE.currentSlideshow.length; renderSlideFrame(); haptic(); }
         }
 
-        const fileToBase64 = (file, maxWidth = 1000, quality = 0.8) => new Promise((resolve, reject) => {
+        const fileToBase64 = (file, maxWidth = 1200, quality = 0.8) => new Promise((resolve, reject) => {
             const reader = new FileReader();
             reader.readAsDataURL(file);
             reader.onload = (e) => {
                 if(file.type === 'application/pdf') return resolve(e.target.result);
-                const img = new Image();
-                img.src = e.target.result;
+                const img = new Image(); img.src = e.target.result;
                 img.onload = () => {
                     const canvas = document.createElement('canvas');
                     let w = img.width, h = img.height;
@@ -656,15 +660,9 @@
 
         const execCmd = (cmd) => document.execCommand(cmd, false, null);
         const getByteSize = (str) => new Blob([str]).size;
-        
-        const safeText = (str) => {
-            if(!str) return '';
-            const div = document.createElement('div');
-            div.textContent = str;
-            return div.innerHTML;
-        };
+        const safeText = (str) => { if(!str) return ''; const div = document.createElement('div'); div.textContent = str; return div.innerHTML; };
 
-        // --- 5. DATA SYNC (CLOUD OR LOCAL FALLBACK) ---
+        // --- 5. DATA SYNC ---
         const fetchRemote = async () => {
             if (STATE.dbActive) {
                 try {
@@ -673,33 +671,24 @@
                     processData(data);
                 } catch (err) {
                     console.error("DB Fetch Error:", err);
-                    showToast("Database error. Falling back to local mode.", true);
+                    showToast("Loading Local Fallback.", true);
                     fallbackLocalLoad();
                 }
-            } else {
-                fallbackLocalLoad();
-            }
+            } else { fallbackLocalLoad(); }
         };
 
-        const fallbackLocalLoad = () => {
-            const localData = JSON.parse(localStorage.getItem('portfolio_local')) || [];
-            processData(localData);
-        };
+        const fallbackLocalLoad = () => { processData(JSON.parse(localStorage.getItem('portfolio_local')) || []); };
 
         const processData = (data) => {
-            const profileObj = data.find(i => i.id === 'profile_main');
-            const catsObj = data.find(i => i.id === 'categories_list');
-            const projsObj = data.find(i => i.id === 'projects_list');
-            const statsObj = data.find(i => i.id === 'analytics_main');
+            const pObj = data.find(i => i.id === 'profile_main');
+            const cObj = data.find(i => i.id === 'categories_list');
+            const prObj = data.find(i => i.id === 'projects_list');
+            const stObj = data.find(i => i.id === 'analytics_main');
 
-            STATE.profile = profileObj ? profileObj.content : { 
-                logo: 'Mark', prefix: "Hi, It's", title: 'Mark Gray', role: 'Data Analyst', 
-                bio: 'Welcome to my digital workspace. I specialize in building data models and actionable dashboards.',
-                btnMain: 'Download CV'
-            };
-            STATE.categories = catsObj ? catsObj.content : [];
-            STATE.projects = projsObj ? projsObj.content : [];
-            if(statsObj && statsObj.content) STATE.analytics = statsObj.content;
+            STATE.profile = pObj ? pObj.content : { logo: 'Mark', prefix: "Hi, It's", title: 'Mark Gray', role: 'Data Analyst', bio: 'Welcome to my digital workspace.', btnMain: 'Download CV' };
+            STATE.categories = cObj ? cObj.content : [];
+            STATE.projects = prObj ? prObj.content : [];
+            if(stObj && stObj.content) STATE.analytics = stObj.content;
 
             renderAll();
         };
@@ -710,62 +699,39 @@
                     const { error } = await supabaseClient.from('portfolio_data').upsert({ id, content, updated_at: new Date() });
                     if (error) throw error;
                     return true;
-                } catch (err) {
-                    showToast("Sync Error: " + err.message, true);
-                    return false;
-                }
+                } catch (err) { showToast("Sync Error: " + err.message, true); return false; }
             } else {
                 let localData = JSON.parse(localStorage.getItem('portfolio_local')) || [];
                 const idx = localData.findIndex(i => i.id === id);
-                if(idx > -1) localData[idx].content = content;
-                else localData.push({id, content});
+                if(idx > -1) localData[idx].content = content; else localData.push({id, content});
                 localStorage.setItem('portfolio_local', JSON.stringify(localData));
                 return true;
             }
         };
 
-        // --- 6. ADMIN & SECURITY LOGIC ---
-        let clickCount = 0;
-        let clickTimeout;
+        // --- 6. ADMIN SECURITY ---
+        let clickCount = 0; let clickTimeout;
         const triggerBtn = document.getElementById('admin-trigger');
         if(triggerBtn) {
             triggerBtn.onclick = () => {
                 if (STATE.isAdmin) {
-                    clickCount++;
-                    clearTimeout(clickTimeout);
-                    if (clickCount >= 2) {
-                        STATE.isAdmin = false;
-                        document.body.classList.remove('admin-active');
-                        showToast("Admin Locked");
-                        clickCount = 0;
-                    } else {
-                        clickTimeout = setTimeout(() => clickCount = 0, 400);
-                    }
+                    clickCount++; clearTimeout(clickTimeout);
+                    if (clickCount >= 2) { STATE.isAdmin = false; document.body.classList.remove('admin-active'); showToast("Admin Locked"); haptic(); clickCount = 0; } 
+                    else { clickTimeout = setTimeout(() => clickCount = 0, 400); }
                     return;
                 }
-                
-                clickCount++;
-                clearTimeout(clickTimeout);
-                if (clickCount >= 3) {
-                    openModal('modal-login');
-                    trackEvent('admin_login_attempt');
-                    clickCount = 0;
-                } else {
-                    clickTimeout = setTimeout(() => clickCount = 0, 400);
-                }
+                clickCount++; clearTimeout(clickTimeout);
+                if (clickCount >= 3) { openModal('modal-login'); haptic(); clickCount = 0; } 
+                else { clickTimeout = setTimeout(() => clickCount = 0, 400); }
             };
         }
 
         window.verifyAdmin = () => {
             const passEl = document.getElementById('admin-pass');
             if (passEl && passEl.value === "@ft@bkh@n786") {
-                STATE.isAdmin = true;
-                document.body.classList.add('admin-active');
-                closeModals();
-                showToast("Admin Mode Unlocked");
-            } else {
-                showToast("Invalid Credentials", true);
-            }
+                STATE.isAdmin = true; document.body.classList.add('admin-active');
+                closeModals(); showToast("Admin Mode Unlocked"); haptic();
+            } else { showToast("Invalid Credentials", true); haptic(); }
         };
 
         // --- 7. RENDERING ENGINE ---
@@ -773,43 +739,24 @@
             renderHero();
             renderCategories();
             if(STATE.activeCat) renderProjects();
+            decodeTextEffect(document.getElementById('hero-title'));
+            applyTilt();
         };
 
         const renderHero = () => {
-            const p = STATE.profile;
-            if(!p) return;
-            const logoEl = document.getElementById('nav-logo');
-            if(logoEl) logoEl.innerHTML = safeText(p.logo || 'PORT').replace(p.logo, `${p.logo}<span class="text-emerald-500">.</span>`);
-            
-            const prefixEl = document.getElementById('hero-prefix');
-            if(prefixEl) prefixEl.textContent = p.prefix || '';
-            
-            const titleEl = document.getElementById('hero-title');
-            if(titleEl) titleEl.innerHTML = safeText(p.title || 'Portfolio').replace(' ', '<br>');
-            
-            const bioEl = document.getElementById('hero-bio');
-            if(bioEl) bioEl.textContent = p.bio || '';
-            
-            const imgEl = document.getElementById('hero-img');
-            if(imgEl && p.img) {
-                imgEl.src = p.img;
-                imgEl.classList.remove('skeleton');
-            }
-            
-            const ctaEl = document.getElementById('hero-cta');
-            if(ctaEl) ctaEl.textContent = p.btnMain || 'Action';
+            const p = STATE.profile; if(!p) return;
+            const logoEl = document.getElementById('nav-logo'); if(logoEl) logoEl.innerHTML = safeText(p.logo || 'PORT').replace(p.logo, `${p.logo}<span class="text-emerald-500">.</span>`);
+            const prefixEl = document.getElementById('hero-prefix'); if(prefixEl) prefixEl.textContent = p.prefix || '';
+            const titleEl = document.getElementById('hero-title'); if(titleEl) titleEl.innerHTML = safeText(p.title || 'Portfolio').replace(' ', '<br>');
+            const bioEl = document.getElementById('hero-bio'); if(bioEl) bioEl.textContent = p.bio || '';
+            const imgEl = document.getElementById('hero-img'); if(imgEl && p.img) { imgEl.src = p.img; imgEl.classList.remove('skeleton'); }
+            const ctaEl = document.getElementById('hero-cta'); if(ctaEl) ctaEl.textContent = p.btnMain || 'Action';
             
             const btnContact = document.getElementById('btn-contact');
             if(btnContact) {
-                if(p.btnContact) {
+                if(p.contact && (p.contact.email || p.contact.phone || p.contact.whatsapp)) {
                     btnContact.classList.remove('hidden');
-                    btnContact.onclick = () => {
-                        trackEvent('contact_click', {location: 'header'});
-                        window.open(p.btnContact.startsWith('http') ? p.btnContact : `https://${p.btnContact}`);
-                    };
-                } else {
-                    btnContact.classList.add('hidden');
-                }
+                } else { btnContact.classList.add('hidden'); }
             }
 
             const sLinks = document.getElementById('social-links');
@@ -819,7 +766,7 @@
                     const map = [['github','fa-github'], ['linkedin','fa-linkedin'], ['twitter','fa-twitter'], ['instagram','fa-instagram']];
                     map.forEach(([key, icon]) => {
                         if(p.socials[key]) {
-                            sLinks.innerHTML += `<a href="${p.socials[key].startsWith('http') ? p.socials[key] : 'https://'+p.socials[key]}" onclick="trackEvent('social_click', {platform: '${key}'})" target="_blank" class="w-10 md:w-12 h-10 md:h-12 rounded-full bg-white/5 flex items-center justify-center hover:bg-emerald-500 hover:text-white transition-all border border-white/10 text-gray-400 hover:-translate-y-1"><i class="fab ${icon} text-base md:text-lg"></i></a>`;
+                            sLinks.innerHTML += `<a href="${p.socials[key].startsWith('http') ? p.socials[key] : 'https://'+p.socials[key]}" target="_blank" class="w-10 md:w-12 h-10 md:h-12 rounded-full bg-white/5 flex items-center justify-center hover:bg-emerald-500 hover:text-white transition-all border border-white/10 text-gray-400 hover:-translate-y-1"><i class="fab ${icon} text-base md:text-lg"></i></a>`;
                         }
                     });
                 }
@@ -827,50 +774,35 @@
         };
 
         window.handleHeroCTA = () => {
-            const p = STATE.profile;
-            if(!p) return;
-            trackEvent('cv_download');
-            
-            if(p.cvFile) {
-                const a = document.createElement("a");
-                a.href = p.cvFile; a.download = "Resume.pdf"; a.click();
-            } else if (p.cvLink) {
-                window.open(p.cvLink.startsWith('http') ? p.cvLink : `https://${p.cvLink}`);
-            } else {
-                showToast("No CV available.", true);
-            }
+            const p = STATE.profile; if(!p) return;
+            trackEvent('cv_download'); haptic();
+            if(p.cvFile) { const a = document.createElement("a"); a.href = p.cvFile; a.download = "Resume.pdf"; a.click(); } 
+            else if (p.cvLink) { window.open(p.cvLink.startsWith('http') ? p.cvLink : `https://${p.cvLink}`); } 
+            else { showToast("No CV available.", true); }
         };
 
         const renderCategories = () => {
-            const catGrid = document.getElementById('grid-categories');
-            if(!catGrid) return;
-            
-            // Sort by order/rank ascending
+            const catGrid = document.getElementById('grid-categories'); if(!catGrid) return;
             let sortedCats = [...STATE.categories].sort((a,b) => (a.order || 99) - (b.order || 99));
-
             catGrid.innerHTML = sortedCats.length ? sortedCats.map(c => `
                 <div class="glass-card p-6 rounded-3xl hover-lift cursor-pointer group relative" onclick="openWorkspace('${c.id}')">
                     <div class="admin-element absolute top-4 right-4 z-20 flex gap-2">
                         <span class="absolute -top-3 -right-2 bg-emerald-500 text-black text-[10px] font-bold px-2 py-1 rounded-full shadow-lg">Rank ${c.order || 99}</span>
-                        <button onclick="event.stopPropagation(); editCategory('${c.id}')" class="w-8 h-8 rounded-full bg-white/10 text-gray-300 hover:bg-blue-500 hover:text-white transition-all backdrop-blur shadow-md">
-                            <i class="fas fa-edit text-xs"></i>
-                        </button>
-                        <button onclick="event.stopPropagation(); triggerDelete('${c.id}')" class="w-8 h-8 rounded-full bg-red-500/20 text-red-500 hover:bg-red-500 hover:text-white transition-all backdrop-blur shadow-md">
-                            <i class="fas fa-trash text-xs"></i>
-                        </button>
+                        <button onclick="event.stopPropagation(); editCategory('${c.id}')" class="w-8 h-8 rounded-full bg-white/10 text-gray-300 hover:bg-blue-500 hover:text-white transition-all backdrop-blur shadow-md"><i class="fas fa-edit text-xs"></i></button>
+                        <button onclick="event.stopPropagation(); triggerDelete('${c.id}')" class="w-8 h-8 rounded-full bg-red-500/20 text-red-500 hover:bg-red-500 hover:text-white transition-all backdrop-blur shadow-md"><i class="fas fa-trash text-xs"></i></button>
                     </div>
                     ${c.img ? `<img src="${c.img}" class="w-14 h-14 md:w-16 md:h-16 rounded-2xl object-cover border border-white/10 shadow-lg bg-black/50 mb-4 md:mb-5">` : `<div class="w-14 h-14 md:w-16 md:h-16 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center text-xl md:text-2xl shadow-lg mb-4 md:mb-5"><i class="fas fa-folder text-emerald-500"></i></div>`}
                     <h4 class="text-lg md:text-xl font-bold text-white group-hover:text-emerald-500 transition-colors">${safeText(c.name)}</h4>
                     <p class="text-xs md:text-sm text-gray-400 mt-2 line-clamp-2">${safeText(c.desc || '')}</p>
                 </div>
             `).join('') : `<p class="col-span-full text-center py-20 text-gray-600">No workspaces added yet.</p>`;
+            applyTilt();
         };
 
         window.openWorkspace = (id) => {
             STATE.activeCat = id;
             const c = STATE.categories.find(x => x.id === id);
             if(c) {
-                trackEvent('category_view', { cat_id: id, cat_name: c.name });
                 const nameEl = document.getElementById('active-cat-name');
                 if(nameEl) nameEl.textContent = c.name;
                 switchView('view-projects');
@@ -880,26 +812,20 @@
 
         const renderProjects = () => {
             const list = STATE.projects.filter(p => p.catId === STATE.activeCat);
-            const grid = document.getElementById('grid-projects');
-            if(!grid) return;
-            
-            // Sort by order/rank ascending
+            const grid = document.getElementById('grid-projects'); if(!grid) return;
             let sortedProjs = [...list].sort((a,b) => (a.order || 99) - (b.order || 99));
-
             grid.innerHTML = sortedProjs.length ? sortedProjs.map(p => {
                 const banner = p.gallery && p.gallery.length > 0 ? p.gallery[0] : p.icon;
+                const views = STATE.analytics?.projectClicks?.[p.id] || 0;
                 return `
                 <div class="glass-card rounded-[2rem] overflow-hidden hover-lift cursor-pointer group flex flex-col h-full" onclick="openProjectDeep('${p.id}')">
                     <div class="h-48 md:h-56 relative overflow-hidden bg-black border-b border-white/10">
                         <img src="${banner}" class="w-full h-full object-cover opacity-60 group-hover:opacity-100 transition-all duration-700 catalog-slide" data-idx="0" data-pid="${p.id}">
+                        <div class="absolute bottom-3 right-3 bg-black/70 backdrop-blur px-2 py-1 rounded-md text-[10px] text-gray-300 font-bold border border-white/10"><i class="fas fa-eye text-emerald-400 mr-1"></i> ${views}</div>
                         <div class="admin-element absolute top-4 right-4 z-20 flex gap-2">
                             <span class="absolute -top-3 -right-2 bg-emerald-500 text-black text-[10px] font-bold px-2 py-1 rounded-full shadow-lg">Rank ${p.order || 99}</span>
-                            <button onclick="event.stopPropagation(); editProject('${p.id}')" class="w-8 h-8 rounded-full bg-black/50 backdrop-blur text-gray-300 hover:bg-blue-500 hover:text-white transition-all shadow-md">
-                                <i class="fas fa-edit text-xs"></i>
-                            </button>
-                            <button onclick="event.stopPropagation(); triggerDelete('${p.id}')" class="w-8 h-8 rounded-full bg-black/50 backdrop-blur text-red-500 hover:bg-red-500 hover:text-white transition-all shadow-md">
-                                <i class="fas fa-trash text-xs"></i>
-                            </button>
+                            <button onclick="event.stopPropagation(); editProject('${p.id}')" class="w-8 h-8 rounded-full bg-black/50 backdrop-blur text-gray-300 hover:bg-blue-500 hover:text-white transition-all shadow-md"><i class="fas fa-edit text-xs"></i></button>
+                            <button onclick="event.stopPropagation(); triggerDelete('${p.id}')" class="w-8 h-8 rounded-full bg-black/50 backdrop-blur text-red-500 hover:bg-red-500 hover:text-white transition-all shadow-md"><i class="fas fa-trash text-xs"></i></button>
                         </div>
                     </div>
                     <div class="p-5 md:p-6 flex-1 flex flex-col relative">
@@ -909,104 +835,67 @@
                     </div>
                 </div>
             `}).join('') : `<p class="col-span-full text-center py-20 text-gray-600">This workspace is currently empty.</p>`;
+            applyTilt();
         };
 
         // --- 8. PROJECT DETAILS & SLIDESHOW ---
         window.openProjectDeep = (id) => {
-            const p = STATE.projects.find(x => x.id === id);
-            if(!p) return;
+            const p = STATE.projects.find(x => x.id === id); if(!p) return;
+            trackEvent('project_view', { proj_id: id });
             
-            trackEvent('project_view', { proj_id: id, proj_name: p.name });
-            
-            const titleEl = document.getElementById('det-title');
-            if(titleEl) titleEl.textContent = p.name;
-            
-            const iconEl = document.getElementById('det-icon');
-            if(iconEl) iconEl.src = p.icon;
-            
-            const descEl = document.getElementById('det-desc');
-            if(descEl) descEl.innerHTML = p.desc || 'No description provided.';
+            const titleEl = document.getElementById('det-title'); if(titleEl) titleEl.textContent = p.name;
+            const iconEl = document.getElementById('det-icon'); if(iconEl) iconEl.src = p.icon;
+            const descEl = document.getElementById('det-desc'); if(descEl) descEl.innerHTML = p.desc || 'No description provided.';
+            const viewEl = document.getElementById('det-views'); if(viewEl) viewEl.textContent = STATE.analytics?.projectClicks?.[id] || 0;
             
             const lnk = document.getElementById('det-link');
             if(lnk) {
-                if(p.link) {
-                    lnk.href = p.link.startsWith('http') ? p.link : `https://${p.link}`;
-                    lnk.style.display = 'flex';
-                } else { lnk.style.display = 'none'; }
+                if(p.link) { lnk.href = p.link.startsWith('http') ? p.link : `https://${p.link}`; lnk.style.display = 'flex'; } 
+                else { lnk.style.display = 'none'; }
             }
             
             STATE.currentSlideshow = p.gallery && p.gallery.length ? p.gallery : [p.icon];
             STATE.slideIdx = 0;
-            startModalSlideshow();
-            openModal('modal-details');
+            startModalSlideshow(); openModal('modal-details');
         };
 
         const startModalSlideshow = () => {
             renderSlideFrame();
-
-            // Create clickable gallery HTML
             const gal = document.getElementById('det-gallery');
             if(gal) {
                 gal.innerHTML = STATE.currentSlideshow.map((img, i) => `
-                    <img src="${img}" onclick="STATE.slideIdx=${i}; renderSlideFrame();" class="w-24 h-16 md:w-32 md:h-20 lg:w-48 lg:h-28 rounded-xl object-cover cursor-pointer hover:ring-2 ring-emerald-500 transition-all shrink-0 snap-center shadow-lg border border-white/10 ${i === STATE.slideIdx ? 'ring-2 ring-emerald-500 opacity-100' : 'opacity-60 hover:opacity-100'}">
+                    <img src="${img}" onclick="STATE.slideIdx=${i}; renderSlideFrame(); haptic();" class="w-24 h-16 md:w-32 md:h-20 lg:w-48 lg:h-28 rounded-xl object-cover cursor-pointer hover:ring-2 ring-emerald-500 transition-all shrink-0 snap-center shadow-lg border border-white/10 ${i === STATE.slideIdx ? 'ring-2 ring-emerald-500 opacity-100' : 'opacity-60 hover:opacity-100'}">
                 `).join('');
             }
             updateDots();
-
             clearInterval(window.slideTimer);
-            if(STATE.currentSlideshow.length > 1) {
-                window.slideTimer = setInterval(() => {
-                    STATE.slideIdx = (STATE.slideIdx + 1) % STATE.currentSlideshow.length;
-                    renderSlideFrame();
-                }, 5000);
-            }
+            if(STATE.currentSlideshow.length > 1) { window.slideTimer = setInterval(() => { STATE.slideIdx = (STATE.slideIdx + 1) % STATE.currentSlideshow.length; renderSlideFrame(); }, 5000); }
         };
         
         window.renderSlideFrame = () => {
-            const canvas = document.getElementById('slideshow-canvas');
-            if(!canvas) return;
+            const canvas = document.getElementById('slideshow-canvas'); if(!canvas) return;
             const ctx = canvas.getContext('2d');
             if(!STATE.currentSlideshow || STATE.currentSlideshow.length === 0) return;
-            
-            const img = new Image();
-            img.src = STATE.currentSlideshow[STATE.slideIdx];
-            img.onload = () => {
-                canvas.width = img.width; canvas.height = img.height;
-                ctx.clearRect(0,0, canvas.width, canvas.height);
-                ctx.drawImage(img, 0, 0);
-            };
+            const img = new Image(); img.src = STATE.currentSlideshow[STATE.slideIdx];
+            img.onload = () => { canvas.width = img.width; canvas.height = img.height; ctx.clearRect(0,0, canvas.width, canvas.height); ctx.drawImage(img, 0, 0); };
             updateDots();
         };
 
         function updateDots() {
-            const dotsContainer = document.getElementById('slideshow-dots');
-            if(!dotsContainer) return;
-            if(STATE.currentSlideshow.length <= 1) { dotsContainer.innerHTML = ''; return; }
-            
-            dotsContainer.innerHTML = STATE.currentSlideshow.map((_, i) => `
-                <div class="w-2 h-2 rounded-full transition-all duration-300 ${i === STATE.slideIdx ? 'bg-emerald-500 w-4' : 'bg-white/30'}"></div>
-            `).join('');
-            
-            // Highlight active thumbnail
             const gal = document.getElementById('det-gallery');
             if(gal) {
                 Array.from(gal.children).forEach((child, i) => {
-                    if(i === STATE.slideIdx) {
-                        child.classList.add('ring-2', 'ring-emerald-500', 'opacity-100');
-                        child.classList.remove('opacity-60');
-                        child.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
-                    } else {
-                        child.classList.remove('ring-2', 'ring-emerald-500', 'opacity-100');
-                        child.classList.add('opacity-60');
-                    }
+                    if(i === STATE.slideIdx) { child.classList.add('ring-2', 'ring-emerald-500', 'opacity-100'); child.classList.remove('opacity-60'); child.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' }); } 
+                    else { child.classList.remove('ring-2', 'ring-emerald-500', 'opacity-100'); child.classList.add('opacity-60'); }
                 });
             }
         }
 
         window.shareLink = () => {
-            const titleEl = document.getElementById('det-title');
-            const title = titleEl ? titleEl.textContent : 'Project';
-            navigator.clipboard.writeText(`Check out ${title}: ${window.location.href}`).then(() => showToast("Share link copied!"));
+            const titleEl = document.getElementById('det-title'); const title = titleEl ? titleEl.textContent : 'Project';
+            if(navigator.share) { navigator.share({ title: title, url: window.location.href }).catch(console.error); }
+            else { navigator.clipboard.writeText(`Check out ${title}: ${window.location.href}`).then(() => showToast("Link copied!")); }
+            haptic();
         };
 
         // Background Catalog Slideshow
@@ -1014,325 +903,109 @@
             const vProj = document.getElementById('view-projects');
             if (!vProj || !vProj.classList.contains('active')) return;
             document.querySelectorAll('.catalog-slide').forEach(imgEl => {
-                const pid = imgEl.getAttribute('data-pid');
-                const p = STATE.projects.find(x => x.id === pid);
+                const pid = imgEl.getAttribute('data-pid'); const p = STATE.projects.find(x => x.id === pid);
                 if(p && p.gallery && p.gallery.length > 1) {
-                    let idx = parseInt(imgEl.getAttribute('data-idx')) || 0;
-                    idx = (idx + 1) % p.gallery.length;
-                    imgEl.style.opacity = '0.3';
-                    setTimeout(() => {
-                        imgEl.src = p.gallery[idx];
-                        imgEl.setAttribute('data-idx', idx);
-                        imgEl.style.opacity = '';
-                    }, 400);
+                    let idx = parseInt(imgEl.getAttribute('data-idx')) || 0; idx = (idx + 1) % p.gallery.length;
+                    imgEl.style.opacity = '0.4';
+                    setTimeout(() => { imgEl.src = p.gallery[idx]; imgEl.setAttribute('data-idx', idx); imgEl.style.opacity = ''; }, 400);
                 }
             });
         }, 4000);
 
-        // --- 9. FORM SUBMISSIONS (CRUD) ---
-        // Profile Edit
+        // --- 9. FORM SUBMISSIONS ---
         window.openProfileEditor = () => {
             const p = STATE.profile || {};
-            document.getElementById('edit-logo').value = p.logo || '';
-            document.getElementById('edit-prefix').value = p.prefix || '';
-            document.getElementById('edit-title').value = p.title || '';
-            document.getElementById('edit-bio').value = p.bio || '';
-            document.getElementById('edit-btn-main').value = p.btnMain || '';
-            document.getElementById('edit-btn-contact').value = p.btnContact || '';
-            document.getElementById('edit-cv-link').value = p.cvLink || '';
-            if(p.socials) {
-                document.getElementById('edit-github').value = p.socials.github || '';
-                document.getElementById('edit-linkedin').value = p.socials.linkedin || '';
-                document.getElementById('edit-twitter').value = p.socials.twitter || '';
-                document.getElementById('edit-instagram').value = p.socials.instagram || '';
+            document.getElementById('edit-logo').value = p.logo || ''; document.getElementById('edit-prefix').value = p.prefix || '';
+            document.getElementById('edit-title').value = p.title || ''; document.getElementById('edit-bio').value = p.bio || '';
+            document.getElementById('edit-btn-main').value = p.btnMain || ''; document.getElementById('edit-cv-link').value = p.cvLink || '';
+            
+            if(p.contact) { 
+                const wa = document.getElementById('edit-whatsapp'); if(wa) wa.value = p.contact.whatsapp || ''; 
+                const ph = document.getElementById('edit-phone'); if(ph) ph.value = p.contact.phone || ''; 
+                const em = document.getElementById('edit-email'); if(em) em.value = p.contact.email || ''; 
+            }
+            if(p.socials) { 
+                const gh = document.getElementById('edit-github'); if(gh) gh.value = p.socials.github || ''; 
+                const li = document.getElementById('edit-linkedin'); if(li) li.value = p.socials.linkedin || ''; 
+                const tw = document.getElementById('edit-twitter'); if(tw) tw.value = p.socials.twitter || ''; 
+                const ig = document.getElementById('edit-instagram'); if(ig) ig.value = p.socials.instagram || ''; 
             }
             openModal('modal-profile');
         };
 
         window.saveProfile = async () => {
             if(!STATE.isAdmin) return;
-            const btn = document.getElementById('save-prof-btn');
-            if(btn) { btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...'; }
+            const btn = document.getElementById('save-prof-btn'); if(btn) { btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...'; }
             
+            const wa = document.getElementById('edit-whatsapp'); const ph = document.getElementById('edit-phone'); const em = document.getElementById('edit-email');
+            const gh = document.getElementById('edit-github'); const li = document.getElementById('edit-linkedin'); const tw = document.getElementById('edit-twitter'); const ig = document.getElementById('edit-instagram');
+
             const payload = {
-                logo: document.getElementById('edit-logo').value,
-                prefix: document.getElementById('edit-prefix').value,
-                title: document.getElementById('edit-title').value,
-                bio: document.getElementById('edit-bio').value,
-                btnMain: document.getElementById('edit-btn-main').value,
-                btnContact: document.getElementById('edit-btn-contact').value,
-                cvLink: document.getElementById('edit-cv-link').value,
-                socials: {
-                    github: document.getElementById('edit-github').value,
-                    linkedin: document.getElementById('edit-linkedin').value,
-                    twitter: document.getElementById('edit-twitter').value,
-                    instagram: document.getElementById('edit-instagram').value
-                },
-                img: STATE.profile?.img || null,
-                cvFile: STATE.profile?.cvFile || null
+                logo: document.getElementById('edit-logo').value, prefix: document.getElementById('edit-prefix').value, title: document.getElementById('edit-title').value, bio: document.getElementById('edit-bio').value,
+                btnMain: document.getElementById('edit-btn-main').value, cvLink: document.getElementById('edit-cv-link').value,
+                contact: { whatsapp: wa ? wa.value : '', phone: ph ? ph.value : '', email: em ? em.value : '' },
+                socials: { github: gh ? gh.value : '', linkedin: li ? li.value : '', twitter: tw ? tw.value : '', instagram: ig ? ig.value : '' },
+                img: STATE.profile?.img || null, cvFile: STATE.profile?.cvFile || null
             };
-
-            const imgFile = document.getElementById('edit-img').files[0];
-            if(imgFile) payload.img = await fileToBase64(imgFile, 600, 0.9);
-            
+            const imgFile = document.getElementById('edit-img').files[0]; if(imgFile) payload.img = await fileToBase64(imgFile, 600, 0.9);
             const cvFile = document.getElementById('edit-cv').files[0];
-            if(cvFile) {
-                if(cvFile.size > 800000) { 
-                    showToast("CV exceeds 750KB limit", true); 
-                    if(btn) { btn.disabled=false; btn.innerHTML="Save Profile"; }
-                    return; 
-                }
-                payload.cvFile = await fileToBase64(cvFile);
-            }
-
-            if(getByteSize(JSON.stringify(payload)) > 1000000) {
-                showToast("Payload too large. Use a smaller image.", true);
-            } else {
-                STATE.profile = payload;
-                if(await syncRemote('profile_main', payload)) {
-                    showToast("Profile Updated");
-                    closeModals();
-                    renderHero();
-                }
-            }
+            if(cvFile) { if(cvFile.size > 800000) { showToast("CV exceeds 750KB", true); if(btn) { btn.disabled=false; btn.innerHTML="Save"; } return; } payload.cvFile = await fileToBase64(cvFile); }
+            if(getByteSize(JSON.stringify(payload)) > 1000000) { showToast("Payload too large.", true); } else { STATE.profile = payload; if(await syncRemote('profile_main', payload)) { showToast("Profile Updated"); closeModals(); renderHero(); } }
             if(btn) { btn.disabled = false; btn.innerHTML = 'Save Profile'; }
         };
 
-        // Category Edit
-        window.openCategoryModal = () => {
-            document.getElementById('cat-id').value = '';
-            document.getElementById('cat-name').value = '';
-            document.getElementById('cat-order').value = '99';
-            const descEl = document.getElementById('cat-desc');
-            if(descEl) descEl.value = '';
-            document.getElementById('cat-file').value = '';
-            openModal('modal-cat');
-        };
-
-        window.editCategory = (id) => {
-            const c = STATE.categories.find(x => x.id === id);
-            if(!c) return;
-            document.getElementById('cat-id').value = c.id;
-            document.getElementById('cat-name').value = c.name;
-            document.getElementById('cat-order').value = c.order || 99;
-            const descEl = document.getElementById('cat-desc');
-            if(descEl) descEl.value = c.desc || '';
-            document.getElementById('cat-file').value = '';
-            openModal('modal-cat');
-        };
-
+        window.openCategoryModal = () => { document.getElementById('cat-id').value = ''; document.getElementById('cat-name').value = ''; document.getElementById('cat-order').value = '99'; const descEl = document.getElementById('cat-desc'); if(descEl) descEl.value = ''; document.getElementById('cat-file').value = ''; openModal('modal-cat'); };
+        window.editCategory = (id) => { const c = STATE.categories.find(x => x.id === id); if(!c) return; document.getElementById('cat-id').value = c.id; document.getElementById('cat-name').value = c.name; document.getElementById('cat-order').value = c.order || 99; const descEl = document.getElementById('cat-desc'); if(descEl) descEl.value = c.desc || ''; document.getElementById('cat-file').value = ''; openModal('modal-cat'); };
         window.saveCategory = async () => {
             if(!STATE.isAdmin) return;
-            const idInput = document.getElementById('cat-id').value;
-            const name = document.getElementById('cat-name').value.trim();
-            const orderInput = parseInt(document.getElementById('cat-order').value) || 99;
-            const descEl = document.getElementById('cat-desc');
-            const desc = descEl ? descEl.value.trim() : '';
+            const idInput = document.getElementById('cat-id').value; const name = document.getElementById('cat-name').value.trim(); const orderInput = parseInt(document.getElementById('cat-order').value) || 99;
+            const descEl = document.getElementById('cat-desc'); const desc = descEl ? descEl.value.trim() : '';
             if(!name) return showToast("Name required", true);
-            
-            const btn = document.getElementById('save-cat-btn');
-            if(btn) { btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>'; }
-            
-            const imgFile = document.getElementById('cat-file').files[0];
-            let imgData = null;
-            
-            if(imgFile) {
-                imgData = await fileToBase64(imgFile, 400, 0.9);
-            } else if(idInput) {
-                const existing = STATE.categories.find(x => x.id === idInput);
-                if(existing) imgData = existing.img;
-            }
-
-            if (idInput) {
-                const idx = STATE.categories.findIndex(x => x.id === idInput);
-                if(idx > -1) {
-                    STATE.categories[idx].name = name;
-                    STATE.categories[idx].desc = desc;
-                    STATE.categories[idx].order = orderInput;
-                    if(imgData) STATE.categories[idx].img = imgData;
-                }
-            } else {
-                STATE.categories.push({ id: 'cat_' + Date.now(), name, desc, img: imgData, order: orderInput });
-            }
-            
-            if(await syncRemote('categories_list', STATE.categories)) {
-                showToast(idInput ? "Workspace Updated" : "Workspace Created");
-                closeModals();
-                renderCategories();
-            }
-            if(btn) { btn.disabled = false; btn.innerHTML = 'Save'; }
+            const btn = document.getElementById('save-cat-btn'); if(btn) { btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>'; }
+            const imgFile = document.getElementById('cat-file').files[0]; let imgData = null;
+            if(imgFile) { imgData = await fileToBase64(imgFile, 400, 0.9); } else if(idInput) { const existing = STATE.categories.find(x => x.id === idInput); if(existing) imgData = existing.img; }
+            if (idInput) { const idx = STATE.categories.findIndex(x => x.id === idInput); if(idx > -1) { STATE.categories[idx].name = name; STATE.categories[idx].desc = desc; STATE.categories[idx].order = orderInput; if(imgData) STATE.categories[idx].img = imgData; } } 
+            else { STATE.categories.push({ id: 'cat_' + Date.now(), name, desc, img: imgData, order: orderInput }); }
+            if(await syncRemote('categories_list', STATE.categories)) { showToast("Workspace Saved"); closeModals(); renderCategories(); }
+            if(btn) { btn.disabled = false; btn.innerHTML = 'Save Workspace'; }
         };
 
-        // Project Edit
-        window.openProjectModal = () => {
-            document.getElementById('proj-id').value = '';
-            document.getElementById('proj-name').value = '';
-            document.getElementById('proj-order').value = '99';
-            document.getElementById('proj-editor').innerHTML = '';
-            document.getElementById('proj-link-in').value = '';
-            document.getElementById('proj-icon-file').value = '';
-            document.getElementById('proj-gallery-files').value = '';
-            document.getElementById('proj-clear-gallery').value = 'false';
-            openModal('modal-proj');
-        };
-
-        window.editProject = (id) => {
-            const p = STATE.projects.find(x => x.id === id);
-            if(!p) return;
-            document.getElementById('proj-id').value = p.id;
-            document.getElementById('proj-name').value = p.name;
-            document.getElementById('proj-order').value = p.order || 99;
-            document.getElementById('proj-editor').innerHTML = p.desc || '';
-            document.getElementById('proj-link-in').value = p.link || '';
-            document.getElementById('proj-icon-file').value = '';
-            document.getElementById('proj-gallery-files').value = '';
-            document.getElementById('proj-clear-gallery').value = 'false';
-            openModal('modal-proj');
-        };
-
+        window.openProjectModal = () => { document.getElementById('proj-id').value = ''; document.getElementById('proj-name').value = ''; document.getElementById('proj-order').value = '99'; document.getElementById('proj-editor').innerHTML = ''; document.getElementById('proj-link-in').value = ''; document.getElementById('proj-icon-file').value = ''; document.getElementById('proj-gallery-files').value = ''; document.getElementById('proj-clear-gallery').value = 'false'; openModal('modal-proj'); };
+        window.editProject = (id) => { const p = STATE.projects.find(x => x.id === id); if(!p) return; document.getElementById('proj-id').value = p.id; document.getElementById('proj-name').value = p.name; document.getElementById('proj-order').value = p.order || 99; document.getElementById('proj-editor').innerHTML = p.desc || ''; document.getElementById('proj-link-in').value = p.link || ''; document.getElementById('proj-icon-file').value = ''; document.getElementById('proj-gallery-files').value = ''; document.getElementById('proj-clear-gallery').value = 'false'; openModal('modal-proj'); };
         window.saveProject = async () => {
             if(!STATE.isAdmin) return;
-            const idInput = document.getElementById('proj-id').value;
-            const name = document.getElementById('proj-name').value.trim();
-            const orderInput = parseInt(document.getElementById('proj-order').value) || 99;
+            const idInput = document.getElementById('proj-id').value; const name = document.getElementById('proj-name').value.trim(); const orderInput = parseInt(document.getElementById('proj-order').value) || 99;
             if(!name) return showToast("Title required", true);
-            
-            const btn = document.getElementById('save-proj-btn');
-            if(btn) { btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Uploading...'; }
-
+            const btn = document.getElementById('save-proj-btn'); if(btn) { btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Uploading...'; }
             const existing = idInput ? STATE.projects.find(x => x.id === idInput) : null;
-            
-            let icon = existing ? existing.icon : 'https://placehold.co/400x400/10b981/ffffff?text=App';
-            const iconFile = document.getElementById('proj-icon-file').files[0];
-            if(iconFile) icon = await fileToBase64(iconFile, 400, 0.8);
-
-            let gallery = [];
-            const clearGal = document.getElementById('proj-clear-gallery').value === 'true';
-            const gallFiles = document.getElementById('proj-gallery-files').files;
-            
-            if(gallFiles.length > 0) {
-                for(let f of gallFiles) gallery.push(await fileToBase64(f, 1000, 0.7));
-            } else if (!clearGal && existing && existing.gallery) {
-                gallery = existing.gallery;
-            }
-            
+            let icon = existing ? existing.icon : 'https://placehold.co/400x400/10b981/ffffff?text=App'; const iconFile = document.getElementById('proj-icon-file').files[0]; if(iconFile) icon = await fileToBase64(iconFile, 400, 0.8);
+            let gallery = []; const clearGal = document.getElementById('proj-clear-gallery').value === 'true'; const gallFiles = document.getElementById('proj-gallery-files').files;
+            if(gallFiles.length > 0) { for(let f of gallFiles) gallery.push(await fileToBase64(f, 1000, 0.7)); } else if (!clearGal && existing && existing.gallery) { gallery = existing.gallery; }
             if(!gallery.length) gallery = [icon];
-
-            let finalLink = document.getElementById('proj-link-in').value.trim();
-            if(finalLink && !finalLink.startsWith('http')) finalLink = 'https://' + finalLink;
-
-            const payload = {
-                id: idInput || ('proj_' + Date.now()),
-                catId: STATE.activeCat,
-                name,
-                icon,
-                gallery,
-                order: orderInput,
-                desc: sanitizeRichHTML(document.getElementById('proj-editor').innerHTML),
-                link: finalLink
-            };
-
-            if(getByteSize(JSON.stringify(payload)) > 1000000) {
-                showToast("Exceeds 1MB limit. Select fewer images.", true);
-                if(btn) { btn.disabled = false; btn.innerHTML = 'Save Project'; }
-                return;
-            }
-
-            if(existing) {
-                const idx = STATE.projects.findIndex(x => x.id === idInput);
-                STATE.projects[idx] = payload;
-            } else {
-                STATE.projects.push(payload);
-            }
-
-            if(await syncRemote('projects_list', STATE.projects)) {
-                showToast(existing ? "Project Updated" : "Project Uploaded");
-                closeModals();
-                renderProjects();
-            }
+            let finalLink = document.getElementById('proj-link-in').value.trim(); if(finalLink && !finalLink.startsWith('http')) finalLink = 'https://' + finalLink;
+            const payload = { id: idInput || ('proj_' + Date.now()), catId: STATE.activeCat, name, icon, gallery, order: orderInput, desc: sanitizeRichHTML(document.getElementById('proj-editor').innerHTML), link: finalLink };
+            if(getByteSize(JSON.stringify(payload)) > 1000000) { showToast("Exceeds 1MB limit.", true); if(btn) { btn.disabled = false; btn.innerHTML = 'Save Project'; } return; }
+            if(existing) { const idx = STATE.projects.findIndex(x => x.id === idInput); STATE.projects[idx] = payload; } else { STATE.projects.push(payload); }
+            if(await syncRemote('projects_list', STATE.projects)) { showToast("Project Saved"); closeModals(); renderProjects(); }
             if(btn) { btn.disabled = false; btn.innerHTML = 'Save Project'; }
         };
 
-        // Deletions
-        window.triggerDelete = (id) => {
-            const delId = document.getElementById('del-id');
-            if(delId) delId.value = id;
-            openModal('modal-confirm-delete');
-        };
-
+        window.triggerDelete = (id) => { const delId = document.getElementById('del-id'); if(delId) delId.value = id; openModal('modal-confirm-delete'); };
         window.executeDelete = async () => {
-            const pwd = document.getElementById('del-pwd');
-            if(!STATE.isAdmin || !pwd || pwd.value !== "@ft@bkh@n786") {
-                return showToast("Authorization Failed", true);
-            }
-            
-            const btn = document.getElementById('btn-execute-del');
-            if(btn) { btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>'; }
-            
-            const delId = document.getElementById('del-id');
-            const id = delId ? delId.value : null;
-            if(!id) return;
-            
-            if(id.startsWith('cat_')) {
-                STATE.categories = STATE.categories.filter(c => c.id !== id);
-                // Purge attached projects
-                STATE.projects = STATE.projects.filter(p => p.catId !== id);
-                await syncRemote('categories_list', STATE.categories);
-                await syncRemote('projects_list', STATE.projects);
-                if(STATE.activeCat === id) switchView('view-home');
-                else renderCategories();
-            } else {
-                STATE.projects = STATE.projects.filter(p => p.id !== id);
-                await syncRemote('projects_list', STATE.projects);
-                renderProjects();
-            }
-            
-            closeModals();
-            showToast("Item Purged");
-            if(btn) { btn.disabled = false; btn.innerHTML = 'Authorize Deletion'; }
+            const pwd = document.getElementById('del-pwd'); if(!STATE.isAdmin || !pwd || pwd.value !== "@ft@bkh@n786") { return showToast("Auth Failed", true); }
+            const btn = document.getElementById('btn-execute-del'); if(btn) { btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>'; }
+            const delId = document.getElementById('del-id'); const id = delId ? delId.value : null; if(!id) return;
+            if(id.startsWith('cat_')) { STATE.categories = STATE.categories.filter(c => c.id !== id); STATE.projects = STATE.projects.filter(p => p.catId !== id); await syncRemote('categories_list', STATE.categories); await syncRemote('projects_list', STATE.projects); if(STATE.activeCat === id) switchView('view-home'); else renderCategories(); } 
+            else { STATE.projects = STATE.projects.filter(p => p.id !== id); await syncRemote('projects_list', STATE.projects); renderProjects(); }
+            closeModals(); showToast("Purged"); if(btn) { btn.disabled = false; btn.innerHTML = 'Authorize Deletion'; }
         };
 
-        // --- 10. AI ENGINE ---
         window.aiEnhance = async (btn, targetId, type) => {
-            const el = document.getElementById(targetId);
-            if(!el) return;
-            const raw = type === 'rich' ? el.innerText : el.value;
-            if(!raw || raw.length < 5) return showToast("Context too short for AI", true);
-            
-            const original = btn.innerHTML;
-            btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
-            
-            try {
-                const prompt = type === 'rich' 
-                    ? `Rewrite this project description to be highly professional, structured with bullet points for features, and compelling for recruiters. Keep it under 200 words. Input: ${raw}`
-                    : `Rewrite this to be punchy and professional. Max 2 sentences. Input: ${raw}`;
-
-                const response = await fetch('/api/gemini', {
-                    method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({ prompt, model: "gemini-3.1-flash" })
-                });
-                
-                if(!response.ok) throw new Error("Network");
-                const data = await response.json();
-                if(type === 'rich') el.innerHTML = sanitizeRichHTML(data.text.replace(/\n/g, '<br>'));
-                else el.value = String(data.text);
-                showToast("AI Enhancement Complete");
-            } catch(e) {
-                showToast("AI Enhancer is only available in dev mode.", true);
-            } finally {
-                btn.disabled = false; btn.innerHTML = original;
-            }
+            showToast("AI Enhancer is only available in a server environment.", true);
         };
 
         // Boot
-        try {
-            console.log("Initializing Portfolio...");
-            fetchRemote();
-        } catch(e) {
-            console.error("Boot Error", e);
-            renderAll();
-        }
+        try { console.log("Initializing Portfolio..."); fetchRemote(); } catch(e) { console.error("Boot Error", e); renderAll(); }
     </script>
 </body>
 </html>
