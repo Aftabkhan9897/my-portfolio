@@ -60,7 +60,7 @@
         <!-- VIEW: HOME -->
         <main id="view-home" class="view-section active">
             <section class="glass-card rounded-[2.5rem] p-8 md:p-16 flex flex-col md:flex-row items-center gap-12 relative overflow-hidden">
-                <button onclick="openProfileEditor()" class="admin-element absolute top-6 right-6 w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-emerald-500 transition-all">
+                <button onclick="openProfileEditor()" class="admin-element absolute top-6 right-6 w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-emerald-500 transition-colors">
                     <i class="fas fa-pen text-xs"></i>
                 </button>
                 
@@ -70,8 +70,7 @@
                     <p class="text-gray-400 text-lg mb-10 max-w-xl leading-relaxed mx-auto md:mx-0" id="hero-bio">Design-driven development focused on clean aesthetics and high performance.</p>
                     
                     <div class="flex flex-wrap gap-4 justify-center md:justify-start items-center">
-                        <button onclick="handleHeroCTA()" id="hero-cta" class="px-10 py-4 bg-emerald-600 rounded-full font-bold text-white shadow-xl shadow-emerald-900/20 hover:scale-105 transition-transform">
-                        Download CV</button>
+                        <button onclick="handleHeroCTA()" id="hero-cta" class="px-10 py-4 bg-emerald-600 rounded-full font-bold text-white shadow-xl shadow-emerald-900/20 hover:scale-105 transition-transform">Download Resume</button>
                         <div id="social-links" class="flex gap-3"></div>
                     </div>
                 </div>
@@ -96,7 +95,7 @@
                     <button onclick="switchView('view-home')" class="text-gray-500 hover:text-white mb-4 flex items-center gap-2 transition-colors"><i class="fas fa-arrow-left"></i> Back to Profile</button>
                     <h2 class="text-4xl font-bold text-white">Workspaces</h2>
                 </div>
-                <button onclick="openCategoryModal()" class="admin-element px-6 py-3 bg-emerald-600 hover:bg-emerald-500 rounded-xl text-sm font-bold transition-all shadow-lg shadow-emerald-900/30">
+                <button onclick="openCategoryModal()" class="admin-element px-6 py-3 bg-emerald-600 hover:bg-emerald-500 rounded-xl text-sm font-bold transition-all shadow-lg shadow-emerald-900/30 flex items-center gap-2">
                     <i class="fas fa-plus"></i> New Workspace
                 </button>
             </div>
@@ -112,7 +111,7 @@
                     <button onclick="switchView('view-categories')" class="text-gray-500 hover:text-white mb-4 flex items-center gap-2 transition-colors"><i class="fas fa-arrow-left"></i> Back to Workspaces</button>
                     <h2 id="active-cat-name" class="text-4xl font-bold text-white">Project Title</h2>
                 </div>
-                <button onclick="openProjectModal()" class="admin-element px-6 py-3 bg-emerald-600 hover:bg-emerald-500 rounded-xl text-sm font-bold transition-all shadow-lg shadow-emerald-900/30">
+                <button onclick="openProjectModal()" class="admin-element px-6 py-3 bg-emerald-600 hover:bg-emerald-500 rounded-xl text-sm font-bold transition-all shadow-lg shadow-emerald-900/30 flex items-center gap-2">
                     <i class="fas fa-upload"></i> Upload Project
                 </button>
             </div>
@@ -143,7 +142,7 @@
                     <div class="flex-1">
                         <h2 id="det-title" class="text-3xl md:text-5xl font-black text-white mb-4 tracking-tight">Project Title</h2>
                         <div class="flex flex-wrap gap-4 items-center">
-                            <a id="det-link" target="_blank" class="px-8 py-3 bg-emerald-600 text-white rounded-xl font-bold hover:bg-emerald-500 transition-colors shadow-lg shadow-emerald-900/30">
+                            <a id="det-link" target="_blank" class="px-8 py-3 bg-emerald-600 text-white rounded-xl font-bold hover:bg-emerald-500 transition-colors shadow-lg shadow-emerald-900/30 flex items-center gap-2">
                                 Launch Project <i class="fas fa-external-link-alt text-sm"></i>
                             </a>
                             <button onclick="shareLink()" class="w-12 h-12 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center hover:bg-white/10 text-white transition-colors">
@@ -154,10 +153,15 @@
                 </div>
 
                 <!-- Canvas Slideshow Container -->
-                <div class="px-8 md:px-12 mb-10">
+                <div class="px-8 md:px-12 mb-6">
                     <div class="aspect-video bg-black rounded-3xl overflow-hidden border border-white/5 shadow-inner relative">
                         <canvas id="slideshow-canvas" class="w-full h-full absolute inset-0"></canvas>
                     </div>
+                </div>
+
+                <!-- ADDED: The Gallery Container for clickable thumbnails -->
+                <div class="px-8 md:px-12 mb-10">
+                    <div id="det-gallery" class="flex gap-4 overflow-x-auto hide-scroll pb-4 snap-x"></div>
                 </div>
 
                 <div class="px-8 md:px-12 pb-10">
@@ -176,7 +180,7 @@
             </div>
             <h3 class="text-2xl font-bold text-white mb-2">Admin Unlock</h3>
             <p class="text-gray-500 text-sm mb-8">Enter access code to enable editing.</p>
-            <input type="password" id="admin-pass" class="w-full bg-black/50 border border-white/10 rounded-xl px-6 py-4 text-center text-white focus:border-emerald-500 outline-none mb-6 tracking-widest">
+            <input type="password" id="admin-pass" class="w-full bg-black/50 border border-white/10 rounded-xl px-6 py-4 text-center text-white focus:border-emerald-500 outline-none mb-6 tracking-widest transition-colors" placeholder="••••••••">
             <div class="flex gap-4">
                 <button onclick="closeModals()" class="flex-1 py-4 rounded-xl font-bold text-gray-400 hover:text-white transition-colors">Cancel</button>
                 <button onclick="verifyAdmin()" class="flex-1 py-4 bg-emerald-600 hover:bg-emerald-500 rounded-xl font-bold text-white transition-colors shadow-lg">Unlock</button>
@@ -187,8 +191,7 @@
     <!-- MODAL: PROFILE EDITOR -->
     <div id="modal-profile" class="modal-overlay">
         <div class="glass-modal p-8 rounded-3xl w-full max-w-2xl max-h-[85vh] overflow-y-auto hide-scroll border border-white/10 relative">
-            <button onclick="closeModals()" class="absolute top-6 right-6 w-8 h-8 rounded-full bg-white/5 text-gray-400 flex items-center justify-center hover:text-white hover:bg-white/10 transition-all">
-            </button>
+            <button onclick="closeModals()" class="absolute top-6 right-6 w-8 h-8 rounded-full bg-white/5 text-gray-400 flex items-center justify-center hover:text-white hover:bg-white/10 transition-all"><i class="fas fa-times"></i></button>
             <h3 class="text-2xl font-bold text-white mb-8 flex items-center gap-3"><i class="fas fa-user-edit text-emerald-500"></i> Identity Settings</h3>
             
             <div class="space-y-6">
@@ -215,7 +218,7 @@
                 </div>
                 <div>
                     <label class="text-xs text-gray-500 uppercase font-bold mb-2 block">Profile Image</label>
-                    <input type="file" id="edit-img" accept="image/*" class="w-full text-xs text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-emerald-400 file:font-bold file:cursor-pointer">
+                    <input type="file" id="edit-img" accept="image/*" class="w-full text-xs text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-emerald-400 file:font-bold file:bg-emerald-500/10 hover:file:bg-emerald-500/20 cursor-pointer">
                 </div>
                 
                 <div class="p-5 bg-black/30 rounded-2xl border border-white/5">
@@ -223,19 +226,19 @@
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div class="flex items-center gap-3">
                             <i class="fab fa-github text-xl w-6 text-center text-gray-400"></i>
-                            <input type="url" id="edit-github" class="flex-1 bg-black/50 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:border-emerald-500 outline-none transition-colors">
+                            <input type="url" id="edit-github" class="flex-1 bg-black/50 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:border-emerald-500 outline-none transition-colors" placeholder="GitHub URL">
                         </div>
                         <div class="flex items-center gap-3">
                             <i class="fab fa-linkedin text-xl w-6 text-center text-blue-500"></i>
-                            <input type="url" id="edit-linkedin" class="flex-1 bg-black/50 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:border-emerald-500 outline-none transition-colors">
+                            <input type="url" id="edit-linkedin" class="flex-1 bg-black/50 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:border-emerald-500 outline-none transition-colors" placeholder="LinkedIn URL">
                         </div>
                         <div class="flex items-center gap-3">
                             <i class="fab fa-twitter text-xl w-6 text-center text-blue-400"></i>
-                            <input type="url" id="edit-twitter" class="flex-1 bg-black/50 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:border-emerald-500 outline-none transition-colors">
+                            <input type="url" id="edit-twitter" class="flex-1 bg-black/50 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:border-emerald-500 outline-none transition-colors" placeholder="Twitter URL">
                         </div>
                         <div class="flex items-center gap-3">
                             <i class="fab fa-instagram text-xl w-6 text-center text-pink-500"></i>
-                            <input type="url" id="edit-instagram" class="flex-1 bg-black/50 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:border-emerald-500 outline-none transition-colors">
+                            <input type="url" id="edit-instagram" class="flex-1 bg-black/50 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:border-emerald-500 outline-none transition-colors" placeholder="Instagram URL">
                         </div>
                     </div>
                 </div>
@@ -243,11 +246,11 @@
                 <div class="grid grid-cols-2 gap-4">
                     <div>
                         <label class="text-xs text-gray-500 uppercase font-bold mb-2 block">Hero Button Text</label>
-                        <input type="text" id="edit-btn-main" class="w-full bg-black/50 border border-white/10 rounded-lg px-4 py-3 text-white focus:border-emerald-500 outline-none transition-colors">
+                        <input type="text" id="edit-btn-main" class="w-full bg-black/50 border border-white/10 rounded-lg px-4 py-3 text-white focus:border-emerald-500 outline-none transition-colors" placeholder="e.g. Download CV">
                     </div>
                     <div>
                         <label class="text-xs text-gray-500 uppercase font-bold mb-2 block">Nav Contact Link</label>
-                        <input type="url" id="edit-btn-contact" class="w-full bg-black/50 border border-white/10 rounded-lg px-4 py-3 text-white focus:border-emerald-500 outline-none transition-colors">
+                        <input type="url" id="edit-btn-contact" class="w-full bg-black/50 border border-white/10 rounded-lg px-4 py-3 text-white focus:border-emerald-500 outline-none transition-colors" placeholder="mailto:...">
                     </div>
                 </div>
 
@@ -258,18 +261,18 @@
                             <label class="block text-xs font-bold text-gray-400 uppercase mb-2 flex justify-between">
                                 Upload PDF <span class="text-emerald-500">Max 750KB</span>
                             </label>
-                            <input type="file" id="edit-cv" accept=".pdf" class="w-full text-gray-400 text-sm file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-emerald-600/20 file:font-bold file:cursor-pointer">
+                            <input type="file" id="edit-cv" accept=".pdf" class="w-full text-gray-400 text-sm file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-emerald-600/20 file:text-emerald-400 hover:file:bg-emerald-600/30 cursor-pointer border border-white/5 rounded-lg p-1 bg-black/50">
                         </div>
                         <div>
                             <label class="block text-xs font-bold text-gray-400 uppercase mb-2">OR External CV Link</label>
-                            <input type="url" id="edit-cv-link" class="w-full bg-black/50 border border-white/10 rounded-lg px-4 py-3 text-white focus:border-emerald-500 outline-none transition-colors">
+                            <input type="url" id="edit-cv-link" class="w-full bg-black/50 border border-white/10 rounded-lg px-4 py-3 text-white focus:border-emerald-500 outline-none transition-colors" placeholder="https://drive.google.com/...">
                         </div>
                     </div>
                 </div>
 
                 <div class="pt-6 border-t border-white/5 flex gap-4">
                     <button onclick="closeModals()" class="flex-1 py-4 font-bold text-gray-400 hover:text-white transition-colors bg-white/5 rounded-xl hover:bg-white/10">Cancel</button>
-                    <button onclick="saveProfile()" id="save-prof-btn" class="flex-1 py-4 bg-emerald-600 hover:bg-emerald-500 rounded-xl font-bold text-white transition-colors shadow-lg shadow-emerald-600/30">Save Profile</button>
+                    <button onclick="saveProfile()" id="save-prof-btn" class="flex-1 py-4 bg-emerald-600 hover:bg-emerald-500 rounded-xl font-bold text-white transition-colors shadow-lg shadow-emerald-900/20">Save Profile</button>
                 </div>
             </div>
         </div>
@@ -278,8 +281,7 @@
     <!-- MODAL: CATEGORY EDITOR -->
     <div id="modal-cat" class="modal-overlay">
         <div class="glass-modal p-8 rounded-3xl w-full max-w-md border border-white/10 relative">
-            <button onclick="closeModals()" class="absolute top-6 right-6 w-8 h-8 rounded-full bg-white/5 text-gray-400 flex items-center justify-center hover:text-white hover:bg-white/10 transition-all">
-            </button>
+            <button onclick="closeModals()" class="absolute top-6 right-6 w-8 h-8 rounded-full bg-white/5 text-gray-400 flex items-center justify-center hover:text-white hover:bg-white/10 transition-all"><i class="fas fa-times"></i></button>
             <h3 class="text-2xl font-bold text-white mb-8"><i class="fas fa-folder text-emerald-500 mr-2"></i> Workspace Config</h3>
             <div class="space-y-5">
                 <input type="hidden" id="cat-id">
@@ -287,13 +289,18 @@
                     <label class="text-xs text-gray-500 uppercase font-bold mb-2 block">Workspace Name</label>
                     <input type="text" id="cat-name" class="w-full bg-black/50 border border-white/10 rounded-lg px-4 py-3 text-white focus:border-emerald-500 outline-none transition-colors">
                 </div>
+                <!-- ADDED: Short Description Field -->
+                <div>
+                    <label class="text-xs text-gray-500 uppercase font-bold mb-2 block">Short Description</label>
+                    <textarea id="cat-desc" rows="2" class="w-full bg-black/50 border border-white/10 rounded-lg px-4 py-3 text-white focus:border-emerald-500 outline-none transition-colors"></textarea>
+                </div>
                 <div>
                     <label class="text-xs text-gray-500 uppercase font-bold mb-2 block">Cover Image</label>
-                    <input type="file" id="cat-file" accept="image/*" class="w-full text-xs text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-emerald-400 file:font-bold file:cursor-pointer">
+                    <input type="file" id="cat-file" accept="image/*" class="w-full text-xs text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-emerald-400 file:font-bold file:bg-emerald-500/10 hover:file:bg-emerald-500/20 cursor-pointer">
                 </div>
                 <div class="flex gap-4 pt-6 mt-4 border-t border-white/5">
                     <button onclick="closeModals()" class="flex-1 py-4 font-bold text-gray-400 hover:text-white transition-colors bg-white/5 rounded-xl hover:bg-white/10">Cancel</button>
-                    <button onclick="saveCategory()" id="save-cat-btn" class="flex-1 py-4 bg-emerald-600 hover:bg-emerald-500 rounded-xl font-bold text-white transition-colors shadow-lg shadow-emerald-600/30">Save</button>
+                    <button onclick="saveCategory()" id="save-cat-btn" class="flex-1 py-4 bg-emerald-600 hover:bg-emerald-500 rounded-xl font-bold text-white transition-colors shadow-lg shadow-emerald-900/20">Save</button>
                 </div>
             </div>
         </div>
@@ -302,8 +309,7 @@
     <!-- MODAL: PROJECT EDITOR -->
     <div id="modal-proj" class="modal-overlay">
         <div class="glass-modal p-8 rounded-3xl w-full max-w-3xl max-h-[85vh] overflow-y-auto hide-scroll border border-white/10 relative">
-            <button onclick="closeModals()" class="absolute top-6 right-6 w-8 h-8 rounded-full bg-white/5 text-gray-400 flex items-center justify-center hover:text-white hover:bg-white/10 transition-all">
-            </button>
+            <button onclick="closeModals()" class="absolute top-6 right-6 w-8 h-8 rounded-full bg-white/5 text-gray-400 flex items-center justify-center hover:text-white hover:bg-white/10 transition-all"><i class="fas fa-times"></i></button>
             <h3 class="text-2xl font-bold text-white mb-8"><i class="fas fa-layer-group text-emerald-500 mr-2"></i> Project Configuration</h3>
             <div class="space-y-6">
                 <input type="hidden" id="proj-id">
@@ -314,22 +320,22 @@
                     </div>
                     <div>
                         <label class="text-xs text-gray-500 uppercase font-bold mb-2 block">Live Link</label>
-                        <input type="url" id="proj-link-in" class="w-full bg-black/50 border border-white/10 rounded-lg px-4 py-3 text-white focus:border-emerald-500 outline-none transition-colors">
+                        <input type="url" id="proj-link-in" class="w-full bg-black/50 border border-white/10 rounded-lg px-4 py-3 text-white focus:border-emerald-500 outline-none transition-colors" placeholder="https://...">
                     </div>
                 </div>
                 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 bg-black/30 rounded-xl border border-white/5">
                     <div>
                         <label class="text-xs text-gray-400 uppercase font-bold mb-2 block">App Icon (Square)</label>
-                        <input type="file" id="proj-icon-file" accept="image/*" class="w-full text-xs text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-emerald-400 file:font-bold file:cursor-pointer">
+                        <input type="file" id="proj-icon-file" accept="image/*" class="w-full text-xs text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-emerald-400 file:font-bold file:bg-emerald-500/10 hover:file:bg-emerald-500/20 cursor-pointer">
                     </div>
                     <div>
                         <label class="text-xs text-gray-400 uppercase font-bold mb-2 flex justify-between items-center">
                             <span>Gallery (Multiple)</span>
-                            <button onclick="document.getElementById('proj-clear-gallery').value='true'; showToast('Gallery marked for clearing.', 'info');" class="text-red-400 hover:text-red-300 text-xs">Clear</button>
+                            <button onclick="document.getElementById('proj-clear-gallery').value='true'; showToast('Gallery marked for clearing.', 'info');" class="text-red-400 hover:text-red-300 transition-colors"><i class="fas fa-trash"></i> Reset</button>
                         </label>
                         <input type="hidden" id="proj-clear-gallery" value="false">
-                        <input type="file" id="proj-gallery-files" accept="image/*" multiple class="w-full text-xs text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-emerald-400 file:font-bold file:cursor-pointer">
+                        <input type="file" id="proj-gallery-files" accept="image/*" multiple class="w-full text-xs text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-emerald-400 file:font-bold file:bg-emerald-500/10 hover:file:bg-emerald-500/20 cursor-pointer">
                     </div>
                 </div>
 
@@ -349,7 +355,7 @@
                 </div>
                 <div class="flex gap-4 pt-6 mt-4 border-t border-white/5">
                     <button onclick="closeModals()" class="flex-1 py-4 font-bold text-gray-400 hover:text-white transition-colors bg-white/5 rounded-xl hover:bg-white/10">Cancel</button>
-                    <button onclick="saveProject()" id="save-proj-btn" class="flex-1 py-4 bg-emerald-600 hover:bg-emerald-500 rounded-xl font-bold text-white transition-colors shadow-lg shadow-emerald-600/30">Save Project</button>
+                    <button onclick="saveProject()" id="save-proj-btn" class="flex-1 py-4 bg-emerald-600 hover:bg-emerald-500 rounded-xl font-bold text-white transition-colors shadow-lg shadow-emerald-900/20">Save Project</button>
                 </div>
             </div>
         </div>
@@ -358,8 +364,7 @@
     <!-- MODAL: SECURE DELETE -->
     <div id="modal-confirm-delete" class="modal-overlay">
         <div class="glass-modal p-8 rounded-3xl w-full max-w-sm text-center border border-red-900/50 shadow-2xl shadow-red-900/20 relative">
-            <button onclick="closeModals()" class="absolute top-4 right-4 w-8 h-8 rounded-full bg-white/5 text-gray-400 flex items-center justify-center hover:text-white hover:bg-white/10 transition-all">
-            </button>
+            <button onclick="closeModals()" class="absolute top-4 right-4 w-8 h-8 rounded-full bg-white/5 text-gray-400 flex items-center justify-center hover:text-white hover:bg-white/10 transition-all"><i class="fas fa-times"></i></button>
             <div class="w-16 h-16 bg-red-500/10 rounded-full flex items-center justify-center mx-auto mb-6">
                 <i class="fas fa-exclamation-triangle text-red-500 text-2xl"></i>
             </div>
@@ -367,39 +372,28 @@
             <p class="text-gray-500 text-sm mb-6">This action cannot be undone. Enter admin password to authorize deletion.</p>
             
             <input type="hidden" id="del-id">
-            <input type="password" id="del-pwd" class="w-full bg-black/50 border border-red-900/50 rounded-xl px-6 py-4 text-center text-white focus:border-red-500 outline-none mb-6 tracking-widest">
+            <input type="password" id="del-pwd" class="w-full bg-black/50 border border-red-900/50 rounded-xl px-6 py-4 text-center text-white focus:border-red-500 outline-none mb-6 tracking-widest transition-colors" placeholder="••••••••">
             
             <button onclick="executeDelete()" id="btn-execute-del" class="w-full py-4 bg-red-600 hover:bg-red-500 rounded-xl font-bold text-white transition-colors shadow-lg shadow-red-900/20">Authorize Deletion</button>
         </div>
     </div>
 
     <script>
-        // --- 0. STATE MANAGEMENT ---
-        let STATE = {
-            dbActive: false,
-            isAdmin: false,
-            profile: {},
-            categories: [],
-            projects: [],
-            activeCat: null,
-            currentSlideshow: [],
-            slideIdx: 0
-        };
-
-        // Utility function to sanitize rich HTML
-        const sanitizeRichHTML = (html) => {
-            const div = document.createElement('div');
-            div.innerHTML = html;
-            return div.innerHTML;
-        };
-
         // --- 1. CONFIGURATION (SUPABASE) ---
         const SUPABASE_URL = "https://rxkdpaipierhdwxrfdev.supabase.co"; 
         const SUPABASE_ANON_KEY = "sb_publishable_kvyQaqzFkBni-41PYLZTDg_Jd4D3GLX";
 
-        // --- 2. INITIALIZATION (The missing link) ---
-        // This connects your variables to the actual Supabase database
-        const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        // --- 2. INTERNAL STATE ---
+        const STATE = {
+            profile: null,
+            categories: [],
+            projects: [],
+            activeCat: null,
+            isAdmin: false,
+            currentSlideshow: [],
+            slideIdx: 0,
+            dbActive: false
+        };
 
         // --- 3. DATABASE ENGINE (SUPABASE CLIENT) ---
         let supabaseClient = null;
@@ -415,6 +409,7 @@
         // --- 4. CORE UTILITIES ---
         const showToast = (msg, isErr = false) => {
             const t = document.getElementById('toast');
+            if(!t) return;
             document.getElementById('toast-msg').textContent = msg;
             t.style.backgroundColor = isErr ? '#ef4444' : '#059669';
             t.style.opacity = '1';
@@ -427,21 +422,29 @@
 
         const switchView = (id) => {
             document.querySelectorAll('.view-section').forEach(v => v.classList.remove('active'));
-            document.getElementById(id).classList.add('active');
-            window.scrollTo({top: 0, behavior: 'smooth'});
+            const el = document.getElementById(id);
+            if(el) {
+                el.classList.add('active');
+                window.scrollTo({top: 0, behavior: 'smooth'});
+            }
         };
 
         const closeModals = () => {
             document.querySelectorAll('.modal-overlay').forEach(m => m.classList.remove('active'));
             document.body.classList.remove('modal-open');
             clearInterval(window.slideTimer);
-            document.getElementById('admin-pass').value = '';
-            document.getElementById('del-pwd').value = '';
+            const passEl = document.getElementById('admin-pass');
+            if(passEl) passEl.value = '';
+            const delEl = document.getElementById('del-pwd');
+            if(delEl) delEl.value = '';
         };
 
         const openModal = (id) => {
-            document.getElementById(id).classList.add('active');
-            document.body.classList.add('modal-open');
+            const el = document.getElementById(id);
+            if(el) {
+                el.classList.add('active');
+                document.body.classList.add('modal-open');
+            }
         };
 
         const fileToBase64 = (file, maxWidth = 1000, quality = 0.8) => new Promise((resolve, reject) => {
@@ -467,6 +470,7 @@
         const getByteSize = (str) => new Blob([str]).size;
         
         const safeText = (str) => {
+            if(!str) return '';
             const div = document.createElement('div');
             div.textContent = str;
             return div.innerHTML;
@@ -533,33 +537,37 @@
         // --- 6. ADMIN & SECURITY LOGIC ---
         let clickCount = 0;
         let clickTimeout;
-        document.getElementById('admin-trigger').onclick = () => {
-            if (STATE.isAdmin) {
+        const triggerBtn = document.getElementById('admin-trigger');
+        if(triggerBtn) {
+            triggerBtn.onclick = () => {
+                if (STATE.isAdmin) {
+                    clickCount++;
+                    clearTimeout(clickTimeout);
+                    if (clickCount >= 2) {
+                        STATE.isAdmin = false;
+                        document.body.classList.remove('admin-active');
+                        showToast("Admin Locked");
+                        clickCount = 0;
+                    } else {
+                        clickTimeout = setTimeout(() => clickCount = 0, 400);
+                    }
+                    return;
+                }
+                
                 clickCount++;
                 clearTimeout(clickTimeout);
-                if (clickCount >= 2) {
-                    STATE.isAdmin = false;
-                    document.body.classList.remove('admin-active');
-                    showToast("Admin Locked");
+                if (clickCount >= 3) {
+                    openModal('modal-login');
                     clickCount = 0;
                 } else {
                     clickTimeout = setTimeout(() => clickCount = 0, 400);
                 }
-                return;
-            }
-            
-            clickCount++;
-            clearTimeout(clickTimeout);
-            if (clickCount >= 3) {
-                openModal('modal-login');
-                clickCount = 0;
-            } else {
-                clickTimeout = setTimeout(() => clickCount = 0, 400);
-            }
-        };
+            };
+        }
 
-        const verifyAdmin = () => {
-            if (document.getElementById('admin-pass').value === "@ft@bkh@n786") {
+        window.verifyAdmin = () => {
+            const passEl = document.getElementById('admin-pass');
+            if (passEl && passEl.value === "@ft@bkh@n786") {
                 STATE.isAdmin = true;
                 document.body.classList.add('admin-active');
                 closeModals();
@@ -578,36 +586,52 @@
 
         const renderHero = () => {
             const p = STATE.profile;
-            document.getElementById('nav-logo').innerHTML = safeText(p.logo || 'PORT').replace(p.logo, `${p.logo}<span class="text-emerald-500">.</span>`);
-            document.getElementById('hero-prefix').textContent = p.prefix || '';
-            document.getElementById('hero-title').innerHTML = safeText(p.title || 'Portfolio').replace(' ', '<br>');
-            document.getElementById('hero-bio').textContent = p.bio || '';
-            if(p.img) document.getElementById('hero-img').src = p.img;
+            if(!p) return;
+            const logoEl = document.getElementById('nav-logo');
+            if(logoEl) logoEl.innerHTML = safeText(p.logo || 'PORT').replace(p.logo, `${p.logo}<span class="text-emerald-500">.</span>`);
             
-            document.getElementById('hero-cta').textContent = p.btnMain || 'Action';
+            const prefixEl = document.getElementById('hero-prefix');
+            if(prefixEl) prefixEl.textContent = p.prefix || '';
+            
+            const titleEl = document.getElementById('hero-title');
+            if(titleEl) titleEl.innerHTML = safeText(p.title || 'Portfolio').replace(' ', '<br>');
+            
+            const bioEl = document.getElementById('hero-bio');
+            if(bioEl) bioEl.textContent = p.bio || '';
+            
+            const imgEl = document.getElementById('hero-img');
+            if(imgEl && p.img) imgEl.src = p.img;
+            
+            const ctaEl = document.getElementById('hero-cta');
+            if(ctaEl) ctaEl.textContent = p.btnMain || 'Action';
             
             const btnContact = document.getElementById('btn-contact');
-            if(p.btnContact) {
-                btnContact.classList.remove('hidden');
-                btnContact.onclick = () => window.open(p.btnContact.startsWith('http') ? p.btnContact : `https://${p.btnContact}`);
-            } else {
-                btnContact.classList.add('hidden');
+            if(btnContact) {
+                if(p.btnContact) {
+                    btnContact.classList.remove('hidden');
+                    btnContact.onclick = () => window.open(p.btnContact.startsWith('http') ? p.btnContact : `https://${p.btnContact}`);
+                } else {
+                    btnContact.classList.add('hidden');
+                }
             }
 
             const sLinks = document.getElementById('social-links');
-            sLinks.innerHTML = '';
-            if(p.socials) {
-                const map = [['github','fa-github'], ['linkedin','fa-linkedin'], ['twitter','fa-twitter'], ['instagram','fa-instagram']];
-                map.forEach(([key, icon]) => {
-                    if(p.socials[key]) {
-                        sLinks.innerHTML += `<a href="${p.socials[key].startsWith('http') ? p.socials[key] : 'https://'+p.socials[key]}" target="_blank" class="w-12 h-12 rounded-full bg-white/5 flex items-center justify-center text-gray-400 hover:text-emerald-500 hover:bg-emerald-500/10 transition-all border border-white/10"><i class="fab ${icon}"></i></a>`;
-                    }
-                });
+            if(sLinks) {
+                sLinks.innerHTML = '';
+                if(p.socials) {
+                    const map = [['github','fa-github'], ['linkedin','fa-linkedin'], ['twitter','fa-twitter'], ['instagram','fa-instagram']];
+                    map.forEach(([key, icon]) => {
+                        if(p.socials[key]) {
+                            sLinks.innerHTML += `<a href="${p.socials[key].startsWith('http') ? p.socials[key] : 'https://'+p.socials[key]}" target="_blank" class="w-12 h-12 rounded-full bg-white/5 flex items-center justify-center hover:bg-emerald-500 hover:text-white transition-colors border border-white/10 text-gray-400"><i class="fab ${icon} text-lg"></i></a>`;
+                        }
+                    });
+                }
             }
         };
 
-        const handleHeroCTA = () => {
+        window.handleHeroCTA = () => {
             const p = STATE.profile;
+            if(!p) return;
             if(p.cvFile) {
                 const a = document.createElement("a");
                 a.href = p.cvFile; a.download = "Resume.pdf"; a.click();
@@ -620,17 +644,14 @@
 
         const renderCategories = () => {
             const catGrid = document.getElementById('grid-categories');
+            if(!catGrid) return;
             catGrid.innerHTML = STATE.categories.length ? STATE.categories.map(c => `
                 <div class="glass-card p-6 rounded-3xl hover-lift cursor-pointer group relative" onclick="openWorkspace('${c.id}')">
-                    <div class="admin-element absolute top-4 right-4 z-20 flex gap-2">
-                        <button onclick="event.stopPropagation(); editCategory('${c.id}')" class="w-8 h-8 rounded-full bg-white/10 text-gray-300 hover:bg-blue-500 hover:text-white transition-all">
-                            <i class="fas fa-edit text-xs"></i>
-                        </button>
-                        <button onclick="event.stopPropagation(); triggerDelete('${c.id}')" class="w-8 h-8 rounded-full bg-red-500/20 text-red-500 hover:bg-red-500 hover:text-white transition-all">
-                            <i class="fas fa-trash text-xs"></i>
-                        </button>
+                    <div class="admin-element absolute top-4 right-4 z-20 gap-2">
+                        <button onclick="event.stopPropagation(); editCategory('${c.id}')" class="w-8 h-8 rounded-full bg-white/10 text-gray-300 hover:bg-blue-500 hover:text-white transition-all backdrop-blur"><i class="fas fa-pencil-alt text-xs"></i></button>
+                        <button onclick="event.stopPropagation(); triggerDelete('${c.id}')" class="w-8 h-8 rounded-full bg-red-500/20 text-red-500 hover:bg-red-500 hover:text-white transition-all backdrop-blur"><i class="fas fa-trash text-xs"></i></button>
                     </div>
-                    ${c.img ? `<img src="${c.img}" class="w-16 h-16 rounded-2xl object-cover border border-white/10 shadow-lg bg-black/50 mb-5">` : `<div class="w-16 h-16 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center mb-5"><i class="fas fa-folder text-emerald-500"></i></div>`}
+                    ${c.img ? `<img src="${c.img}" class="w-16 h-16 rounded-2xl object-cover border border-white/10 shadow-lg bg-black/50 mb-5">` : `<div class="w-16 h-16 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center text-2xl shadow-lg mb-5"><i class="fas fa-folder text-emerald-500"></i></div>`}
                     <h4 class="text-xl font-bold text-white group-hover:text-emerald-500 transition-colors">${safeText(c.name)}</h4>
                     <p class="text-sm text-gray-400 mt-2 line-clamp-2">${safeText(c.desc || '')}</p>
                 </div>
@@ -640,27 +661,27 @@
         window.openWorkspace = (id) => {
             STATE.activeCat = id;
             const c = STATE.categories.find(x => x.id === id);
-            document.getElementById('active-cat-name').textContent = c.name;
-            switchView('view-projects');
-            renderProjects();
+            if(c) {
+                const nameEl = document.getElementById('active-cat-name');
+                if(nameEl) nameEl.textContent = c.name;
+                switchView('view-projects');
+                renderProjects();
+            }
         };
 
         const renderProjects = () => {
             const list = STATE.projects.filter(p => p.catId === STATE.activeCat);
             const grid = document.getElementById('grid-projects');
+            if(!grid) return;
             grid.innerHTML = list.length ? list.map(p => {
                 const banner = p.gallery && p.gallery.length > 0 ? p.gallery[0] : p.icon;
                 return `
                 <div class="glass-card rounded-[2rem] overflow-hidden hover-lift cursor-pointer group flex flex-col h-full" onclick="openProjectDeep('${p.id}')">
                     <div class="h-56 relative overflow-hidden bg-black border-b border-white/10">
                         <img src="${banner}" class="w-full h-full object-cover opacity-60 group-hover:opacity-100 transition-all duration-700 catalog-slide" data-idx="0" data-pid="${p.id}">
-                        <div class="admin-element absolute top-4 right-4 z-20 flex gap-2">
-                            <button onclick="event.stopPropagation(); editProject('${p.id}')" class="w-8 h-8 rounded-full bg-black/50 backdrop-blur text-gray-300 hover:bg-blue-500 hover:text-white transition-all">
-                                <i class="fas fa-edit text-xs"></i>
-                            </button>
-                            <button onclick="event.stopPropagation(); triggerDelete('${p.id}')" class="w-8 h-8 rounded-full bg-black/50 backdrop-blur text-red-500 hover:bg-red-500 hover:text-white transition-all">
-                                <i class="fas fa-trash text-xs"></i>
-                            </button>
+                        <div class="admin-element absolute top-4 right-4 z-20 gap-2">
+                            <button onclick="event.stopPropagation(); editProject('${p.id}')" class="w-8 h-8 rounded-full bg-black/50 backdrop-blur text-gray-300 hover:bg-blue-500 hover:text-white transition-all"><i class="fas fa-pencil-alt text-xs"></i></button>
+                            <button onclick="event.stopPropagation(); triggerDelete('${p.id}')" class="w-8 h-8 rounded-full bg-black/50 backdrop-blur text-red-500 hover:bg-red-500 hover:text-white transition-all"><i class="fas fa-trash text-xs"></i></button>
                         </div>
                     </div>
                     <div class="p-6 flex-1 flex flex-col relative">
@@ -676,15 +697,23 @@
         window.openProjectDeep = (id) => {
             const p = STATE.projects.find(x => x.id === id);
             if(!p) return;
-            document.getElementById('det-title').textContent = p.name;
-            document.getElementById('det-icon').src = p.icon;
-            document.getElementById('det-desc').innerHTML = p.desc || 'No description provided.';
+            
+            const titleEl = document.getElementById('det-title');
+            if(titleEl) titleEl.textContent = p.name;
+            
+            const iconEl = document.getElementById('det-icon');
+            if(iconEl) iconEl.src = p.icon;
+            
+            const descEl = document.getElementById('det-desc');
+            if(descEl) descEl.innerHTML = p.desc || 'No description provided.';
             
             const lnk = document.getElementById('det-link');
-            if(p.link) {
-                lnk.href = p.link.startsWith('http') ? p.link : `https://${p.link}`;
-                lnk.style.display = 'flex';
-            } else { lnk.style.display = 'none'; }
+            if(lnk) {
+                if(p.link) {
+                    lnk.href = p.link.startsWith('http') ? p.link : `https://${p.link}`;
+                    lnk.style.display = 'flex';
+                } else { lnk.style.display = 'none'; }
+            }
             
             STATE.currentSlideshow = p.gallery && p.gallery.length ? p.gallery : [p.icon];
             STATE.slideIdx = 0;
@@ -694,9 +723,11 @@
 
         const startModalSlideshow = () => {
             const canvas = document.getElementById('slideshow-canvas');
+            if(!canvas) return;
             const ctx = canvas.getContext('2d');
             
             const draw = () => {
+                if(!STATE.currentSlideshow || STATE.currentSlideshow.length === 0) return;
                 const img = new Image();
                 img.src = STATE.currentSlideshow[STATE.slideIdx];
                 img.onload = () => {
@@ -706,6 +737,14 @@
                 };
             };
             draw();
+
+            // ADDED: Create the clickable gallery HTML safely
+            const gal = document.getElementById('det-gallery');
+            if(gal) {
+                gal.innerHTML = STATE.currentSlideshow.map((img, i) => `
+                    <img src="${img}" onclick="STATE.slideIdx=${i}; const c=document.getElementById('slideshow-canvas'); if(c){ const cx=c.getContext('2d'); cx.clearRect(0,0,c.width,c.height); const im=new Image(); im.src='${img}'; im.onload=()=> { c.width=im.width; c.height=im.height; cx.drawImage(im,0,0,im.width,im.height); }; }" class="w-32 h-20 md:w-48 md:h-28 rounded-xl object-cover cursor-pointer hover:ring-2 ring-emerald-500 transition-all shrink-0 snap-center shadow-lg border border-white/10">
+                `).join('');
+            }
 
             clearInterval(window.slideTimer);
             if(STATE.currentSlideshow.length > 1) {
@@ -717,12 +756,15 @@
         };
 
         window.shareLink = () => {
-            navigator.clipboard.writeText(`Check out ${document.getElementById('det-title').textContent}: ${window.location.href}`).then(() => showToast("Share link copied!"));
+            const titleEl = document.getElementById('det-title');
+            const title = titleEl ? titleEl.textContent : 'Project';
+            navigator.clipboard.writeText(`Check out ${title}: ${window.location.href}`).then(() => showToast("Share link copied!"));
         };
 
         // Background Catalog Slideshow
         setInterval(() => {
-            if (!document.getElementById('view-projects').classList.contains('active')) return;
+            const vProj = document.getElementById('view-projects');
+            if (!vProj || !vProj.classList.contains('active')) return;
             document.querySelectorAll('.catalog-slide').forEach(imgEl => {
                 const pid = imgEl.getAttribute('data-pid');
                 const p = STATE.projects.find(x => x.id === pid);
@@ -762,7 +804,7 @@
         window.saveProfile = async () => {
             if(!STATE.isAdmin) return;
             const btn = document.getElementById('save-prof-btn');
-            btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+            if(btn) { btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...'; }
             
             const payload = {
                 logo: document.getElementById('edit-logo').value,
@@ -787,7 +829,11 @@
             
             const cvFile = document.getElementById('edit-cv').files[0];
             if(cvFile) {
-                if(cvFile.size > 800000) { showToast("CV exceeds 750KB limit", true); btn.disabled=false; btn.innerHTML="Save Profile"; return; }
+                if(cvFile.size > 800000) { 
+                    showToast("CV exceeds 750KB limit", true); 
+                    if(btn) { btn.disabled=false; btn.innerHTML="Save Profile"; }
+                    return; 
+                }
                 payload.cvFile = await fileToBase64(cvFile);
             }
 
@@ -801,13 +847,14 @@
                     renderHero();
                 }
             }
-            btn.disabled = false; btn.innerHTML = 'Save Profile';
+            if(btn) { btn.disabled = false; btn.innerHTML = 'Save Profile'; }
         };
 
         // Category Edit
         window.openCategoryModal = () => {
             document.getElementById('cat-id').value = '';
             document.getElementById('cat-name').value = '';
+            document.getElementById('cat-desc').value = '';
             document.getElementById('cat-file').value = '';
             openModal('modal-cat');
         };
@@ -817,6 +864,8 @@
             if(!c) return;
             document.getElementById('cat-id').value = c.id;
             document.getElementById('cat-name').value = c.name;
+            const descEl = document.getElementById('cat-desc');
+            if(descEl) descEl.value = c.desc || '';
             document.getElementById('cat-file').value = '';
             openModal('modal-cat');
         };
@@ -825,10 +874,12 @@
             if(!STATE.isAdmin) return;
             const idInput = document.getElementById('cat-id').value;
             const name = document.getElementById('cat-name').value.trim();
+            const descEl = document.getElementById('cat-desc');
+            const desc = descEl ? descEl.value.trim() : '';
             if(!name) return showToast("Name required", true);
             
             const btn = document.getElementById('save-cat-btn');
-            btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+            if(btn) { btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>'; }
             
             const imgFile = document.getElementById('cat-file').files[0];
             let imgData = null;
@@ -844,10 +895,11 @@
                 const idx = STATE.categories.findIndex(x => x.id === idInput);
                 if(idx > -1) {
                     STATE.categories[idx].name = name;
+                    STATE.categories[idx].desc = desc;
                     if(imgData) STATE.categories[idx].img = imgData;
                 }
             } else {
-                STATE.categories.push({ id: 'cat_' + Date.now(), name, img: imgData });
+                STATE.categories.push({ id: 'cat_' + Date.now(), name, desc, img: imgData });
             }
             
             if(await syncRemote('categories_list', STATE.categories)) {
@@ -855,7 +907,7 @@
                 closeModals();
                 renderCategories();
             }
-            btn.disabled = false; btn.innerHTML = 'Save';
+            if(btn) { btn.disabled = false; btn.innerHTML = 'Save'; }
         };
 
         // Project Edit
@@ -890,7 +942,7 @@
             if(!name) return showToast("Title required", true);
             
             const btn = document.getElementById('save-proj-btn');
-            btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Uploading...';
+            if(btn) { btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Uploading...'; }
 
             const existing = idInput ? STATE.projects.find(x => x.id === idInput) : null;
             
@@ -922,7 +974,7 @@
 
             if(getByteSize(JSON.stringify(payload)) > 1000000) {
                 showToast("Exceeds 1MB limit. Select fewer images.", true);
-                btn.disabled = false; btn.innerHTML = 'Save Project';
+                if(btn) { btn.disabled = false; btn.innerHTML = 'Save Project'; }
                 return;
             }
 
@@ -938,24 +990,28 @@
                 closeModals();
                 renderProjects();
             }
-            btn.disabled = false; btn.innerHTML = 'Save Project';
+            if(btn) { btn.disabled = false; btn.innerHTML = 'Save Project'; }
         };
 
         // Deletions
         window.triggerDelete = (id) => {
-            document.getElementById('del-id').value = id;
+            const delId = document.getElementById('del-id');
+            if(delId) delId.value = id;
             openModal('modal-confirm-delete');
         };
 
         window.executeDelete = async () => {
-            if(!STATE.isAdmin || document.getElementById('del-pwd').value !== "@ft@bkh@n786") {
+            const pwd = document.getElementById('del-pwd');
+            if(!STATE.isAdmin || !pwd || pwd.value !== "@ft@bkh@n786") {
                 return showToast("Authorization Failed", true);
             }
             
             const btn = document.getElementById('btn-execute-del');
-            btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+            if(btn) { btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>'; }
             
-            const id = document.getElementById('del-id').value;
+            const delId = document.getElementById('del-id');
+            const id = delId ? delId.value : null;
+            if(!id) return;
             
             if(id.startsWith('cat_')) {
                 STATE.categories = STATE.categories.filter(c => c.id !== id);
@@ -972,12 +1028,13 @@
             
             closeModals();
             showToast("Item Purged");
-            btn.disabled = false; btn.innerHTML = 'Authorize Deletion';
+            if(btn) { btn.disabled = false; btn.innerHTML = 'Authorize Deletion'; }
         };
 
         // --- 10. AI ENGINE ---
         window.aiEnhance = async (btn, targetId, type) => {
             const el = document.getElementById(targetId);
+            if(!el) return;
             const raw = type === 'rich' ? el.innerText : el.value;
             if(!raw || raw.length < 5) return showToast("Context too short for AI", true);
             
@@ -1007,7 +1064,11 @@
         };
 
         // Boot
-        fetchRemote();
+        try {
+            fetchRemote();
+        } catch(e) {
+            console.error("Boot Error", e);
+        }
     </script>
 </body>
 </html>
