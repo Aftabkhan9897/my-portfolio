@@ -14,6 +14,8 @@
         :root {
             --bg-color: #050505;
             --primary-emerald: #10b981;
+            --primary-emerald-rgb: 16, 185, 129;
+            --primary-emerald-dark: #059669;
         }
         body { 
             font-family: 'Inter', sans-serif; 
@@ -26,17 +28,39 @@
             overscroll-behavior: none; 
         }
 
-        /* Dynamic Brand Accent Overrides */
-        .text-emerald-500 { color: var(--primary-emerald) !important; }
-        .bg-emerald-500 { background-color: var(--primary-emerald) !important; }
-        .border-emerald-500 { border-color: var(--primary-emerald) !important; }
-        .from-emerald-500 { --tw-gradient-from: var(--primary-emerald) !important; --tw-gradient-to: var(--primary-emerald) !important; --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to); }
-        .to-emerald-600 { --tw-gradient-to: var(--primary-emerald) !important; opacity: 0.95; }
-        .ring-emerald-500 { --tw-ring-color: var(--primary-emerald) !important; }
-        .bg-emerald-500\/10 { background-color: rgba(16, 185, 129, 0.1) !important; }
-        .border-emerald-500\/20 { border-color: rgba(16, 185, 129, 0.2) !important; }
-        .shadow-emerald-900\/30 { box-shadow: 0 10px 15px -3px rgba(16, 185, 129, 0.3) !important; }
+        /* Dynamic Brand Accent Overrides (Leaving NO traces of old green) */
+        .text-emerald-500, .hover\:text-emerald-500:hover { color: var(--primary-emerald) !important; }
+        .text-emerald-400, .hover\:text-emerald-400:hover { color: var(--primary-emerald) !important; }
+        .bg-emerald-500, .hover\:bg-emerald-500:hover { background-color: var(--primary-emerald) !important; }
+        .bg-emerald-600, .hover\:bg-emerald-600:hover { background-color: var(--primary-emerald-dark) !important; }
+        .border-emerald-500, .hover\:border-emerald-500:hover { border-color: var(--primary-emerald) !important; }
         
+        /* Gradients */
+        .from-emerald-500 { 
+            --tw-gradient-from: var(--primary-emerald) !important; 
+            --tw-gradient-to: rgba(var(--primary-emerald-rgb), 0) !important; 
+            --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to) !important; 
+        }
+        .to-emerald-600 { 
+            --tw-gradient-to: var(--primary-emerald-dark) !important; 
+        }
+
+        /* Rings & Shadows */
+        .ring-emerald-500 { --tw-ring-color: var(--primary-emerald) !important; }
+        .shadow-emerald-900\/30 { box-shadow: 0 10px 15px -3px rgba(var(--primary-emerald-rgb), 0.3) !important; }
+        .shadow-emerald-500\/20 { box-shadow: 0 10px 15px -3px rgba(var(--primary-emerald-rgb), 0.2) !important; }
+        .shadow-emerald-500\/40 { box-shadow: 0 10px 15px -3px rgba(var(--primary-emerald-rgb), 0.4) !important; }
+        
+        /* Dynamic Alpha Overlays */
+        .bg-emerald-500\/10 { background-color: rgba(var(--primary-emerald-rgb), 0.1) !important; }
+        .border-emerald-500\/20 { border-color: rgba(var(--primary-emerald-rgb), 0.2) !important; }
+        .bg-emerald-600\/20 { background-color: rgba(var(--primary-emerald-rgb), 0.2) !important; }
+        .bg-emerald-900\/10 { background-color: rgba(var(--primary-emerald-rgb), 0.1) !important; }
+        
+        /* Custom File Pickers Overrides */
+        .file\:text-emerald-400::file-selector-button { color: var(--primary-emerald) !important; }
+        .file\:bg-emerald-500\/10::file-selector-button { background-color: rgba(var(--primary-emerald-rgb), 0.1) !important; }
+
         /* Hardware Accelerated Containment */
         .view-section { display: none; opacity: 0; }
         .view-section.active { display: block; opacity: 1; animation: fadeUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
@@ -128,8 +152,8 @@
         /* 3D Hover Physics */
         .hover-lift { transition: box-shadow 0.4s ease, border-color 0.4s ease, transform 0.4s cubic-bezier(0.25, 1, 0.5, 1); will-change: transform; }
         .hover-lift:hover { 
-            border-color: rgba(16, 185, 129, 0.4); 
-            box-shadow: 0 20px 40px -10px rgba(16, 185, 129, 0.15); 
+            border-color: rgba(var(--primary-emerald-rgb), 0.4) !important; 
+            box-shadow: 0 20px 40px -10px rgba(var(--primary-emerald-rgb), 0.15) !important; 
         }
         
         .perspective-grid {
@@ -163,54 +187,12 @@
         #swipe-container {
             touch-action: pan-y;
         }
-
-        /* Fluid follower customization (Desktop exclusive) */
-        @media (pointer: fine) {
-            #fluid-cursor-dot {
-                position: fixed;
-                width: 6px;
-                height: 6px;
-                background-color: var(--primary-emerald);
-                border-radius: 50%;
-                pointer-events: none;
-                z-index: 9999;
-                transform: translate(-50%, -50%);
-                transition: opacity 0.2s ease, width 0.2s ease, height 0.2s ease, background-color 0.2s ease;
-            }
-            #fluid-cursor-ring {
-                position: fixed;
-                width: 32px;
-                height: 32px;
-                border: 1.5px solid rgba(16, 185, 129, 0.4);
-                border-radius: 50%;
-                pointer-events: none;
-                z-index: 9998;
-                transform: translate(-50%, -50%);
-                transition: opacity 0.2s ease, width 0.3s cubic-bezier(0.25, 1, 0.5, 1), height 0.3s cubic-bezier(0.25, 1, 0.5, 1), border-color 0.3s ease, background-color 0.3s ease;
-            }
-            /* Hover interactive states */
-            body.cursor-hovering #fluid-cursor-dot {
-                width: 4px;
-                height: 4px;
-                background-color: #06b6d4;
-            }
-            body.cursor-hovering #fluid-cursor-ring {
-                width: 48px;
-                height: 48px;
-                border-color: #06b6d4;
-                background-color: rgba(6, 182, 212, 0.05);
-            }
-        }
     </style>
 </head>
 <body class="antialiased relative min-h-screen flex flex-col pb-safe">
 
     <!-- Scroll Progress -->
     <div id="scroll-progress"></div>
-
-    <!-- Fluid Custom Follower (Invisible on Mobile Touch Screens) -->
-    <div id="fluid-cursor-dot" class="hidden md:block opacity-0 transition-opacity duration-300"></div>
-    <div id="fluid-cursor-ring" class="hidden md:block opacity-0 transition-opacity duration-300"></div>
 
     <!-- Ambient Parallax Orbs -->
     <div id="glow-1" class="accent-glow bg-emerald-500 w-96 h-96 -top-20 -left-20"></div>
@@ -324,8 +306,6 @@
     <!-- MODAL: CONTACT SHEET -->
     <div id="modal-contact" class="modal-overlay">
         <div class="glass-modal p-8 md:p-10 rounded-[2rem] w-full max-w-sm mx-4 text-center border border-white/10 relative shadow-2xl">
-            <!-- Mobile Drag Indicator -->
-            <div class="w-12 h-1.5 bg-white/20 rounded-full mx-auto mb-4 md:hidden shrink-0"></div>
             
             <button onclick="closeModals()" class="absolute top-6 right-6 w-8 h-8 rounded-full bg-white/5 text-gray-400 flex items-center justify-center hover:text-white hover:bg-white/10 transition-all mobile-close-btn"><i class="fas fa-times"></i></button>
             
@@ -344,8 +324,6 @@
     <!-- MODAL: PROJECT DETAILS -->
     <div id="modal-details" class="modal-overlay">
         <div class="glass-modal w-full max-w-4xl h-full md:h-auto md:max-h-[90vh] md:rounded-[2rem] overflow-hidden flex flex-col relative shadow-2xl border-0 md:border border-white/10">
-            <!-- Mobile Drag Indicator -->
-            <div class="w-12 h-1.5 bg-white/20 rounded-full mx-auto mt-4 mb-2 md:hidden shrink-0"></div>
             
             <button onclick="closeModals()" class="absolute top-4 md:top-6 right-4 md:right-6 z-50 w-10 h-10 rounded-full bg-black/60 backdrop-blur text-white flex items-center justify-center hover:bg-red-500 transition-all hover:scale-110 shadow-lg mobile-close-btn">
                 <i class="fas fa-times"></i>
@@ -395,8 +373,6 @@
     <!-- MODAL: ANALYTICS DASHBOARD -->
     <div id="modal-analytics" class="modal-overlay">
         <div class="glass-modal w-full max-w-3xl h-full md:h-auto md:max-h-[85vh] md:rounded-[2rem] overflow-hidden flex flex-col relative shadow-2xl border-0 md:border border-white/10">
-            <!-- Mobile Drag Indicator -->
-            <div class="w-12 h-1.5 bg-white/20 rounded-full mx-auto mt-4 mb-2 md:hidden shrink-0"></div>
             
             <button onclick="closeModals()" class="absolute top-4 md:top-6 right-4 md:right-6 z-50 w-10 h-10 rounded-full bg-black/60 backdrop-blur text-white flex items-center justify-center hover:bg-red-500 transition-all hover:scale-110 shadow-lg mobile-close-btn">
                 <i class="fas fa-times"></i>
@@ -454,8 +430,6 @@
     <!-- MODAL: PROFILE EDITOR -->
     <div id="modal-profile" class="modal-overlay">
         <div class="glass-modal w-full max-w-2xl h-full md:h-auto md:max-h-[85vh] md:rounded-[2rem] overflow-hidden flex flex-col relative shadow-2xl border-0 md:border border-white/10">
-            <!-- Mobile Drag Indicator -->
-            <div class="w-12 h-1.5 bg-white/20 rounded-full mx-auto mt-4 mb-2 md:hidden shrink-0"></div>
             
             <button onclick="closeModals()" class="absolute top-4 md:top-6 right-4 md:right-6 z-50 w-10 h-10 rounded-full bg-black/60 backdrop-blur text-white flex items-center justify-center hover:bg-red-500 transition-all hover:scale-110 shadow-lg mobile-close-btn">
                 <i class="fas fa-times"></i>
@@ -469,12 +443,24 @@
                     <div class="p-4 md:p-5 bg-black/30 rounded-2xl border border-white/5">
                         <label class="text-xs text-emerald-400 uppercase font-bold mb-3 block"><i class="fas fa-palette mr-1.5"></i> Brand Theme Accent</label>
                         <div class="flex flex-wrap gap-3">
-                            <button onclick="setThemeAccent('#10b981')" class="w-8 h-8 rounded-full bg-[#10b981] border-2 border-white/20 hover:scale-110 transition-all active:scale-95" title="Emerald"></button>
-                            <button onclick="setThemeAccent('#06b6d4')" class="w-8 h-8 rounded-full bg-[#06b6d4] border-2 border-white/20 hover:scale-110 transition-all active:scale-95" title="Cyan"></button>
-                            <button onclick="setThemeAccent('#6366f1')" class="w-8 h-8 rounded-full bg-[#6366f1] border-2 border-white/20 hover:scale-110 transition-all active:scale-95" title="Indigo"></button>
-                            <button onclick="setThemeAccent('#f43f5e')" class="w-8 h-8 rounded-full bg-[#f43f5e] border-2 border-white/20 hover:scale-110 transition-all active:scale-95" title="Rose"></button>
-                            <button onclick="setThemeAccent('#f59e0b')" class="w-8 h-8 rounded-full bg-[#f59e0b] border-2 border-white/20 hover:scale-110 transition-all active:scale-95" title="Amber"></button>
+                            <!-- Premium Gold -->
+                            <button onclick="setThemeAccent('#d4af37', '212, 175, 55', '#aa8010')" class="w-8 h-8 rounded-full bg-[#d4af37] border-2 border-white/20 hover:scale-110 transition-all active:scale-95" title="Premium Gold"></button>
+                            <!-- Premium Silver -->
+                            <button onclick="setThemeAccent('#c0c0c0', '192, 192, 192', '#909090')" class="w-8 h-8 rounded-full bg-[#c0c0c0] border-2 border-white/20 hover:scale-110 transition-all active:scale-95" title="Premium Silver"></button>
+                            <!-- Premium Bronze -->
+                            <button onclick="setThemeAccent('#cd7f32', '205, 127, 50', '#955010')" class="w-8 h-8 rounded-full bg-[#cd7f32] border-2 border-white/20 hover:scale-110 transition-all active:scale-95" title="Premium Bronze"></button>
+                            <!-- Emerald -->
+                            <button onclick="setThemeAccent('#10b981', '16, 185, 129', '#059669')" class="w-8 h-8 rounded-full bg-[#10b981] border-2 border-white/20 hover:scale-110 transition-all active:scale-95" title="Emerald"></button>
+                            <!-- Sapphire -->
+                            <button onclick="setThemeAccent('#3b82f6', '59, 130, 246', '#1d4ed8')" class="w-8 h-8 rounded-full bg-[#3b82f6] border-2 border-white/20 hover:scale-110 transition-all active:scale-95" title="Sapphire Blue"></button>
+                            <!-- Amethyst -->
+                            <button onclick="setThemeAccent('#8b5cf6', '139, 92, 246', '#6d28d9')" class="w-8 h-8 rounded-full bg-[#8b5cf6] border-2 border-white/20 hover:scale-110 transition-all active:scale-95" title="Amethyst Purple"></button>
+                            <!-- Ruby -->
+                            <button onclick="setThemeAccent('#ef4444', '239, 68, 68', '#b91c1c')" class="w-8 h-8 rounded-full bg-[#ef4444] border-2 border-white/20 hover:scale-110 transition-all active:scale-95" title="Ruby Red"></button>
+                            
                             <input type="hidden" id="edit-accent" value="#10b981">
+                            <input type="hidden" id="edit-accent-rgb" value="16, 185, 129">
+                            <input type="hidden" id="edit-accent-dark" value="#059669">
                         </div>
                     </div>
 
@@ -537,8 +523,6 @@
     <!-- MODAL: CATEGORY EDITOR -->
     <div id="modal-cat" class="modal-overlay">
         <div class="glass-modal w-full max-w-md h-full md:h-auto md:max-h-[85vh] md:rounded-[2rem] overflow-hidden flex flex-col relative shadow-2xl border-0 md:border border-white/10">
-            <!-- Mobile Drag Indicator -->
-            <div class="w-12 h-1.5 bg-white/20 rounded-full mx-auto mt-4 mb-2 md:hidden shrink-0"></div>
             
             <button onclick="closeModals()" class="absolute top-4 md:top-6 right-4 md:right-6 z-50 w-10 h-10 rounded-full bg-black/60 backdrop-blur text-white flex items-center justify-center hover:bg-red-500 transition-all hover:scale-110 shadow-lg mobile-close-btn">
                 <i class="fas fa-times"></i>
@@ -563,8 +547,6 @@
     <!-- MODAL: PROJECT EDITOR -->
     <div id="modal-proj" class="modal-overlay">
         <div class="glass-modal w-full max-w-3xl h-full md:h-auto md:max-h-[85vh] md:rounded-[2rem] overflow-hidden flex flex-col relative shadow-2xl border-0 md:border border-white/10">
-            <!-- Mobile Drag Indicator -->
-            <div class="w-12 h-1.5 bg-white/20 rounded-full mx-auto mt-4 mb-2 md:hidden shrink-0"></div>
             
             <button onclick="closeModals()" class="absolute top-4 md:top-6 right-4 md:right-6 z-50 w-10 h-10 rounded-full bg-black/60 backdrop-blur text-white flex items-center justify-center hover:bg-red-500 transition-all hover:scale-110 shadow-lg mobile-close-btn">
                 <i class="fas fa-times"></i>
@@ -585,7 +567,7 @@
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 bg-black/30 rounded-xl border border-white/5">
                         <div><label class="text-[10px] text-gray-400 uppercase font-bold mb-2 block">App Icon</label><input type="file" id="proj-icon-file" accept="image/*" class="w-full text-xs text-gray-500 file:mr-2 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-emerald-400 file:bg-emerald-500/10 cursor-pointer"></div>
                         <div>
-                            <label class="text-[10px] text-gray-400 uppercase font-bold mb-2 flex justify-between items-center"><span>Gallery (Multiple)</span><button onclick="document.getElementById('proj-clear-gallery').value='true'; showToast('Gallery marked for clearing.', 'info');" class="text-red-400 hover:text-red-300">Reset</button></label>
+                            <label class="text-[10px] text-gray-400 uppercase font-bold mb-2 flex justify-between items-center"><span>Gallery (Multiple)</span><button onclick="document.getElementById('proj-clear-gallery').value='true'; showToast('Gallery marked for clearing.', 'info');" class="text-red-400 hover:text-red-300 mr-2"><i class="fas fa-trash"></i> Reset</button></label>
                             <input type="hidden" id="proj-clear-gallery" value="false">
                             <input type="file" id="proj-gallery-files" accept="image/*" multiple class="w-full text-xs text-gray-500 file:mr-2 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-emerald-400 file:bg-emerald-500/10 cursor-pointer">
                         </div>
@@ -792,7 +774,7 @@
             const t = document.getElementById('toast');
             if(!t) return;
             document.getElementById('toast-msg').textContent = msg;
-            t.style.backgroundColor = isErr ? '#ef4444' : '#059669';
+            t.style.backgroundColor = isErr ? '#ef4444' : 'var(--primary-emerald-dark)';
             t.style.opacity = '1';
             t.style.transform = 'translate(-50%, 0) scale(1)';
             setTimeout(() => { t.style.opacity = '0'; t.style.transform = 'translate(-50%, 20px) scale(0.95)'; }, 3000);
@@ -857,6 +839,10 @@
             document.body.classList.remove('modal-open');
             document.body.classList.remove('cursor-hovering'); // Eradicate custom cursor hover loops on closure
             clearInterval(window.slideTimer);
+            const passEl = document.getElementById('admin-pass');
+            if(passEl) passEl.value = '';
+            const delEl = document.getElementById('del-pwd');
+            if(delEl) delEl.value = '';
         };
 
         const openModal = async (id) => {
@@ -888,25 +874,38 @@
             }
         };
 
-        // Swipe down to dismiss bottom sheet implementation
+        // Swipe down to dismiss bottom sheet implementation (Only triggers when at absolute top of modal scroll viewport)
         let touchStartY = 0;
         let touchMoveY = 0;
         const attachSwipeDismiss = (sheet) => {
+            const scrollContainer = sheet.querySelector('.overflow-y-auto') || sheet;
+            
             sheet.addEventListener('touchstart', (e) => {
+                if (scrollContainer && scrollContainer.scrollTop > 0) {
+                    touchStartY = -1; // Flag to skip swipe gesture to avoid interrupting upward page scrolls
+                    return;
+                }
                 touchStartY = e.touches[0].clientY;
-                touchMoveY = touchStartY; // Fixed touch tracking index logic gap to prevent accidental dismissals on standard taps
+                touchMoveY = touchStartY;
             }, { passive: true });
             
             sheet.addEventListener('touchmove', (e) => {
+                if (touchStartY === -1) return;
                 touchMoveY = e.touches[0].clientY;
                 const deltaY = touchMoveY - touchStartY;
                 if (deltaY > 0) {
                     sheet.style.transform = `translateY(${deltaY}px)`;
                     sheet.style.transition = 'none';
+                } else {
+                    sheet.style.transform = '';
                 }
             }, { passive: true });
             
             sheet.addEventListener('touchend', () => {
+                if (touchStartY === -1) {
+                    touchStartY = 0;
+                    return;
+                }
                 const deltaY = touchMoveY - touchStartY;
                 if (deltaY > 150) {
                     closeModals();
@@ -986,7 +985,10 @@
                     const rotateY = ((x - centerX) / centerX) * 8;
                     
                     tiltInner.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.02, 1.02, 1.02)`;
-                    card.style.backgroundImage = `radial-gradient(circle at ${x}px ${y}px, rgba(16, 185, 129, 0.15) 0%, rgba(15, 17, 21, 0.6) 80%)`;
+                    
+                    // Dynamic custom properties lookup for flashlight background coords
+                    const rgbVar = getComputedStyle(document.documentElement).getPropertyValue('--primary-emerald-rgb').trim();
+                    card.style.backgroundImage = `radial-gradient(circle at ${x}px ${y}px, rgba(${rgbVar}, 0.15) 0%, rgba(15, 17, 21, 0.6) 80%)`;
                 };
                 card.onmouseleave = () => { 
                     rect = null;
@@ -1069,7 +1071,7 @@
             const prObj = data.find(i => i.id === 'projects_list');
             const stObj = data.find(i => i.id === 'analytics_main');
 
-            STATE.profile = pObj ? pObj.content : { logo: 'Mark', prefix: "Hi, It's", title: 'Mark Gray', role: 'Data Analyst', bio: 'Welcome to my digital workspace.', btnMain: 'Download CV', accentColor: '#10b981' };
+            STATE.profile = pObj ? pObj.content : { logo: 'Mark', prefix: "Hi, It's", title: 'Mark Gray', role: 'Data Analyst', bio: 'Welcome to my digital workspace.', btnMain: 'Download CV', accentColor: '#10b981', accentColorRgb: '16, 185, 129', accentColorDark: '#059669' };
             STATE.categories = cObj ? cObj.content : [];
             STATE.projects = prObj ? prObj.content : [];
             
@@ -1078,7 +1080,7 @@
 
             // Apply brand customized accent color properties
             if (STATE.profile && STATE.profile.accentColor) {
-                applyAccentStyle(STATE.profile.accentColor);
+                applyAccentStyle(STATE.profile.accentColor, STATE.profile.accentColorRgb, STATE.profile.accentColorDark);
             }
 
             renderAll();
@@ -1218,7 +1220,7 @@
         const renderProjects = () => {
             const list = STATE.projects.filter(p => p.catId === STATE.activeCat);
             const grid = document.getElementById('grid-projects'); if(!grid) return;
-            // Sorting with strict check to handle null/undefined database values correctly (Fixed crash variables lookup)
+            // Sorting with strict check to handle null/undefined database values correctly
             let sortedProjs = [...list].sort((a,b) => (a.order !== undefined && a.order !== null ? Number(a.order) : 99) - (b.order !== undefined && b.order !== null ? Number(b.order) : 99));
             grid.innerHTML = sortedProjs.length ? sortedProjs.map(p => {
                 const banner = p.gallery && p.gallery.length > 0 ? p.gallery[0] : p.icon;
@@ -1353,16 +1355,22 @@
         }, 4000);
 
         // --- Theme Color Accent Mapper ---
-        const applyAccentStyle = (color) => {
+        const applyAccentStyle = (color, rgb, dark) => {
             document.documentElement.style.setProperty('--primary-emerald', color || '#10b981');
+            document.documentElement.style.setProperty('--primary-emerald-rgb', rgb || '16, 185, 129');
+            document.documentElement.style.setProperty('--primary-emerald-dark', dark || '#059669');
         };
         
-        window.setThemeAccent = (color) => {
+        window.setThemeAccent = (color, rgb, dark) => {
             haptic();
-            applyAccentStyle(color);
+            applyAccentStyle(color, rgb, dark);
             const accentInput = document.getElementById('edit-accent');
             if (accentInput) accentInput.value = color;
-            showToast("Accent Color applied preview!");
+            const rgbInput = document.getElementById('edit-accent-rgb');
+            if (rgbInput) rgbInput.value = rgb;
+            const darkInput = document.getElementById('edit-accent-dark');
+            if (darkInput) darkInput.value = dark;
+            showToast("Accent Theme configured!");
         };
 
         // --- 9. FORM SUBMISSIONS ---
@@ -1375,6 +1383,8 @@
             document.getElementById('edit-btn-main').value = p.btnMain || ''; 
             document.getElementById('edit-cv-link').value = p.cvLink || '';
             document.getElementById('edit-accent').value = p.accentColor || '#10b981';
+            document.getElementById('edit-accent-rgb').value = p.accentColorRgb || '16, 185, 129';
+            document.getElementById('edit-accent-dark').value = p.accentColorDark || '#059669';
             
             const wa = document.getElementById('edit-whatsapp'); if(wa) wa.value = p.contact?.whatsapp || ''; 
             const ph = document.getElementById('edit-phone'); if(ph) ph.value = p.contact?.phone || ''; 
@@ -1400,6 +1410,8 @@
                     logo: document.getElementById('edit-logo').value, prefix: document.getElementById('edit-prefix').value, title: document.getElementById('edit-title').value, bio: document.getElementById('edit-bio').value,
                     btnMain: document.getElementById('edit-btn-main').value, cvLink: document.getElementById('edit-cv-link').value,
                     accentColor: document.getElementById('edit-accent').value,
+                    accentColorRgb: document.getElementById('edit-accent-rgb').value,
+                    accentColorDark: document.getElementById('edit-accent-dark').value,
                     contact: { whatsapp: wa ? wa.value : '', phone: ph ? ph.value : '', email: em ? em.value : '' },
                     socials: { github: gh ? gh.value : '', linkedin: li ? li.value : '', twitter: tw ? tw.value : '', instagram: ig ? ig.value : '' },
                     img: STATE.profile?.img || null, cvFile: STATE.profile?.cvFile || null
@@ -1415,7 +1427,7 @@
                     STATE.profile = payload; 
                     if(await syncRemote('profile_main', payload)) { 
                         showToast("Profile Updated"); 
-                        applyAccentStyle(payload.accentColor);
+                        applyAccentStyle(payload.accentColor, payload.accentColorRgb, payload.accentColorDark);
                         closeModals(); 
                         renderHero(); 
                     } 
@@ -1591,97 +1603,10 @@
             }
         };
 
-        // --- 11. PREMIUM FLUID CURSOR FOLLOWER ENGINE ---
-        const initFluidCursor = () => {
-            const dot = document.getElementById('fluid-cursor-dot');
-            const ring = document.getElementById('fluid-cursor-ring');
-            if (!dot || !ring) return;
-
-            let mouseX = window.innerWidth / 2;
-            let mouseY = window.innerHeight / 2;
-            let ringX = mouseX;
-            let ringY = mouseY;
-            let isMobile = false;
-            let cursorInitialized = false;
-
-            const checkPointer = () => {
-                isMobile = window.matchMedia('(pointer: coarse)').matches;
-                if (isMobile) {
-                    dot.classList.add('hidden');
-                    ring.classList.add('hidden');
-                } else {
-                    dot.classList.remove('hidden');
-                    ring.classList.remove('hidden');
-                }
-            };
-            window.addEventListener('resize', checkPointer, { passive: true });
-            checkPointer();
-
-            window.addEventListener('mousemove', (e) => {
-                if (isMobile) return;
-                
-                mouseX = e.clientX;
-                mouseY = e.clientY;
-                
-                // Smoothly fade in custom cursor elements upon first real desktop mouse interaction
-                if (!cursorInitialized) {
-                    dot.classList.remove('opacity-0');
-                    ring.classList.remove('opacity-0');
-                    cursorInitialized = true;
-                }
-
-                // Hide completely when hovering over text inputs to prevent text insertion bar blockage
-                const isTextInput = e.target.closest('input, textarea, [contenteditable="true"], .rich-editor');
-                if (isTextInput) {
-                    dot.style.opacity = '0';
-                    ring.style.opacity = '0';
-                } else {
-                    dot.style.opacity = '1';
-                    ring.style.opacity = '1';
-                }
-                
-                dot.style.left = `${mouseX}px`;
-                dot.style.top = `${mouseY}px`;
-            }, { passive: true });
-
-            const renderFollower = () => {
-                if (!isMobile) {
-                    const lerpFactor = 0.15;
-                    ringX += (mouseX - ringX) * lerpFactor;
-                    ringY += (mouseY - ringY) * lerpFactor;
-
-                    ring.style.left = `${ringX}px`;
-                    ring.style.top = `${ringY}px`;
-                }
-                requestAnimationFrame(renderFollower);
-            };
-            renderFollower();
-
-            const updateInteractiveTargets = () => {
-                const elements = document.querySelectorAll('button, a, .hover-lift, [onclick]');
-                elements.forEach(el => {
-                    if (el.dataset.cursorBound) return;
-                    el.dataset.cursorBound = 'true';
-                    
-                    el.addEventListener('mouseenter', () => {
-                        if (!isMobile) document.body.classList.add('cursor-hovering');
-                    });
-                    el.addEventListener('mouseleave', () => {
-                        if (!isMobile) document.body.classList.remove('cursor-hovering');
-                    });
-                });
-            };
-
-            const observer = new MutationObserver(updateInteractiveTargets);
-            observer.observe(document.body, { childList: true, subtree: true });
-            updateInteractiveTargets();
-        };
-
         // Boot
         try { 
             console.log("Initializing Portfolio..."); 
             fetchRemote(); 
-            initFluidCursor();
         } catch(e) { 
             console.error("Boot Error", e); 
             renderAll(); 
