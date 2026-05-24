@@ -2,75 +2,47 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Live Portfolio | Supabase Powered</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Live Portfolio | Analytics Powered</title>
+    
+    <!-- Google Analytics 4 (GA4) Placeholder -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      // Replace G-XXXXXXXXXX with your actual GA4 Measurement ID
+      gtag('config', 'G-XXXXXXXXXX');
+    </script>
+
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Supabase Client -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
     <style>
-        body { 
-            font-family: 'Inter', sans-serif; 
-            background-color: #050505; 
-            color: #e5e7eb; 
-            overflow-x: hidden; 
-            margin: 0; 
-        }
-
-        /* 1. CYBER-GRID BACKGROUND */
-        .bg-grid {
-            position: fixed; inset: 0; z-index: -2;
-            background-size: 40px 40px;
-            background-image: linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px), 
-                              linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
-            mask-image: radial-gradient(circle at center, black 30%, transparent 80%);
-            -webkit-mask-image: radial-gradient(circle at center, black 30%, transparent 80%);
-        }
-
-        .accent-glow { position: fixed; border-radius: 50%; filter: blur(140px); z-index: -1; opacity: 0.15; pointer-events: none; }
+        body { font-family: 'Inter', sans-serif; background-color: #080808; color: #e5e7eb; overflow-x: hidden; margin: 0; }
+        .glass-card { background: rgba(23, 23, 23, 0.7); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid rgba(255, 255, 255, 0.08); }
+        .glass-modal { background: rgba(10, 10, 10, 0.98); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px); border: 1px solid rgba(255, 255, 255, 0.1); }
         
-        /* 2. ENHANCED GLASSMORPHISM */
-        .glass-card { 
-            background: linear-gradient(145deg, rgba(25,25,25,0.7), rgba(15,15,15,0.9));
-            backdrop-filter: blur(20px); 
-            border: 1px solid rgba(255, 255, 255, 0.06); 
-            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
-        }
-        .glass-modal { 
-            background: linear-gradient(145deg, rgba(15, 15, 15, 0.95), rgba(8, 8, 8, 0.98)); 
-            backdrop-filter: blur(25px); 
-            border: 1px solid rgba(255, 255, 255, 0.1); 
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
-        }
+        .accent-glow { position: fixed; border-radius: 50%; filter: blur(120px); z-index: -1; opacity: 0.15; pointer-events: none; }
         
-        /* View Transitions */
-        .view-section { display: none; opacity: 0; transform: translateY(15px); transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1); }
+        .view-section { display: none; opacity: 0; transform: translateY(10px); transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1); }
         .view-section.active { display: block; opacity: 1; transform: translateY(0); }
 
-        /* 3. SPRING MODAL ANIMATION */
         .modal-overlay { position: fixed; inset: 0; z-index: 100; display: none; align-items: center; justify-content: center; background: rgba(0,0,0,0.85); backdrop-filter: blur(6px); opacity: 0; transition: opacity 0.3s ease; }
         .modal-overlay.active { display: flex; opacity: 1; }
         
-        @keyframes modalPop {
-            0% { opacity: 0; transform: scale(0.9) translateY(20px); }
-            100% { opacity: 1; transform: scale(1) translateY(0); }
-        }
-        .modal-overlay.active .glass-modal { animation: modalPop 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.1) forwards; }
-        
         .admin-element { display: none !important; }
         .admin-active .admin-element { display: inline-flex !important; }
+        .admin-active .admin-element-block { display: block !important; }
         
         .hide-scroll::-webkit-scrollbar { display: none; }
         .hide-scroll { -ms-overflow-style: none; scrollbar-width: none; }
         
-        /* 4. 3D HOVER LIFT */
-        .hover-lift { transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
-        .hover-lift:hover { 
-            transform: translateY(-6px) scale(1.02); 
-            border-color: rgba(16, 185, 129, 0.4); 
-            box-shadow: 0 20px 40px -10px rgba(16, 185, 129, 0.15);
-        }
+        .hover-lift { transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
+        .hover-lift:hover { transform: translateY(-6px) scale(1.02); border-color: #10b981; box-shadow: 0 20px 40px -10px rgba(16, 185, 129, 0.15); }
         
         canvas.slideshow-canvas { width: 100%; height: 100%; object-fit: contain; }
         
@@ -79,13 +51,20 @@
         
         body.modal-open { overflow: hidden; }
 
-        .text-gradient { background: linear-gradient(to right, #10b981, #06b6d4); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        /* Shimmer Loading Skeleton */
+        .skeleton {
+            background: #1f2937;
+            background: linear-gradient(90deg, #1f2937 25%, #374151 50%, #1f2937 75%);
+            background-size: 200% 100%;
+            animation: shimmer 1.5s infinite linear;
+            border-radius: 1rem;
+        }
+        @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
     </style>
 </head>
-<body class="antialiased relative min-h-screen flex flex-col">
+<body class="antialiased relative min-h-screen flex flex-col pb-safe">
 
-    <!-- Ambient UI -->
-    <div class="bg-grid"></div>
+    <!-- Ambient Orbs -->
     <div class="accent-glow bg-emerald-500 w-96 h-96 -top-20 -left-20"></div>
     <div class="accent-glow bg-cyan-600 w-80 h-80 bottom-0 right-0"></div>
 
@@ -94,43 +73,49 @@
         <span id="toast-msg">Success</span>
     </div>
 
-    <div class="max-w-6xl mx-auto px-6 py-10 w-full flex-1 flex flex-col relative z-10">
+    <div class="max-w-6xl mx-auto px-6 py-8 md:py-12 w-full flex-1 flex flex-col relative z-10">
         
-        <header class="flex justify-between items-center mb-16">
+        <header class="flex justify-between items-center mb-10 md:mb-16">
             <h1 id="nav-logo" class="text-2xl font-black text-white tracking-tighter uppercase">PORT<span class="text-emerald-500">FOLIO</span></h1>
-            <button id="btn-contact" class="px-6 py-2 bg-white text-black rounded-full text-sm font-bold hover:bg-emerald-500 hover:text-white transition-all hidden shadow-lg">Contact</button>
+            <div class="flex items-center gap-4">
+                <button onclick="openModal('modal-analytics')" class="admin-element px-4 py-2 bg-gray-800 hover:bg-gray-700 text-emerald-400 rounded-full text-sm font-bold transition-all shadow-lg border border-gray-700">
+                    <i class="fas fa-chart-bar mr-1"></i> Analytics
+                </button>
+                <button id="btn-contact" onclick="trackEvent('contact_click', {location: 'header'})" class="px-6 py-2 bg-white text-black rounded-full text-sm font-bold hover:bg-emerald-500 hover:text-white transition-all hidden">Contact</button>
+            </div>
         </header>
 
         <!-- VIEW: HOME -->
         <main id="view-home" class="view-section active">
-            <section class="glass-card rounded-[2.5rem] p-8 md:p-16 flex flex-col md:flex-row items-center gap-12 relative overflow-hidden group border border-white/10 hover:border-emerald-500/30 transition-colors duration-500">
-                <button onclick="openProfileEditor()" class="admin-element absolute top-6 right-6 w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-emerald-500 transition-all shadow-lg hover:scale-110">
+            <section class="glass-card rounded-[2.5rem] p-8 md:p-16 flex flex-col md:flex-row items-center gap-10 md:gap-12 relative overflow-hidden">
+                <button onclick="openProfileEditor()" class="admin-element absolute top-6 right-6 w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-emerald-500 transition-all shadow-lg border border-white/10 hover:scale-110">
                     <i class="fas fa-pen text-xs"></i>
                 </button>
                 
-                <div class="flex-1 text-center md:text-left relative z-10">
+                <div class="flex-1 text-center md:text-left">
                     <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 mb-6">
                         <div class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></div>
                         <h2 class="text-emerald-500 font-bold tracking-widest text-xs uppercase" id="hero-prefix">Available for work</h2>
                     </div>
                     
-                    <h3 class="text-5xl md:text-7xl font-extrabold text-white mb-6 leading-tight tracking-tight" id="hero-title">Crafting Digital <br> Experiences.</h3>
-                    <p class="text-gray-400 text-lg mb-10 max-w-xl leading-relaxed mx-auto md:mx-0 font-light" id="hero-bio">Design-driven development focused on clean aesthetics and high performance.</p>
+                    <h3 class="text-4xl md:text-7xl font-extrabold text-white mb-6 leading-tight tracking-tight" id="hero-title">Crafting Digital <br> Experiences.</h3>
+                    <p class="text-gray-400 text-base md:text-lg mb-8 md:mb-10 max-w-xl leading-relaxed mx-auto md:mx-0 font-light" id="hero-bio">Design-driven development focused on clean aesthetics and high performance.</p>
                     
                     <div class="flex flex-wrap gap-4 justify-center md:justify-start items-center">
-                        <button onclick="handleHeroCTA()" id="hero-cta" class="px-10 py-4 bg-emerald-600 rounded-full font-bold text-white shadow-xl shadow-emerald-900/30 hover:shadow-emerald-500/40 hover:-translate-y-1 transition-all duration-300">Download Resume</button>
+                        <button onclick="handleHeroCTA()" id="hero-cta" class="px-8 md:px-10 py-3 md:py-4 bg-emerald-600 rounded-full font-bold text-white shadow-xl shadow-emerald-900/30 hover:shadow-emerald-500/40 hover:-translate-y-1 transition-all duration-300">
+                        Download Resume</button>
                         <div id="social-links" class="flex gap-3"></div>
                     </div>
                 </div>
 
-                <div class="w-64 h-64 md:w-80 md:h-80 relative shrink-0">
-                    <div class="absolute inset-0 bg-emerald-500 rounded-full blur-[70px] opacity-20 group-hover:opacity-40 transition-opacity duration-700"></div>
-                    <img id="hero-img" src="https://placehold.co/600x600/171717/white?text=User" class="w-full h-full object-cover rounded-full border-[6px] border-[#121212] relative z-10 shadow-2xl transition-transform duration-700 group-hover:scale-105">
+                <div class="w-48 h-48 md:w-80 md:h-80 relative shrink-0 mt-6 md:mt-0">
+                    <div class="absolute inset-0 bg-emerald-500 rounded-full blur-[50px] md:blur-[70px] opacity-20 group-hover:opacity-40 transition-opacity duration-700"></div>
+                    <img id="hero-img" src="https://placehold.co/600x600/171717/white?text=User" class="w-full h-full object-cover rounded-full border-[4px] md:border-[6px] border-[#121212] relative z-10 shadow-2xl transition-transform duration-700 hover:scale-105">
                 </div>
             </section>
 
-            <div class="flex justify-center mt-12">
-                <button onclick="switchView('view-categories')" class="px-8 py-4 glass-card text-white font-bold rounded-2xl hover:bg-white/10 transition-all flex items-center gap-3 group shadow-lg hover:shadow-emerald-900/20 hover:border-emerald-500/30">
+            <div class="flex justify-center mt-10 md:mt-12">
+                <button onclick="switchView('view-categories')" class="px-6 md:px-8 py-3 md:py-4 glass-card text-white font-bold rounded-2xl hover:bg-white/10 transition-all flex items-center gap-3 group shadow-lg hover:shadow-emerald-900/20 hover:border-emerald-500/30">
                     View Portfolio <i class="fas fa-arrow-right text-emerald-500 group-hover:translate-x-1 transition-transform"></i>
                 </button>
             </div>
@@ -138,32 +123,37 @@
 
         <!-- VIEW: WORKSPACES (CATEGORIES) -->
         <main id="view-categories" class="view-section">
-            <div class="flex justify-between items-end mb-12">
+            <div class="flex justify-between items-end mb-8 md:mb-12">
                 <div>
                     <button onclick="switchView('view-home')" class="text-gray-500 hover:text-white mb-4 flex items-center gap-2 transition-colors"><i class="fas fa-arrow-left"></i> Back to Profile</button>
-                    <h2 class="text-4xl font-bold text-white tracking-tight">Workspaces</h2>
+                    <h2 class="text-3xl md:text-4xl font-bold text-white tracking-tight">Workspaces</h2>
                 </div>
-                <button onclick="openCategoryModal()" class="admin-element px-6 py-3 bg-emerald-600 hover:bg-emerald-500 rounded-xl text-sm font-bold transition-all shadow-lg shadow-emerald-900/30 flex items-center gap-2 hover:-translate-y-1">
-                    <i class="fas fa-plus"></i> New Workspace
+                <button onclick="openCategoryModal()" class="admin-element px-4 md:px-6 py-2.5 md:py-3 bg-emerald-600 hover:bg-emerald-500 rounded-xl text-xs md:text-sm font-bold transition-all shadow-lg shadow-emerald-900/30 flex items-center gap-2 hover:-translate-y-1">
+                    <i class="fas fa-plus"></i> <span class="hidden md:inline">New Workspace</span>
                 </button>
             </div>
+            
             <div id="grid-categories" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                <!-- Loaded Dynamically -->
+                <!-- Loading Skeletons -->
+                <div class="glass-card p-6 rounded-3xl h-48 flex flex-col justify-end"><div class="skeleton h-16 w-16 mb-4 rounded-2xl"></div><div class="skeleton h-6 w-3/4 mb-2"></div><div class="skeleton h-4 w-1/2"></div></div>
+                <div class="glass-card p-6 rounded-3xl h-48 flex flex-col justify-end hidden sm:flex"><div class="skeleton h-16 w-16 mb-4 rounded-2xl"></div><div class="skeleton h-6 w-3/4 mb-2"></div><div class="skeleton h-4 w-1/2"></div></div>
+                <div class="glass-card p-6 rounded-3xl h-48 flex flex-col justify-end hidden lg:flex"><div class="skeleton h-16 w-16 mb-4 rounded-2xl"></div><div class="skeleton h-6 w-3/4 mb-2"></div><div class="skeleton h-4 w-1/2"></div></div>
             </div>
         </main>
 
         <!-- VIEW: PROJECTS -->
         <main id="view-projects" class="view-section">
-            <div class="flex justify-between items-end mb-12">
+            <div class="flex justify-between items-end mb-8 md:mb-12">
                 <div>
                     <button onclick="switchView('view-categories')" class="text-gray-500 hover:text-white mb-4 flex items-center gap-2 transition-colors"><i class="fas fa-arrow-left"></i> Back to Workspaces</button>
-                    <h2 id="active-cat-name" class="text-4xl font-bold text-white tracking-tight text-gradient">Project Title</h2>
+                    <h2 id="active-cat-name" class="text-3xl md:text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-cyan-400 tracking-tight">Projects</h2>
                 </div>
-                <button onclick="openProjectModal()" class="admin-element px-6 py-3 bg-emerald-600 hover:bg-emerald-500 rounded-xl text-sm font-bold transition-all shadow-lg shadow-emerald-900/30 flex items-center gap-2 hover:-translate-y-1">
-                    <i class="fas fa-upload"></i> Upload Project
+                <button onclick="openProjectModal()" class="admin-element px-4 md:px-6 py-2.5 md:py-3 bg-emerald-600 hover:bg-emerald-500 rounded-xl text-xs md:text-sm font-bold transition-all shadow-lg shadow-emerald-900/30 flex items-center gap-2 hover:-translate-y-1">
+                    <i class="fas fa-upload"></i> <span class="hidden md:inline">Upload Project</span>
                 </button>
             </div>
-            <div id="grid-projects" class="grid grid-cols-1 md:grid-cols-2 gap-8">
+            
+            <div id="grid-projects" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
                 <!-- Loaded Dynamically -->
             </div>
         </main>
@@ -172,25 +162,25 @@
 
     <!-- Admin Skull (Footer) -->
     <div class="w-full flex justify-center py-10 opacity-20 hover:opacity-100 transition-opacity duration-300 relative z-10 mt-auto">
-        <button id="admin-trigger" class="focus:outline-none transform hover:scale-110 transition-all">
-            <i class="fas fa-skull text-3xl text-gray-500 drop-shadow-[0_0_10px_rgba(255,255,255,0.1)]"></i>
+        <button id="admin-trigger" class="focus:outline-none transform hover:scale-110 transition-all p-4">
+            <i class="fas fa-skull text-2xl md:text-3xl text-gray-500 drop-shadow-[0_0_10px_rgba(255,255,255,0.1)]"></i>
         </button>
     </div>
 
     <!-- MODAL: PROJECT DETAILS (PLAY STORE STYLE) -->
     <div id="modal-details" class="modal-overlay">
-        <div class="glass-modal w-full max-w-4xl max-h-[90vh] md:rounded-[2rem] overflow-hidden flex flex-col relative shadow-2xl border border-white/10">
-            <button onclick="closeModals()" class="absolute top-6 right-6 z-50 w-10 h-10 rounded-full bg-black/60 backdrop-blur text-white flex items-center justify-center hover:bg-red-500 transition-all hover:scale-110">
+        <div class="glass-modal w-full max-w-4xl h-full md:h-auto md:max-h-[90vh] md:rounded-[2rem] overflow-hidden flex flex-col relative shadow-2xl border-0 md:border md:border-white/10">
+            <button onclick="closeModals()" class="absolute top-4 md:top-6 right-4 md:right-6 z-50 w-10 h-10 rounded-full bg-black/60 backdrop-blur text-white flex items-center justify-center hover:bg-red-500 transition-all hover:scale-110 shadow-lg">
                 <i class="fas fa-times"></i>
             </button>
             
-            <div class="overflow-y-auto hide-scroll flex-1 pb-20">
-                <div class="p-8 md:p-12 flex gap-8 items-start">
-                    <img id="det-icon" src="" class="w-24 h-24 md:w-32 md:h-32 rounded-3xl object-cover shadow-2xl border border-white/5 shrink-0 bg-black">
-                    <div class="flex-1">
-                        <h2 id="det-title" class="text-3xl md:text-5xl font-black text-white mb-4 tracking-tight">Project Title</h2>
-                        <div class="flex flex-wrap gap-4 items-center">
-                            <a id="det-link" target="_blank" class="px-8 py-3 bg-emerald-600 text-white rounded-xl font-bold hover:bg-emerald-500 transition-colors shadow-lg shadow-emerald-900/30 flex items-center gap-2 hover:-translate-y-1">
+            <div class="overflow-y-auto hide-scroll flex-1 pb-20 pt-4 md:pt-0">
+                <div class="p-6 md:p-12 flex flex-col md:flex-row gap-6 md:gap-8 items-start">
+                    <img id="det-icon" src="" class="w-20 h-20 md:w-32 md:h-32 rounded-2xl md:rounded-3xl object-cover shadow-2xl border border-white/5 shrink-0 bg-black">
+                    <div class="flex-1 w-full">
+                        <h2 id="det-title" class="text-2xl md:text-5xl font-black text-white mb-4 tracking-tight">Project Title</h2>
+                        <div class="flex flex-wrap gap-3 md:gap-4 items-center w-full">
+                            <a id="det-link" target="_blank" onclick="trackEvent('external_link', {type: 'project'})" class="flex-1 md:flex-none justify-center px-6 md:px-8 py-3 bg-emerald-600 text-white rounded-xl font-bold hover:bg-emerald-500 transition-colors shadow-lg shadow-emerald-900/30 flex items-center gap-2 hover:-translate-y-1">
                                 Launch Project <i class="fas fa-external-link-alt text-sm"></i>
                             </a>
                             <button onclick="shareLink()" class="w-12 h-12 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center hover:bg-white/10 text-white transition-colors hover:-translate-y-1">
@@ -201,28 +191,67 @@
                 </div>
 
                 <!-- Canvas Slideshow Container -->
-                <div class="px-8 md:px-12 mb-6">
-                    <div class="aspect-video bg-black rounded-3xl overflow-hidden border border-white/5 shadow-inner relative">
+                <div class="px-6 md:px-12 mb-6">
+                    <div id="swipe-container" class="aspect-video bg-black rounded-2xl md:rounded-3xl overflow-hidden border border-white/5 shadow-inner relative select-none">
                         <canvas id="slideshow-canvas" class="w-full h-full absolute inset-0"></canvas>
+                        <div class="absolute bottom-4 left-0 right-0 flex justify-center gap-2" id="slideshow-dots"></div>
                     </div>
+                    <p class="text-center text-xs text-gray-600 mt-2 md:hidden"><i class="fas fa-arrows-alt-h"></i> Swipe to explore</p>
                 </div>
 
-                <!-- GALLERY -->
-                <div class="px-8 md:px-12 mb-10">
-                    <div id="det-gallery" class="flex gap-4 overflow-x-auto hide-scroll pb-4 snap-x"></div>
+                <div class="px-6 md:px-12 mb-10">
+                    <div id="det-gallery" class="flex gap-3 md:gap-4 overflow-x-auto hide-scroll pb-4 snap-x snap-mandatory"></div>
                 </div>
 
-                <div class="px-8 md:px-12 pb-10">
+                <div class="px-6 md:px-12 pb-10">
                     <h4 class="text-emerald-500 font-bold uppercase text-xs tracking-widest mb-4 flex items-center gap-2">Project Overview <i class="fas fa-arrow-right text-gray-500"></i></h4>
-                    <div id="det-desc" class="text-gray-300 leading-relaxed space-y-4 text-[15px]"></div>
+                    <div id="det-desc" class="text-gray-300 leading-relaxed space-y-4 text-sm md:text-[15px]"></div>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: ANALYTICS DASHBOARD -->
+    <div id="modal-analytics" class="modal-overlay">
+        <div class="glass-modal p-6 md:p-8 rounded-[2rem] w-full max-w-3xl max-h-[85vh] overflow-y-auto hide-scroll border border-white/10 relative">
+            <button onclick="closeModals()" class="absolute top-6 right-6 w-8 h-8 rounded-full bg-white/5 text-gray-400 flex items-center justify-center hover:text-white hover:bg-white/10 transition-all hover:scale-110"><i class="fas fa-times"></i></button>
+            <h3 class="text-2xl font-bold text-white mb-2"><i class="fas fa-chart-line text-emerald-500 mr-2"></i> Performance Analytics</h3>
+            <p class="text-sm text-gray-400 mb-8">Internal tracking dashboard. Data is synced in real-time.</p>
+            
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+                <div class="bg-black/40 border border-white/5 p-4 rounded-2xl flex flex-col items-center justify-center text-center hover:border-emerald-500/30 transition-colors">
+                    <i class="fas fa-eye text-2xl text-blue-400 mb-2"></i>
+                    <span class="text-3xl font-black text-white" id="stat-views">0</span>
+                    <span class="text-xs text-gray-500 uppercase font-bold tracking-wider">Total Views</span>
+                </div>
+                <div class="bg-black/40 border border-white/5 p-4 rounded-2xl flex flex-col items-center justify-center text-center hover:border-emerald-500/30 transition-colors">
+                    <i class="fas fa-file-download text-2xl text-emerald-400 mb-2"></i>
+                    <span class="text-3xl font-black text-white" id="stat-cv">0</span>
+                    <span class="text-xs text-gray-500 uppercase font-bold tracking-wider">CV Downloads</span>
+                </div>
+                <div class="bg-black/40 border border-white/5 p-4 rounded-2xl flex flex-col items-center justify-center text-center hover:border-emerald-500/30 transition-colors">
+                    <i class="fas fa-envelope text-2xl text-purple-400 mb-2"></i>
+                    <span class="text-3xl font-black text-white" id="stat-contact">0</span>
+                    <span class="text-xs text-gray-500 uppercase font-bold tracking-wider">Contact Clicks</span>
+                </div>
+                <div class="bg-black/40 border border-white/5 p-4 rounded-2xl flex flex-col items-center justify-center text-center hover:border-emerald-500/30 transition-colors">
+                    <i class="fas fa-mouse-pointer text-2xl text-pink-400 mb-2"></i>
+                    <span class="text-3xl font-black text-white" id="stat-interactions">0</span>
+                    <span class="text-xs text-gray-500 uppercase font-bold tracking-wider">Interactions</span>
+                </div>
+            </div>
+
+            <h4 class="text-sm font-bold text-gray-300 uppercase tracking-widest mb-4">Top Performing Projects</h4>
+            <div id="stat-top-projects" class="space-y-3 bg-black/20 p-4 rounded-2xl border border-white/5">
+                <!-- Dynamically injected -->
+                <p class="text-sm text-gray-500 text-center py-4">Waiting for data...</p>
             </div>
         </div>
     </div>
 
     <!-- MODAL: ADMIN LOGIN -->
     <div id="modal-login" class="modal-overlay">
-        <div class="glass-modal p-10 rounded-3xl w-full max-w-sm text-center border border-white/10">
+        <div class="glass-modal p-8 md:p-10 rounded-3xl w-full max-w-sm mx-4 text-center border border-white/10">
             <div class="w-16 h-16 bg-emerald-500/10 rounded-full flex items-center justify-center mx-auto mb-6">
                 <i class="fas fa-lock text-emerald-500 text-2xl"></i>
             </div>
@@ -230,97 +259,97 @@
             <p class="text-gray-500 text-sm mb-8">Enter access code to enable editing.</p>
             <input type="password" id="admin-pass" class="w-full bg-black/50 border border-white/10 rounded-xl px-6 py-4 text-center text-white focus:border-emerald-500 outline-none mb-6 tracking-widest transition-colors" placeholder="••••••••">
             <div class="flex gap-4">
-                <button onclick="closeModals()" class="flex-1 py-4 rounded-xl font-bold text-gray-400 hover:text-white transition-colors">Cancel</button>
-                <button onclick="verifyAdmin()" class="flex-1 py-4 bg-emerald-600 hover:bg-emerald-500 rounded-xl font-bold text-white transition-colors shadow-lg hover:-translate-y-1">Unlock</button>
+                <button onclick="closeModals()" class="flex-1 py-3 md:py-4 rounded-xl font-bold text-gray-400 hover:text-white transition-colors bg-white/5 hover:bg-white/10">Cancel</button>
+                <button onclick="verifyAdmin()" class="flex-1 py-3 md:py-4 bg-emerald-600 hover:bg-emerald-500 rounded-xl font-bold text-white transition-colors shadow-lg hover:-translate-y-1">Unlock</button>
             </div>
         </div>
     </div>
 
     <!-- MODAL: PROFILE EDITOR -->
     <div id="modal-profile" class="modal-overlay">
-        <div class="glass-modal p-8 rounded-3xl w-full max-w-2xl max-h-[85vh] overflow-y-auto hide-scroll border border-white/10 relative">
-            <button onclick="closeModals()" class="absolute top-6 right-6 w-8 h-8 rounded-full bg-white/5 text-gray-400 flex items-center justify-center hover:text-white hover:bg-white/10 transition-all hover:scale-110"><i class="fas fa-times"></i></button>
-            <h3 class="text-2xl font-bold text-white mb-8 flex items-center gap-3"><i class="fas fa-user-edit text-emerald-500"></i> Identity Settings</h3>
+        <div class="glass-modal p-6 md:p-8 rounded-3xl w-full max-w-2xl max-h-[85vh] overflow-y-auto hide-scroll border border-white/10 relative">
+            <button onclick="closeModals()" class="absolute top-4 md:top-6 right-4 md:right-6 w-8 h-8 rounded-full bg-white/5 text-gray-400 flex items-center justify-center hover:text-white hover:bg-white/10 transition-all hover:scale-110"><i class="fas fa-times"></i></button>
+            <h3 class="text-xl md:text-2xl font-bold text-white mb-6 md:mb-8 flex items-center gap-3"><i class="fas fa-user-edit text-emerald-500"></i> Identity Settings</h3>
             
-            <div class="space-y-6">
-                <div class="grid grid-cols-2 gap-4">
+            <div class="space-y-5 md:space-y-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                         <label class="text-xs text-gray-500 uppercase font-bold mb-2 block">Logo Text</label>
-                        <input type="text" id="edit-logo" class="w-full bg-black/50 border border-white/10 rounded-lg px-4 py-3 text-white focus:border-emerald-500 outline-none transition-colors">
+                        <input type="text" id="edit-logo" class="w-full bg-black/50 border border-white/10 rounded-lg px-4 py-3 text-sm text-white focus:border-emerald-500 outline-none transition-colors">
                     </div>
                     <div>
                         <label class="text-xs text-gray-500 uppercase font-bold mb-2 block">Greeting Prefix</label>
-                        <input type="text" id="edit-prefix" class="w-full bg-black/50 border border-white/10 rounded-lg px-4 py-3 text-white focus:border-emerald-500 outline-none transition-colors">
+                        <input type="text" id="edit-prefix" class="w-full bg-black/50 border border-white/10 rounded-lg px-4 py-3 text-sm text-white focus:border-emerald-500 outline-none transition-colors">
                     </div>
                 </div>
                 <div>
                     <label class="text-xs text-gray-500 uppercase font-bold mb-2 block">Main Heading</label>
-                    <input type="text" id="edit-title" class="w-full bg-black/50 border border-white/10 rounded-lg px-4 py-3 text-white focus:border-emerald-500 outline-none transition-colors">
+                    <input type="text" id="edit-title" class="w-full bg-black/50 border border-white/10 rounded-lg px-4 py-3 text-sm text-white focus:border-emerald-500 outline-none transition-colors">
                 </div>
                 <div>
                     <div class="flex justify-between items-center mb-2">
                         <label class="text-xs text-gray-500 uppercase font-bold">Short Bio</label>
-                        <button onclick="aiEnhance(this, 'edit-bio', 'bio')" class="text-emerald-500 text-xs font-bold hover:text-emerald-400 transition-colors"><i class="fas fa-magic"></i> AI Enhance</button>
+                        <button onclick="aiEnhance(this, 'edit-bio', 'bio')" class="text-emerald-500 text-xs font-bold hover:text-emerald-400 transition-colors"><i class="fas fa-magic"></i> AI</button>
                     </div>
-                    <textarea id="edit-bio" rows="3" class="w-full bg-black/50 border border-white/10 rounded-lg px-4 py-3 text-white focus:border-emerald-500 outline-none transition-colors"></textarea>
+                    <textarea id="edit-bio" rows="3" class="w-full bg-black/50 border border-white/10 rounded-lg px-4 py-3 text-sm text-white focus:border-emerald-500 outline-none transition-colors"></textarea>
                 </div>
                 <div>
                     <label class="text-xs text-gray-500 uppercase font-bold mb-2 block">Profile Image</label>
                     <input type="file" id="edit-img" accept="image/*" class="w-full text-xs text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-emerald-400 file:font-bold file:bg-emerald-500/10 hover:file:bg-emerald-500/20 cursor-pointer">
                 </div>
                 
-                <div class="p-5 bg-black/30 rounded-2xl border border-white/5">
-                    <h4 class="text-sm font-bold text-gray-300 mb-4">Social Links (Leave blank to hide)</h4>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div class="flex items-center gap-3">
-                            <i class="fab fa-github text-xl w-6 text-center text-gray-400"></i>
-                            <input type="url" id="edit-github" class="flex-1 bg-black/50 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:border-emerald-500 outline-none transition-colors">
+                <div class="p-4 md:p-5 bg-black/30 rounded-2xl border border-white/5">
+                    <h4 class="text-xs font-bold text-gray-300 mb-3 md:mb-4 uppercase">Social Links</h4>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
+                        <div class="flex items-center gap-2 md:gap-3">
+                            <i class="fab fa-github text-lg w-5 md:w-6 text-center text-gray-400"></i>
+                            <input type="url" id="edit-github" class="flex-1 bg-black/50 border border-white/10 rounded-lg px-3 py-2 text-xs md:text-sm text-white focus:border-emerald-500 outline-none transition-colors" placeholder="GitHub URL">
                         </div>
-                        <div class="flex items-center gap-3">
-                            <i class="fab fa-linkedin text-xl w-6 text-center text-blue-500"></i>
-                            <input type="url" id="edit-linkedin" class="flex-1 bg-black/50 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:border-emerald-500 outline-none transition-colors">
+                        <div class="flex items-center gap-2 md:gap-3">
+                            <i class="fab fa-linkedin text-lg w-5 md:w-6 text-center text-blue-500"></i>
+                            <input type="url" id="edit-linkedin" class="flex-1 bg-black/50 border border-white/10 rounded-lg px-3 py-2 text-xs md:text-sm text-white focus:border-emerald-500 outline-none transition-colors" placeholder="LinkedIn URL">
                         </div>
-                        <div class="flex items-center gap-3">
-                            <i class="fab fa-twitter text-xl w-6 text-center text-blue-400"></i>
-                            <input type="url" id="edit-twitter" class="flex-1 bg-black/50 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:border-emerald-500 outline-none transition-colors">
+                        <div class="flex items-center gap-2 md:gap-3">
+                            <i class="fab fa-twitter text-lg w-5 md:w-6 text-center text-blue-400"></i>
+                            <input type="url" id="edit-twitter" class="flex-1 bg-black/50 border border-white/10 rounded-lg px-3 py-2 text-xs md:text-sm text-white focus:border-emerald-500 outline-none transition-colors" placeholder="Twitter URL">
                         </div>
-                        <div class="flex items-center gap-3">
-                            <i class="fab fa-instagram text-xl w-6 text-center text-pink-500"></i>
-                            <input type="url" id="edit-instagram" class="flex-1 bg-black/50 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:border-emerald-500 outline-none transition-colors">
+                        <div class="flex items-center gap-2 md:gap-3">
+                            <i class="fab fa-instagram text-lg w-5 md:w-6 text-center text-pink-500"></i>
+                            <input type="url" id="edit-instagram" class="flex-1 bg-black/50 border border-white/10 rounded-lg px-3 py-2 text-xs md:text-sm text-white focus:border-emerald-500 outline-none transition-colors" placeholder="Instagram URL">
                         </div>
                     </div>
                 </div>
 
-                <div class="grid grid-cols-2 gap-4">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                         <label class="text-xs text-gray-500 uppercase font-bold mb-2 block">Hero Button Text</label>
-                        <input type="text" id="edit-btn-main" class="w-full bg-black/50 border border-white/10 rounded-lg px-4 py-3 text-white focus:border-emerald-500 outline-none transition-colors">
+                        <input type="text" id="edit-btn-main" class="w-full bg-black/50 border border-white/10 rounded-lg px-4 py-3 text-sm text-white focus:border-emerald-500 outline-none transition-colors">
                     </div>
                     <div>
                         <label class="text-xs text-gray-500 uppercase font-bold mb-2 block">Nav Contact Link</label>
-                        <input type="url" id="edit-btn-contact" class="w-full bg-black/50 border border-white/10 rounded-lg px-4 py-3 text-white focus:border-emerald-500 outline-none transition-colors">
+                        <input type="url" id="edit-btn-contact" class="w-full bg-black/50 border border-white/10 rounded-lg px-4 py-3 text-sm text-white focus:border-emerald-500 outline-none transition-colors">
                     </div>
                 </div>
 
-                <div class="p-5 bg-emerald-900/10 rounded-2xl border border-emerald-500/20 border-dashed">
-                    <h4 class="text-sm font-bold text-emerald-400 mb-4"><i class="fas fa-file-pdf"></i> Resume Setup</h4>
+                <div class="p-4 md:p-5 bg-emerald-900/10 rounded-2xl border border-emerald-500/20 border-dashed">
+                    <h4 class="text-xs font-bold text-emerald-400 mb-3 md:mb-4 uppercase"><i class="fas fa-file-pdf"></i> Resume Setup</h4>
                     <div class="space-y-4">
                         <div>
-                            <label class="block text-xs font-bold text-gray-400 uppercase mb-2 flex justify-between">
+                            <label class="block text-[10px] md:text-xs font-bold text-gray-400 uppercase mb-2 flex justify-between">
                                 Upload PDF <span class="text-emerald-500">Max 750KB</span>
                             </label>
-                            <input type="file" id="edit-cv" accept=".pdf" class="w-full text-gray-400 text-sm file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-emerald-600/20 file:text-emerald-400 hover:file:bg-emerald-600/30 cursor-pointer border border-white/5 rounded-lg p-1 bg-black/50">
+                            <input type="file" id="edit-cv" accept=".pdf" class="w-full text-gray-400 text-xs md:text-sm file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-emerald-600/20 file:text-emerald-400 hover:file:bg-emerald-600/30 cursor-pointer border border-white/5 rounded-lg p-1 bg-black/50">
                         </div>
                         <div>
-                            <label class="block text-xs font-bold text-gray-400 uppercase mb-2">OR External CV Link</label>
-                            <input type="url" id="edit-cv-link" class="w-full bg-black/50 border border-white/10 rounded-lg px-4 py-3 text-white focus:border-emerald-500 outline-none transition-colors">
+                            <label class="block text-[10px] md:text-xs font-bold text-gray-400 uppercase mb-2">OR External CV Link</label>
+                            <input type="url" id="edit-cv-link" class="w-full bg-black/50 border border-white/10 rounded-lg px-4 py-3 text-sm text-white focus:border-emerald-500 outline-none transition-colors">
                         </div>
                     </div>
                 </div>
 
-                <div class="pt-6 border-t border-white/5 flex gap-4">
-                    <button onclick="closeModals()" class="flex-1 py-4 font-bold text-gray-400 hover:text-white transition-colors bg-white/5 rounded-xl hover:bg-white/10">Cancel</button>
-                    <button onclick="saveProfile()" id="save-prof-btn" class="flex-1 py-4 bg-emerald-600 hover:bg-emerald-500 rounded-xl font-bold text-white transition-colors shadow-lg shadow-emerald-900/20 hover:-translate-y-1">Save Profile</button>
+                <div class="pt-6 border-t border-white/5 flex gap-3 md:gap-4">
+                    <button onclick="closeModals()" class="flex-1 py-3 md:py-4 font-bold text-gray-400 hover:text-white transition-colors bg-white/5 rounded-xl hover:bg-white/10 text-sm md:text-base">Cancel</button>
+                    <button onclick="saveProfile()" id="save-prof-btn" class="flex-1 py-3 md:py-4 bg-emerald-600 hover:bg-emerald-500 rounded-xl font-bold text-white transition-colors shadow-lg shadow-emerald-900/20 text-sm md:text-base">Save Profile</button>
                 </div>
             </div>
         </div>
@@ -328,27 +357,32 @@
 
     <!-- MODAL: CATEGORY EDITOR -->
     <div id="modal-cat" class="modal-overlay">
-        <div class="glass-modal p-8 rounded-3xl w-full max-w-md border border-white/10 relative">
-            <button onclick="closeModals()" class="absolute top-6 right-6 w-8 h-8 rounded-full bg-white/5 text-gray-400 flex items-center justify-center hover:text-white hover:bg-white/10 transition-all hover:scale-110"><i class="fas fa-times"></i></button>
-            <h3 class="text-2xl font-bold text-white mb-8"><i class="fas fa-folder text-emerald-500 mr-2"></i> Workspace Config</h3>
-            <div class="space-y-5">
+        <div class="glass-modal p-6 md:p-8 rounded-3xl w-full max-w-md mx-4 border border-white/10 relative">
+            <button onclick="closeModals()" class="absolute top-4 md:top-6 right-4 md:right-6 w-8 h-8 rounded-full bg-white/5 text-gray-400 flex items-center justify-center hover:text-white hover:bg-white/10 transition-all"><i class="fas fa-times"></i></button>
+            <h3 class="text-xl md:text-2xl font-bold text-white mb-6 md:mb-8"><i class="fas fa-folder text-emerald-500 mr-2"></i> Workspace Config</h3>
+            <div class="space-y-4 md:space-y-5">
                 <input type="hidden" id="cat-id">
-                <div>
-                    <label class="text-xs text-gray-500 uppercase font-bold mb-2 block">Workspace Name</label>
-                    <input type="text" id="cat-name" class="w-full bg-black/50 border border-white/10 rounded-lg px-4 py-3 text-white focus:border-emerald-500 outline-none transition-colors">
+                <div class="flex gap-4">
+                    <div class="flex-1">
+                        <label class="text-xs text-gray-500 uppercase font-bold mb-2 block">Workspace Name</label>
+                        <input type="text" id="cat-name" class="w-full bg-black/50 border border-white/10 rounded-lg px-4 py-3 text-sm text-white focus:border-emerald-500 outline-none transition-colors">
+                    </div>
+                    <div class="w-24">
+                        <label class="text-xs text-gray-500 uppercase font-bold mb-2 block">Rank</label>
+                        <input type="number" id="cat-order" value="99" min="1" max="999" class="w-full bg-black/50 border border-white/10 rounded-lg px-4 py-3 text-sm text-white focus:border-emerald-500 outline-none transition-colors text-center" title="1 = First">
+                    </div>
                 </div>
-                <!-- RESTORED: Short Description Field -->
                 <div>
                     <label class="text-xs text-gray-500 uppercase font-bold mb-2 block">Short Description</label>
-                    <textarea id="cat-desc" rows="2" class="w-full bg-black/50 border border-white/10 rounded-lg px-4 py-3 text-white focus:border-emerald-500 outline-none transition-colors" placeholder="Brief summary of this workspace..."></textarea>
+                    <textarea id="cat-desc" rows="2" class="w-full bg-black/50 border border-white/10 rounded-lg px-4 py-3 text-sm text-white focus:border-emerald-500 outline-none transition-colors"></textarea>
                 </div>
                 <div>
                     <label class="text-xs text-gray-500 uppercase font-bold mb-2 block">Cover Image</label>
                     <input type="file" id="cat-file" accept="image/*" class="w-full text-xs text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-emerald-400 file:font-bold file:bg-emerald-500/10 hover:file:bg-emerald-500/20 cursor-pointer">
                 </div>
-                <div class="flex gap-4 pt-6 mt-4 border-t border-white/5">
-                    <button onclick="closeModals()" class="flex-1 py-4 font-bold text-gray-400 hover:text-white transition-colors bg-white/5 rounded-xl hover:bg-white/10">Cancel</button>
-                    <button onclick="saveCategory()" id="save-cat-btn" class="flex-1 py-4 bg-emerald-600 hover:bg-emerald-500 rounded-xl font-bold text-white transition-colors shadow-lg shadow-emerald-900/20 hover:-translate-y-1">Save</button>
+                <div class="flex gap-3 md:gap-4 pt-4 md:pt-6 mt-2 md:mt-4 border-t border-white/5">
+                    <button onclick="closeModals()" class="flex-1 py-3 md:py-4 font-bold text-gray-400 hover:text-white transition-colors bg-white/5 rounded-xl hover:bg-white/10 text-sm md:text-base">Cancel</button>
+                    <button onclick="saveCategory()" id="save-cat-btn" class="flex-1 py-3 md:py-4 bg-emerald-600 hover:bg-emerald-500 rounded-xl font-bold text-white transition-colors shadow-lg text-sm md:text-base">Save</button>
                 </div>
             </div>
         </div>
@@ -356,34 +390,40 @@
 
     <!-- MODAL: PROJECT EDITOR -->
     <div id="modal-proj" class="modal-overlay">
-        <div class="glass-modal p-8 rounded-3xl w-full max-w-3xl max-h-[85vh] overflow-y-auto hide-scroll border border-white/10 relative">
-            <button onclick="closeModals()" class="absolute top-6 right-6 w-8 h-8 rounded-full bg-white/5 text-gray-400 flex items-center justify-center hover:text-white hover:bg-white/10 transition-all hover:scale-110"><i class="fas fa-times"></i></button>
-            <h3 class="text-2xl font-bold text-white mb-8"><i class="fas fa-layer-group text-emerald-500 mr-2"></i> Project Configuration</h3>
-            <div class="space-y-6">
+        <div class="glass-modal p-6 md:p-8 rounded-3xl w-full max-w-3xl max-h-[85vh] overflow-y-auto hide-scroll border border-white/10 relative">
+            <button onclick="closeModals()" class="absolute top-4 md:top-6 right-4 md:right-6 w-8 h-8 rounded-full bg-white/5 text-gray-400 flex items-center justify-center hover:text-white hover:bg-white/10 transition-all"><i class="fas fa-times"></i></button>
+            <h3 class="text-xl md:text-2xl font-bold text-white mb-6 md:mb-8"><i class="fas fa-layer-group text-emerald-500 mr-2"></i> Project Config</h3>
+            <div class="space-y-5 md:space-y-6">
                 <input type="hidden" id="proj-id">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
+                
+                <div class="flex flex-col md:flex-row gap-4">
+                    <div class="flex-1">
                         <label class="text-xs text-gray-500 uppercase font-bold mb-2 block">Project Title</label>
-                        <input type="text" id="proj-name" class="w-full bg-black/50 border border-white/10 rounded-lg px-4 py-3 text-white focus:border-emerald-500 outline-none transition-colors">
+                        <input type="text" id="proj-name" class="w-full bg-black/50 border border-white/10 rounded-lg px-4 py-3 text-sm text-white focus:border-emerald-500 outline-none transition-colors">
                     </div>
-                    <div>
-                        <label class="text-xs text-gray-500 uppercase font-bold mb-2 block">Live Link</label>
-                        <input type="url" id="proj-link-in" class="w-full bg-black/50 border border-white/10 rounded-lg px-4 py-3 text-white focus:border-emerald-500 outline-none transition-colors">
+                    <div class="w-full md:w-32">
+                        <label class="text-xs text-gray-500 uppercase font-bold mb-2 block">Display Rank</label>
+                        <input type="number" id="proj-order" value="99" min="1" max="999" class="w-full bg-black/50 border border-white/10 rounded-lg px-4 py-3 text-sm text-white focus:border-emerald-500 outline-none transition-colors text-center" title="1 = First">
                     </div>
+                </div>
+
+                <div>
+                    <label class="text-xs text-gray-500 uppercase font-bold mb-2 block">Live Link</label>
+                    <input type="url" id="proj-link-in" class="w-full bg-black/50 border border-white/10 rounded-lg px-4 py-3 text-sm text-white focus:border-emerald-500 outline-none transition-colors" placeholder="https://...">
                 </div>
                 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 bg-black/30 rounded-xl border border-white/5">
                     <div>
-                        <label class="text-xs text-gray-400 uppercase font-bold mb-2 block">App Icon (Square)</label>
-                        <input type="file" id="proj-icon-file" accept="image/*" class="w-full text-xs text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-emerald-400 file:font-bold file:bg-emerald-500/10 hover:file:bg-emerald-500/20 cursor-pointer">
+                        <label class="text-[10px] md:text-xs text-gray-400 uppercase font-bold mb-2 block">App Icon (Square)</label>
+                        <input type="file" id="proj-icon-file" accept="image/*" class="w-full text-xs text-gray-500 file:mr-2 md:file:mr-4 file:py-1.5 md:file:py-2 file:px-3 md:file:px-4 file:rounded-lg file:border-0 file:text-emerald-400 file:font-bold file:bg-emerald-500/10 hover:file:bg-emerald-500/20 cursor-pointer">
                     </div>
                     <div>
-                        <label class="text-xs text-gray-400 uppercase font-bold mb-2 flex justify-between items-center">
+                        <label class="text-[10px] md:text-xs text-gray-400 uppercase font-bold mb-2 flex justify-between items-center">
                             <span>Gallery (Multiple)</span>
-                            <button onclick="document.getElementById('proj-clear-gallery').value='true'; showToast('Gallery marked for clearing.', 'info');" class="text-red-400 hover:text-red-300 text-xs">Clear</button>
+                            <button onclick="document.getElementById('proj-clear-gallery').value='true'; showToast('Gallery marked for clearing.', 'info');" class="text-red-400 hover:text-red-300">Reset</button>
                         </label>
                         <input type="hidden" id="proj-clear-gallery" value="false">
-                        <input type="file" id="proj-gallery-files" accept="image/*" multiple class="w-full text-xs text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-emerald-400 file:font-bold file:bg-emerald-500/10 hover:file:bg-emerald-500/20 cursor-pointer">
+                        <input type="file" id="proj-gallery-files" accept="image/*" multiple class="w-full text-xs text-gray-500 file:mr-2 md:file:mr-4 file:py-1.5 md:file:py-2 file:px-3 md:file:px-4 file:rounded-lg file:border-0 file:text-emerald-400 file:font-bold file:bg-emerald-500/10 hover:file:bg-emerald-500/20 cursor-pointer">
                     </div>
                 </div>
 
@@ -393,17 +433,17 @@
                         <button onclick="aiEnhance(this, 'proj-editor', 'rich')" class="text-emerald-500 text-xs font-bold hover:text-emerald-400 transition-colors"><i class="fas fa-magic"></i> AI Enhance</button>
                     </div>
                     <div class="border border-white/10 rounded-xl overflow-hidden bg-black/50 focus-within:border-emerald-500 transition-colors">
-                        <div class="p-2 border-b border-white/10 flex gap-2 bg-white/5">
-                            <button onclick="execCmd('bold')" class="w-8 h-8 text-gray-400 hover:text-white hover:bg-white/10 rounded transition-colors"><i class="fas fa-bold"></i></button>
-                            <button onclick="execCmd('italic')" class="w-8 h-8 text-gray-400 hover:text-white hover:bg-white/10 rounded transition-colors"><i class="fas fa-italic"></i></button>
-                            <button onclick="execCmd('insertUnorderedList')" class="w-8 h-8 text-gray-400 hover:text-white hover:bg-white/10 rounded transition-colors"><i class="fas fa-list-ul"></i></button>
+                        <div class="p-2 border-b border-white/10 flex gap-2 bg-white/5 overflow-x-auto hide-scroll">
+                            <button onclick="execCmd('bold')" class="w-8 h-8 shrink-0 text-gray-400 hover:text-white hover:bg-white/10 rounded transition-colors"><i class="fas fa-bold"></i></button>
+                            <button onclick="execCmd('italic')" class="w-8 h-8 shrink-0 text-gray-400 hover:text-white hover:bg-white/10 rounded transition-colors"><i class="fas fa-italic"></i></button>
+                            <button onclick="execCmd('insertUnorderedList')" class="w-8 h-8 shrink-0 text-gray-400 hover:text-white hover:bg-white/10 rounded transition-colors"><i class="fas fa-list-ul"></i></button>
                         </div>
                         <div id="proj-editor" contenteditable="true" class="p-4 text-white rich-editor text-sm leading-relaxed" placeholder="Tell the story of this project..."></div>
                     </div>
                 </div>
-                <div class="flex gap-4 pt-6 mt-4 border-t border-white/5">
-                    <button onclick="closeModals()" class="flex-1 py-4 font-bold text-gray-400 hover:text-white transition-colors bg-white/5 rounded-xl hover:bg-white/10">Cancel</button>
-                    <button onclick="saveProject()" id="save-proj-btn" class="flex-1 py-4 bg-emerald-600 hover:bg-emerald-500 rounded-xl font-bold text-white transition-colors shadow-lg shadow-emerald-900/20 hover:-translate-y-1">Save Project</button>
+                <div class="flex gap-3 md:gap-4 pt-4 md:pt-6 mt-2 md:mt-4 border-t border-white/5">
+                    <button onclick="closeModals()" class="flex-1 py-3 md:py-4 font-bold text-gray-400 hover:text-white transition-colors bg-white/5 rounded-xl hover:bg-white/10 text-sm md:text-base">Cancel</button>
+                    <button onclick="saveProject()" id="save-proj-btn" class="flex-1 py-3 md:py-4 bg-emerald-600 hover:bg-emerald-500 rounded-xl font-bold text-white transition-colors shadow-lg text-sm md:text-base">Save Project</button>
                 </div>
             </div>
         </div>
@@ -411,49 +451,41 @@
 
     <!-- MODAL: SECURE DELETE -->
     <div id="modal-confirm-delete" class="modal-overlay">
-        <div class="glass-modal p-8 rounded-3xl w-full max-w-sm text-center border border-red-900/50 shadow-2xl shadow-red-900/20 relative">
-            <button onclick="closeModals()" class="absolute top-4 right-4 w-8 h-8 rounded-full bg-white/5 text-gray-400 flex items-center justify-center hover:text-white hover:bg-white/10 transition-all hover:scale-110"><i class="fas fa-times"></i></button>
-            <div class="w-16 h-16 bg-red-500/10 rounded-full flex items-center justify-center mx-auto mb-6">
-                <i class="fas fa-exclamation-triangle text-red-500 text-2xl animate-pulse"></i>
+        <div class="glass-modal p-6 md:p-8 rounded-3xl w-full max-w-sm mx-4 text-center border border-red-900/50 shadow-2xl shadow-red-900/20 relative">
+            <button onclick="closeModals()" class="absolute top-4 md:top-6 right-4 md:right-6 w-8 h-8 rounded-full bg-white/5 text-gray-400 flex items-center justify-center hover:text-white hover:bg-white/10 transition-all"><i class="fas fa-times"></i></button>
+            <div class="w-12 h-12 md:w-16 md:h-16 bg-red-500/10 rounded-full flex items-center justify-center mx-auto mb-4 md:mb-6">
+                <i class="fas fa-exclamation-triangle text-xl md:text-2xl text-red-500"></i>
             </div>
-            <h3 class="text-2xl font-bold text-white mb-2">Confirm Purge</h3>
-            <p class="text-gray-500 text-sm mb-6">This action cannot be undone. Enter admin password to authorize deletion.</p>
+            <h3 class="text-xl md:text-2xl font-bold text-white mb-2">Confirm Purge</h3>
+            <p class="text-gray-500 text-xs md:text-sm mb-6">This action cannot be undone. Enter admin password to authorize.</p>
             
             <input type="hidden" id="del-id">
-            <input type="password" id="del-pwd" class="w-full bg-black/50 border border-red-900/50 rounded-xl px-6 py-4 text-center text-white focus:border-red-500 outline-none mb-6 tracking-widest transition-colors" placeholder="••••••••">
+            <input type="password" id="del-pwd" class="w-full bg-black/50 border border-red-900/50 rounded-xl px-4 py-3 text-center text-sm md:text-base text-white focus:border-red-500 outline-none mb-6 tracking-widest transition-colors" placeholder="••••••••">
             
-            <button onclick="executeDelete()" id="btn-execute-del" class="w-full py-4 bg-red-600 hover:bg-red-500 rounded-xl font-bold text-white transition-colors shadow-lg shadow-red-900/20 hover:-translate-y-1">Authorize Deletion</button>
+            <button onclick="executeDelete()" id="btn-execute-del" class="w-full py-3 md:py-4 bg-red-600 hover:bg-red-500 rounded-xl font-bold text-white transition-colors shadow-lg text-sm md:text-base">Authorize Deletion</button>
         </div>
     </div>
 
     <script>
-        // --- 0. STATE MANAGEMENT ---
-        let STATE = {
-            dbActive: false,
-            isAdmin: false,
-            profile: {},
-            categories: [],
-            projects: [],
-            activeCat: null,
-            currentSlideshow: [],
-            slideIdx: 0
-        };
-
-        // Utility function to sanitize rich HTML safely
-        const sanitizeRichHTML = (html) => {
-            const div = document.createElement('div');
-            div.innerHTML = html;
-            return div.innerHTML;
-        };
-
         // --- 1. CONFIGURATION (SUPABASE) ---
         const SUPABASE_URL = "https://rxkdpaipierhdwxrfdev.supabase.co"; 
         const SUPABASE_ANON_KEY = "sb_publishable_kvyQaqzFkBni-41PYLZTDg_Jd4D3GLX";
 
-        // --- 2. DATABASE ENGINE (SUPABASE CLIENT) ---
-        // SAFELY INITIALIZE: Fixed the bug where the database wouldn't connect.
+        // --- 2. INITIALIZATION & STATE ---
         let supabaseClient = null;
-        if (window.supabase && SUPABASE_URL && SUPABASE_ANON_KEY) {
+        let STATE = {
+            profile: null,
+            categories: [],
+            projects: [],
+            activeCat: null,
+            isAdmin: false,
+            currentSlideshow: [],
+            slideIdx: 0,
+            dbActive: false,
+            analytics: { views: 0, cvDownloads: 0, contacts: 0, projectClicks: {} }
+        };
+
+        if (window.supabase && SUPABASE_URL && SUPABASE_ANON_KEY && !SUPABASE_ANON_KEY.includes("PASTE_YOUR")) {
             try {
                 supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
                 STATE.dbActive = true;
@@ -462,7 +494,80 @@
             }
         }
 
-        // --- 3. CORE UTILITIES ---
+        // --- 3. ANALYTICS ENGINE ---
+        // Generates a session ID to prevent spamming page views
+        if(!sessionStorage.getItem('session_tracked')) {
+            sessionStorage.setItem('session_tracked', 'true');
+            setTimeout(() => trackEvent('page_view', { source: 'direct' }), 2000);
+        }
+
+        window.trackEvent = async (eventName, params = {}) => {
+            // 1. Send to Google Analytics 4 (if configured)
+            if(typeof gtag === 'function') {
+                gtag('event', eventName, params);
+            }
+            
+            // 2. Internal Database Tracking (For Admin Dashboard)
+            if(!STATE.dbActive) return;
+            
+            // Debounce to prevent spam
+            if(params._debounced) return; 
+
+            try {
+                let a = STATE.analytics;
+                if(eventName === 'page_view') a.views++;
+                if(eventName === 'cv_download') a.cvDownloads++;
+                if(eventName === 'contact_click') a.contacts++;
+                if(eventName === 'project_view' && params.proj_id) {
+                    a.projectClicks[params.proj_id] = (a.projectClicks[params.proj_id] || 0) + 1;
+                }
+
+                // Silently upsert to Supabase
+                await supabaseClient.from('portfolio_data').upsert({ 
+                    id: 'analytics_main', 
+                    content: a,
+                    updated_at: new Date()
+                });
+            } catch(e) { /* Silent fail for analytics */ }
+        };
+
+        const renderAnalytics = () => {
+            document.getElementById('stat-views').textContent = STATE.analytics.views || 0;
+            document.getElementById('stat-cv').textContent = STATE.analytics.cvDownloads || 0;
+            document.getElementById('stat-contact').textContent = STATE.analytics.contacts || 0;
+            
+            let totalProjViews = 0;
+            let topProjects = [];
+            
+            if(STATE.analytics.projectClicks) {
+                for (const [id, count] of Object.entries(STATE.analytics.projectClicks)) {
+                    totalProjViews += count;
+                    const p = STATE.projects.find(x => x.id === id);
+                    if(p) topProjects.push({ name: p.name, count: count });
+                }
+            }
+            
+            document.getElementById('stat-interactions').textContent = totalProjViews;
+            
+            const tpContainer = document.getElementById('stat-top-projects');
+            topProjects.sort((a,b) => b.count - a.count);
+            
+            if(topProjects.length === 0) {
+                tpContainer.innerHTML = '<p class="text-sm text-gray-500 text-center py-4">No project clicks yet.</p>';
+            } else {
+                tpContainer.innerHTML = topProjects.slice(0, 5).map((p, idx) => `
+                    <div class="flex justify-between items-center p-2 hover:bg-white/5 rounded-lg transition-colors">
+                        <div class="flex items-center gap-3">
+                            <span class="text-gray-500 font-bold w-4">${idx+1}.</span>
+                            <span class="text-sm text-white font-medium truncate max-w-[150px] md:max-w-[300px]">${p.name}</span>
+                        </div>
+                        <span class="text-xs bg-emerald-500/20 text-emerald-400 px-2 py-1 rounded-md font-bold">${p.count} clicks</span>
+                    </div>
+                `).join('');
+            }
+        };
+
+        // --- 4. CORE UTILITIES ---
         const showToast = (msg, isErr = false) => {
             const t = document.getElementById('toast');
             if(!t) return;
@@ -498,10 +603,37 @@
         const openModal = (id) => {
             const el = document.getElementById(id);
             if(el) {
+                if(id === 'modal-analytics') renderAnalytics();
                 el.classList.add('active');
                 document.body.classList.add('modal-open');
             }
         };
+
+        // Mobile swipe logic for Slideshow
+        let touchstartX = 0;
+        let touchendX = 0;
+        const swipeContainer = document.getElementById('swipe-container');
+        if(swipeContainer) {
+            swipeContainer.addEventListener('touchstart', e => touchstartX = e.changedTouches[0].screenX);
+            swipeContainer.addEventListener('touchend', e => {
+                touchendX = e.changedTouches[0].screenX;
+                handleSwipe();
+            });
+        }
+        function handleSwipe() {
+            if(!STATE.currentSlideshow || STATE.currentSlideshow.length <= 1) return;
+            const threshold = 50;
+            if (touchendX < touchstartX - threshold) {
+                // Swipe Left (Next)
+                STATE.slideIdx = (STATE.slideIdx + 1) % STATE.currentSlideshow.length;
+                renderSlideFrame();
+            }
+            if (touchendX > touchstartX + threshold) {
+                // Swipe Right (Prev)
+                STATE.slideIdx = (STATE.slideIdx - 1 + STATE.currentSlideshow.length) % STATE.currentSlideshow.length;
+                renderSlideFrame();
+            }
+        }
 
         const fileToBase64 = (file, maxWidth = 1000, quality = 0.8) => new Promise((resolve, reject) => {
             const reader = new FileReader();
@@ -532,7 +664,7 @@
             return div.innerHTML;
         };
 
-        // --- 4. DATA SYNC (CLOUD OR LOCAL FALLBACK) ---
+        // --- 5. DATA SYNC (CLOUD OR LOCAL FALLBACK) ---
         const fetchRemote = async () => {
             if (STATE.dbActive) {
                 try {
@@ -541,7 +673,7 @@
                     processData(data);
                 } catch (err) {
                     console.error("DB Fetch Error:", err);
-                    showToast("Database restricted or table missing. Using Local Mode.", true);
+                    showToast("Database error. Falling back to local mode.", true);
                     fallbackLocalLoad();
                 }
             } else {
@@ -558,14 +690,16 @@
             const profileObj = data.find(i => i.id === 'profile_main');
             const catsObj = data.find(i => i.id === 'categories_list');
             const projsObj = data.find(i => i.id === 'projects_list');
+            const statsObj = data.find(i => i.id === 'analytics_main');
 
             STATE.profile = profileObj ? profileObj.content : { 
-                logo: 'Mark', prefix: "Hi, It's", title: 'Mark Gray', role: 'Web Developer', 
-                bio: 'Welcome to my digital workspace. I specialize in building high-performance applications.',
+                logo: 'Mark', prefix: "Hi, It's", title: 'Mark Gray', role: 'Data Analyst', 
+                bio: 'Welcome to my digital workspace. I specialize in building data models and actionable dashboards.',
                 btnMain: 'Download CV'
             };
             STATE.categories = catsObj ? catsObj.content : [];
             STATE.projects = projsObj ? projsObj.content : [];
+            if(statsObj && statsObj.content) STATE.analytics = statsObj.content;
 
             renderAll();
         };
@@ -577,7 +711,7 @@
                     if (error) throw error;
                     return true;
                 } catch (err) {
-                    showToast("Sync Error: Check Supabase RLS Policies", true);
+                    showToast("Sync Error: " + err.message, true);
                     return false;
                 }
             } else {
@@ -590,7 +724,7 @@
             }
         };
 
-        // --- 5. ADMIN & SECURITY LOGIC ---
+        // --- 6. ADMIN & SECURITY LOGIC ---
         let clickCount = 0;
         let clickTimeout;
         const triggerBtn = document.getElementById('admin-trigger');
@@ -614,6 +748,7 @@
                 clearTimeout(clickTimeout);
                 if (clickCount >= 3) {
                     openModal('modal-login');
+                    trackEvent('admin_login_attempt');
                     clickCount = 0;
                 } else {
                     clickTimeout = setTimeout(() => clickCount = 0, 400);
@@ -633,7 +768,7 @@
             }
         };
 
-        // --- 6. RENDERING ENGINE ---
+        // --- 7. RENDERING ENGINE ---
         const renderAll = () => {
             renderHero();
             renderCategories();
@@ -656,7 +791,10 @@
             if(bioEl) bioEl.textContent = p.bio || '';
             
             const imgEl = document.getElementById('hero-img');
-            if(imgEl && p.img) imgEl.src = p.img;
+            if(imgEl && p.img) {
+                imgEl.src = p.img;
+                imgEl.classList.remove('skeleton');
+            }
             
             const ctaEl = document.getElementById('hero-cta');
             if(ctaEl) ctaEl.textContent = p.btnMain || 'Action';
@@ -665,7 +803,10 @@
             if(btnContact) {
                 if(p.btnContact) {
                     btnContact.classList.remove('hidden');
-                    btnContact.onclick = () => window.open(p.btnContact.startsWith('http') ? p.btnContact : `https://${p.btnContact}`);
+                    btnContact.onclick = () => {
+                        trackEvent('contact_click', {location: 'header'});
+                        window.open(p.btnContact.startsWith('http') ? p.btnContact : `https://${p.btnContact}`);
+                    };
                 } else {
                     btnContact.classList.add('hidden');
                 }
@@ -678,7 +819,7 @@
                     const map = [['github','fa-github'], ['linkedin','fa-linkedin'], ['twitter','fa-twitter'], ['instagram','fa-instagram']];
                     map.forEach(([key, icon]) => {
                         if(p.socials[key]) {
-                            sLinks.innerHTML += `<a href="${p.socials[key].startsWith('http') ? p.socials[key] : 'https://'+p.socials[key]}" target="_blank" class="w-12 h-12 rounded-full bg-white/5 flex items-center justify-center hover:bg-emerald-500 hover:text-white transition-all border border-white/10 text-gray-400 hover:scale-110"><i class="fab ${icon} text-lg"></i></a>`;
+                            sLinks.innerHTML += `<a href="${p.socials[key].startsWith('http') ? p.socials[key] : 'https://'+p.socials[key]}" onclick="trackEvent('social_click', {platform: '${key}'})" target="_blank" class="w-10 md:w-12 h-10 md:h-12 rounded-full bg-white/5 flex items-center justify-center hover:bg-emerald-500 hover:text-white transition-all border border-white/10 text-gray-400 hover:-translate-y-1"><i class="fab ${icon} text-base md:text-lg"></i></a>`;
                         }
                     });
                 }
@@ -688,6 +829,8 @@
         window.handleHeroCTA = () => {
             const p = STATE.profile;
             if(!p) return;
+            trackEvent('cv_download');
+            
             if(p.cvFile) {
                 const a = document.createElement("a");
                 a.href = p.cvFile; a.download = "Resume.pdf"; a.click();
@@ -701,19 +844,24 @@
         const renderCategories = () => {
             const catGrid = document.getElementById('grid-categories');
             if(!catGrid) return;
-            catGrid.innerHTML = STATE.categories.length ? STATE.categories.map(c => `
+            
+            // Sort by order/rank ascending
+            let sortedCats = [...STATE.categories].sort((a,b) => (a.order || 99) - (b.order || 99));
+
+            catGrid.innerHTML = sortedCats.length ? sortedCats.map(c => `
                 <div class="glass-card p-6 rounded-3xl hover-lift cursor-pointer group relative" onclick="openWorkspace('${c.id}')">
                     <div class="admin-element absolute top-4 right-4 z-20 flex gap-2">
-                        <button onclick="event.stopPropagation(); editCategory('${c.id}')" class="w-8 h-8 rounded-full bg-white/10 text-gray-300 hover:bg-blue-500 hover:text-white transition-all">
+                        <span class="absolute -top-3 -right-2 bg-emerald-500 text-black text-[10px] font-bold px-2 py-1 rounded-full shadow-lg">Rank ${c.order || 99}</span>
+                        <button onclick="event.stopPropagation(); editCategory('${c.id}')" class="w-8 h-8 rounded-full bg-white/10 text-gray-300 hover:bg-blue-500 hover:text-white transition-all backdrop-blur shadow-md">
                             <i class="fas fa-edit text-xs"></i>
                         </button>
-                        <button onclick="event.stopPropagation(); triggerDelete('${c.id}')" class="w-8 h-8 rounded-full bg-red-500/20 text-red-500 hover:bg-red-500 hover:text-white transition-all">
+                        <button onclick="event.stopPropagation(); triggerDelete('${c.id}')" class="w-8 h-8 rounded-full bg-red-500/20 text-red-500 hover:bg-red-500 hover:text-white transition-all backdrop-blur shadow-md">
                             <i class="fas fa-trash text-xs"></i>
                         </button>
                     </div>
-                    ${c.img ? `<img src="${c.img}" class="w-16 h-16 rounded-2xl object-cover border border-white/10 shadow-lg bg-black/50 mb-5 group-hover:scale-105 transition-transform duration-300">` : `<div class="w-16 h-16 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center mb-5 group-hover:scale-105 transition-transform duration-300"><i class="fas fa-folder text-emerald-500 text-2xl"></i></div>`}
-                    <h4 class="text-xl font-bold text-white group-hover:text-emerald-500 transition-colors">${safeText(c.name)}</h4>
-                    <p class="text-sm text-gray-400 mt-2 line-clamp-2">${safeText(c.desc || '')}</p>
+                    ${c.img ? `<img src="${c.img}" class="w-14 h-14 md:w-16 md:h-16 rounded-2xl object-cover border border-white/10 shadow-lg bg-black/50 mb-4 md:mb-5">` : `<div class="w-14 h-14 md:w-16 md:h-16 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center text-xl md:text-2xl shadow-lg mb-4 md:mb-5"><i class="fas fa-folder text-emerald-500"></i></div>`}
+                    <h4 class="text-lg md:text-xl font-bold text-white group-hover:text-emerald-500 transition-colors">${safeText(c.name)}</h4>
+                    <p class="text-xs md:text-sm text-gray-400 mt-2 line-clamp-2">${safeText(c.desc || '')}</p>
                 </div>
             `).join('') : `<p class="col-span-full text-center py-20 text-gray-600">No workspaces added yet.</p>`;
         };
@@ -722,6 +870,7 @@
             STATE.activeCat = id;
             const c = STATE.categories.find(x => x.id === id);
             if(c) {
+                trackEvent('category_view', { cat_id: id, cat_name: c.name });
                 const nameEl = document.getElementById('active-cat-name');
                 if(nameEl) nameEl.textContent = c.name;
                 switchView('view-projects');
@@ -733,34 +882,41 @@
             const list = STATE.projects.filter(p => p.catId === STATE.activeCat);
             const grid = document.getElementById('grid-projects');
             if(!grid) return;
-            grid.innerHTML = list.length ? list.map(p => {
+            
+            // Sort by order/rank ascending
+            let sortedProjs = [...list].sort((a,b) => (a.order || 99) - (b.order || 99));
+
+            grid.innerHTML = sortedProjs.length ? sortedProjs.map(p => {
                 const banner = p.gallery && p.gallery.length > 0 ? p.gallery[0] : p.icon;
                 return `
                 <div class="glass-card rounded-[2rem] overflow-hidden hover-lift cursor-pointer group flex flex-col h-full" onclick="openProjectDeep('${p.id}')">
-                    <div class="h-56 relative overflow-hidden bg-black border-b border-white/10">
-                        <img src="${banner}" class="w-full h-full object-cover opacity-60 group-hover:opacity-100 transition-all duration-700 catalog-slide group-hover:scale-105" data-idx="0" data-pid="${p.id}">
+                    <div class="h-48 md:h-56 relative overflow-hidden bg-black border-b border-white/10">
+                        <img src="${banner}" class="w-full h-full object-cover opacity-60 group-hover:opacity-100 transition-all duration-700 catalog-slide" data-idx="0" data-pid="${p.id}">
                         <div class="admin-element absolute top-4 right-4 z-20 flex gap-2">
-                            <button onclick="event.stopPropagation(); editProject('${p.id}')" class="w-8 h-8 rounded-full bg-black/50 backdrop-blur text-gray-300 hover:bg-blue-500 hover:text-white transition-all">
+                            <span class="absolute -top-3 -right-2 bg-emerald-500 text-black text-[10px] font-bold px-2 py-1 rounded-full shadow-lg">Rank ${p.order || 99}</span>
+                            <button onclick="event.stopPropagation(); editProject('${p.id}')" class="w-8 h-8 rounded-full bg-black/50 backdrop-blur text-gray-300 hover:bg-blue-500 hover:text-white transition-all shadow-md">
                                 <i class="fas fa-edit text-xs"></i>
                             </button>
-                            <button onclick="event.stopPropagation(); triggerDelete('${p.id}')" class="w-8 h-8 rounded-full bg-black/50 backdrop-blur text-red-500 hover:bg-red-500 hover:text-white transition-all">
+                            <button onclick="event.stopPropagation(); triggerDelete('${p.id}')" class="w-8 h-8 rounded-full bg-black/50 backdrop-blur text-red-500 hover:bg-red-500 hover:text-white transition-all shadow-md">
                                 <i class="fas fa-trash text-xs"></i>
                             </button>
                         </div>
                     </div>
-                    <div class="p-6 flex-1 flex flex-col relative">
-                        <img src="${p.icon}" class="w-16 h-16 rounded-2xl object-cover border-4 border-[#12141a] shadow-xl absolute -top-8 left-6 bg-black">
-                        <h4 class="text-xl font-bold text-white mt-8 mb-2">${safeText(p.name)}</h4>
-                        <p class="text-emerald-500 text-sm font-bold mt-auto group-hover:text-emerald-400 transition-colors">View Showcase <i class="fas fa-arrow-right text-xs ml-1 transform group-hover:translate-x-1 transition-transform"></i></p>
+                    <div class="p-5 md:p-6 flex-1 flex flex-col relative">
+                        <img src="${p.icon}" class="w-14 h-14 md:w-16 md:h-16 rounded-2xl object-cover border-4 border-[#12141a] shadow-xl absolute -top-8 left-5 md:left-6 bg-black">
+                        <h4 class="text-lg md:text-xl font-bold text-white mt-6 md:mt-8 mb-2 line-clamp-1">${safeText(p.name)}</h4>
+                        <p class="text-emerald-500 text-xs md:text-sm font-bold mt-auto group-hover:text-emerald-400 transition-colors">View Details <i class="fas fa-arrow-right text-[10px] md:text-xs ml-1 transform group-hover:translate-x-1 transition-transform"></i></p>
                     </div>
                 </div>
             `}).join('') : `<p class="col-span-full text-center py-20 text-gray-600">This workspace is currently empty.</p>`;
         };
 
-        // --- 7. PROJECT DETAILS & SLIDESHOW ---
+        // --- 8. PROJECT DETAILS & SLIDESHOW ---
         window.openProjectDeep = (id) => {
             const p = STATE.projects.find(x => x.id === id);
             if(!p) return;
+            
+            trackEvent('project_view', { proj_id: id, proj_name: p.name });
             
             const titleEl = document.getElementById('det-title');
             if(titleEl) titleEl.textContent = p.name;
@@ -786,38 +942,66 @@
         };
 
         const startModalSlideshow = () => {
-            const canvas = document.getElementById('slideshow-canvas');
-            if(!canvas) return;
-            const ctx = canvas.getContext('2d');
-            
-            const draw = () => {
-                if(!STATE.currentSlideshow || STATE.currentSlideshow.length === 0) return;
-                const img = new Image();
-                img.src = STATE.currentSlideshow[STATE.slideIdx];
-                img.onload = () => {
-                    canvas.width = img.width; canvas.height = img.height;
-                    ctx.clearRect(0,0, canvas.width, canvas.height);
-                    ctx.drawImage(img, 0, 0);
-                };
-            };
-            draw();
+            renderSlideFrame();
 
-            // FIXED: Render the clickable gallery HTML safely
+            // Create clickable gallery HTML
             const gal = document.getElementById('det-gallery');
             if(gal) {
                 gal.innerHTML = STATE.currentSlideshow.map((img, i) => `
-                    <img src="${img}" onclick="STATE.slideIdx=${i}; const c=document.getElementById('slideshow-canvas'); if(c){ const cx=c.getContext('2d'); cx.clearRect(0,0,c.width,c.height); const im=new Image(); im.src='${img}'; im.onload=()=> { c.width=im.width; c.height=im.height; cx.drawImage(im,0,0,im.width,im.height); }; }" class="w-32 h-20 md:w-48 md:h-28 rounded-xl object-cover cursor-pointer hover:ring-2 ring-emerald-500 transition-all shrink-0 snap-center shadow-lg border border-white/10 hover:scale-105">
+                    <img src="${img}" onclick="STATE.slideIdx=${i}; renderSlideFrame();" class="w-24 h-16 md:w-32 md:h-20 lg:w-48 lg:h-28 rounded-xl object-cover cursor-pointer hover:ring-2 ring-emerald-500 transition-all shrink-0 snap-center shadow-lg border border-white/10 ${i === STATE.slideIdx ? 'ring-2 ring-emerald-500 opacity-100' : 'opacity-60 hover:opacity-100'}">
                 `).join('');
             }
+            updateDots();
 
             clearInterval(window.slideTimer);
             if(STATE.currentSlideshow.length > 1) {
                 window.slideTimer = setInterval(() => {
                     STATE.slideIdx = (STATE.slideIdx + 1) % STATE.currentSlideshow.length;
-                    draw();
+                    renderSlideFrame();
                 }, 5000);
             }
         };
+        
+        window.renderSlideFrame = () => {
+            const canvas = document.getElementById('slideshow-canvas');
+            if(!canvas) return;
+            const ctx = canvas.getContext('2d');
+            if(!STATE.currentSlideshow || STATE.currentSlideshow.length === 0) return;
+            
+            const img = new Image();
+            img.src = STATE.currentSlideshow[STATE.slideIdx];
+            img.onload = () => {
+                canvas.width = img.width; canvas.height = img.height;
+                ctx.clearRect(0,0, canvas.width, canvas.height);
+                ctx.drawImage(img, 0, 0);
+            };
+            updateDots();
+        };
+
+        function updateDots() {
+            const dotsContainer = document.getElementById('slideshow-dots');
+            if(!dotsContainer) return;
+            if(STATE.currentSlideshow.length <= 1) { dotsContainer.innerHTML = ''; return; }
+            
+            dotsContainer.innerHTML = STATE.currentSlideshow.map((_, i) => `
+                <div class="w-2 h-2 rounded-full transition-all duration-300 ${i === STATE.slideIdx ? 'bg-emerald-500 w-4' : 'bg-white/30'}"></div>
+            `).join('');
+            
+            // Highlight active thumbnail
+            const gal = document.getElementById('det-gallery');
+            if(gal) {
+                Array.from(gal.children).forEach((child, i) => {
+                    if(i === STATE.slideIdx) {
+                        child.classList.add('ring-2', 'ring-emerald-500', 'opacity-100');
+                        child.classList.remove('opacity-60');
+                        child.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+                    } else {
+                        child.classList.remove('ring-2', 'ring-emerald-500', 'opacity-100');
+                        child.classList.add('opacity-60');
+                    }
+                });
+            }
+        }
 
         window.shareLink = () => {
             const titleEl = document.getElementById('det-title');
@@ -845,7 +1029,7 @@
             });
         }, 4000);
 
-        // --- 8. FORM SUBMISSIONS (CRUD) ---
+        // --- 9. FORM SUBMISSIONS (CRUD) ---
         // Profile Edit
         window.openProfileEditor = () => {
             const p = STATE.profile || {};
@@ -918,6 +1102,7 @@
         window.openCategoryModal = () => {
             document.getElementById('cat-id').value = '';
             document.getElementById('cat-name').value = '';
+            document.getElementById('cat-order').value = '99';
             const descEl = document.getElementById('cat-desc');
             if(descEl) descEl.value = '';
             document.getElementById('cat-file').value = '';
@@ -929,6 +1114,7 @@
             if(!c) return;
             document.getElementById('cat-id').value = c.id;
             document.getElementById('cat-name').value = c.name;
+            document.getElementById('cat-order').value = c.order || 99;
             const descEl = document.getElementById('cat-desc');
             if(descEl) descEl.value = c.desc || '';
             document.getElementById('cat-file').value = '';
@@ -939,6 +1125,7 @@
             if(!STATE.isAdmin) return;
             const idInput = document.getElementById('cat-id').value;
             const name = document.getElementById('cat-name').value.trim();
+            const orderInput = parseInt(document.getElementById('cat-order').value) || 99;
             const descEl = document.getElementById('cat-desc');
             const desc = descEl ? descEl.value.trim() : '';
             if(!name) return showToast("Name required", true);
@@ -961,10 +1148,11 @@
                 if(idx > -1) {
                     STATE.categories[idx].name = name;
                     STATE.categories[idx].desc = desc;
+                    STATE.categories[idx].order = orderInput;
                     if(imgData) STATE.categories[idx].img = imgData;
                 }
             } else {
-                STATE.categories.push({ id: 'cat_' + Date.now(), name, desc, img: imgData });
+                STATE.categories.push({ id: 'cat_' + Date.now(), name, desc, img: imgData, order: orderInput });
             }
             
             if(await syncRemote('categories_list', STATE.categories)) {
@@ -979,6 +1167,7 @@
         window.openProjectModal = () => {
             document.getElementById('proj-id').value = '';
             document.getElementById('proj-name').value = '';
+            document.getElementById('proj-order').value = '99';
             document.getElementById('proj-editor').innerHTML = '';
             document.getElementById('proj-link-in').value = '';
             document.getElementById('proj-icon-file').value = '';
@@ -992,6 +1181,7 @@
             if(!p) return;
             document.getElementById('proj-id').value = p.id;
             document.getElementById('proj-name').value = p.name;
+            document.getElementById('proj-order').value = p.order || 99;
             document.getElementById('proj-editor').innerHTML = p.desc || '';
             document.getElementById('proj-link-in').value = p.link || '';
             document.getElementById('proj-icon-file').value = '';
@@ -1004,6 +1194,7 @@
             if(!STATE.isAdmin) return;
             const idInput = document.getElementById('proj-id').value;
             const name = document.getElementById('proj-name').value.trim();
+            const orderInput = parseInt(document.getElementById('proj-order').value) || 99;
             if(!name) return showToast("Title required", true);
             
             const btn = document.getElementById('save-proj-btn');
@@ -1027,14 +1218,18 @@
             
             if(!gallery.length) gallery = [icon];
 
+            let finalLink = document.getElementById('proj-link-in').value.trim();
+            if(finalLink && !finalLink.startsWith('http')) finalLink = 'https://' + finalLink;
+
             const payload = {
                 id: idInput || ('proj_' + Date.now()),
                 catId: STATE.activeCat,
                 name,
                 icon,
                 gallery,
+                order: orderInput,
                 desc: sanitizeRichHTML(document.getElementById('proj-editor').innerHTML),
-                link: document.getElementById('proj-link-in').value
+                link: finalLink
             };
 
             if(getByteSize(JSON.stringify(payload)) > 1000000) {
@@ -1080,6 +1275,7 @@
             
             if(id.startsWith('cat_')) {
                 STATE.categories = STATE.categories.filter(c => c.id !== id);
+                // Purge attached projects
                 STATE.projects = STATE.projects.filter(p => p.catId !== id);
                 await syncRemote('categories_list', STATE.categories);
                 await syncRemote('projects_list', STATE.projects);
@@ -1096,7 +1292,7 @@
             if(btn) { btn.disabled = false; btn.innerHTML = 'Authorize Deletion'; }
         };
 
-        // --- 9. AI ENGINE ---
+        // --- 10. AI ENGINE ---
         window.aiEnhance = async (btn, targetId, type) => {
             const el = document.getElementById(targetId);
             if(!el) return;
@@ -1117,12 +1313,13 @@
                     body: JSON.stringify({ prompt, model: "gemini-3.1-flash" })
                 });
                 
+                if(!response.ok) throw new Error("Network");
                 const data = await response.json();
                 if(type === 'rich') el.innerHTML = sanitizeRichHTML(data.text.replace(/\n/g, '<br>'));
                 else el.value = String(data.text);
                 showToast("AI Enhancement Complete");
             } catch(e) {
-                showToast("AI Request Failed", true);
+                showToast("AI Enhancer is only available in dev mode.", true);
             } finally {
                 btn.disabled = false; btn.innerHTML = original;
             }
@@ -1130,9 +1327,11 @@
 
         // Boot
         try {
+            console.log("Initializing Portfolio...");
             fetchRemote();
         } catch(e) {
             console.error("Boot Error", e);
+            renderAll();
         }
     </script>
 </body>
