@@ -183,12 +183,15 @@
 </head>
 <body class="antialiased relative min-h-screen flex flex-col pb-safe">
 
+    <!-- Feature: SEO Injection Hidden Meta -->
     <div id="seo-meta-injection" class="hidden"></div>
 
+    <!-- Offline Shield Banner -->
     <div id="offline-banner" class="hidden w-full bg-red-600 text-white text-xs font-bold text-center py-1.5 z-[9999] relative shadow-md">
         <i class="fas fa-wifi-slash mr-1"></i> You are offline. Changes will be saved locally.
     </div>
 
+    <!-- INITIAL APP LOADER -->
     <div id="app-loader" class="fixed inset-0 z-[99999] bg-[#050505] flex flex-col items-center justify-center transition-opacity duration-700 ease-in-out">
         <div class="relative w-16 h-16 flex items-center justify-center mb-4">
             <div class="absolute inset-0 rounded-full border-t-2 border-emerald-500 animate-spin"></div>
@@ -198,6 +201,7 @@
         <div class="text-xs font-bold text-gray-500 tracking-[0.2em] uppercase animate-pulse">Initializing</div>
     </div>
 
+    <!-- Global Scroll Progress SVG Ring FAB -->
     <div id="fab-top" onclick="window.scrollTo({top: 0, behavior: 'smooth'})" class="fixed bottom-6 right-6 w-14 h-14 bg-black/80 backdrop-blur border border-white/10 hover:bg-white/10 rounded-full flex items-center justify-center text-emerald-500 opacity-0 translate-y-10 transition-all duration-300 cursor-pointer z-40 shadow-2xl group">
         <svg class="absolute inset-0 w-full h-full transform -rotate-90 pointer-events-none" viewBox="0 0 100 100">
             <circle cx="50" cy="50" r="46" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="4"></circle>
@@ -206,16 +210,20 @@
         <i class="fas fa-arrow-up group-hover:-translate-y-1 transition-transform"></i>
     </div>
 
+    <!-- Ambient Parallax Orbs -->
     <div id="glow-1" class="accent-glow bg-emerald-500 w-96 h-96 -top-20 -left-20"></div>
     <div id="glow-2" class="accent-glow bg-cyan-600 w-[30rem] h-[30rem] bottom-0 right-0"></div>
 
+    <!-- Toast UI -->
     <div id="toast" class="fixed bottom-6 left-1/2 -translate-x-1/2 px-6 py-3 rounded-full bg-emerald-600 text-white font-medium shadow-2xl z-[9999] opacity-0 pointer-events-none transition-all duration-300 border border-white/10">
         <span id="toast-msg">Success</span>
     </div>
 
+    <!-- MAIN APP WRAPPER -->
     <div id="app-wrapper" class="opacity-0 transition-opacity duration-1000 ease-out w-full flex-1 flex flex-col relative z-10">
         <div class="max-w-6xl mx-auto px-6 py-6 md:py-12 w-full flex-1 flex flex-col relative z-10">
             
+            <!-- Header Navigation -->
             <header class="flex justify-between items-center mb-8 md:mb-16 print:hidden">
                 <div class="flex flex-col">
                     <h1 id="nav-logo" class="text-2xl font-black text-white tracking-tighter uppercase decode-text cursor-pointer hover-glow px-2 -ml-2 rounded-lg" onclick="window.switchView('view-home')">PORT<span class="text-emerald-500">FOLIO</span></h1>
@@ -233,6 +241,7 @@
                 </div>
             </header>
 
+            <!-- VIEW: HOME (Profile Landing) -->
             <main id="view-home" class="view-section active">
                 <section class="glass-card rounded-[2.5rem] p-8 md:p-16 flex flex-col md:flex-row items-center gap-10 md:gap-12 relative overflow-hidden group border-none md:border-solid">
                     <button onclick="window.openProfileEditor()" class="admin-element absolute top-6 right-6 w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-emerald-500 transition-all shadow-lg border border-white/10 hover-glow z-20">
@@ -256,12 +265,14 @@
                     </div>
 
                     <div class="w-48 h-48 md:w-80 md:h-80 relative shrink-0 mt-6 md:mt-0 group">
+                        <!-- Photo Brim Animation specifically around profile pic -->
                         <div class="profile-brim"></div>
                         <div class="absolute inset-0.5 rounded-full bg-[#050505] z-10"></div>
                         <img id="hero-img" loading="lazy" src="https://placehold.co/600x600/171717/white?text=User" onerror="this.onerror=null; this.src='https://placehold.co/600x600/171717/white?text=User'" class="absolute inset-2 w-[calc(100%-16px)] h-[calc(100%-16px)] object-cover rounded-full border-[3px] border-[#121212] z-20 shadow-2xl transition-transform duration-700 group-hover:scale-105">
                     </div>
                 </section>
 
+                <!-- Experience Section -->
                 <section id="section-experience" class="mt-16 md:mt-24 mb-10 relative hidden">
                     <div class="flex justify-between items-center mb-8">
                         <h3 class="text-2xl font-bold text-white"><i class="fas fa-briefcase text-emerald-500 mr-3"></i>Current Employment</h3>
@@ -280,6 +291,7 @@
                 </div>
             </main>
 
+            <!-- VIEW: EXPERIENCE TIMELINE -->
             <main id="view-experience" class="view-section">
                 <div class="flex justify-between items-end mb-8 md:mb-12 print:hidden">
                     <div>
@@ -304,6 +316,7 @@
                 <div id="experience-list" class="timeline-container space-y-8 pb-10"></div>
             </main>
 
+            <!-- VIEW: WORKSPACES -->
             <main id="view-categories" class="view-section">
                 <div class="flex justify-between items-end mb-8 md:mb-12">
                     <div>
@@ -317,6 +330,7 @@
                 <div id="grid-categories" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"></div>
             </main>
 
+            <!-- VIEW: PROJECTS -->
             <main id="view-projects" class="view-section">
                 <div class="flex justify-between items-end mb-8 md:mb-12">
                     <div>
@@ -342,6 +356,7 @@
 
         </div>
 
+        <!-- Admin Skull & Settings -->
         <div class="w-full flex justify-center items-center py-10 opacity-20 hover:opacity-100 transition-opacity duration-300 relative z-10 mt-auto h-24 print:hidden">
             <button id="admin-trigger" class="focus:outline-none transform hover:scale-110 transition-all p-4 absolute left-1/2 -translate-x-1/2">
                 <i class="fas fa-skull text-2xl md:text-3xl text-gray-500 drop-shadow-[0_0_10px_rgba(255,255,255,0.1)]"></i>
@@ -350,7 +365,10 @@
                 <i class="fas fa-cog text-xl md:text-2xl drop-shadow-[0_0_10px_rgba(255,255,255,0.1)]"></i>
             </button>
         </div>
-    </div> <div id="modal-resume" class="modal-overlay" onclick="if(event.target===this) window.closeModals()">
+    </div> <!-- /App Wrapper -->
+
+    <!-- MODAL: RESUME PREVIEWER -->
+    <div id="modal-resume" class="modal-overlay" onclick="if(event.target===this) window.closeModals()">
         <div class="glass-modal w-full max-w-4xl h-[90vh] md:rounded-[2rem] overflow-hidden flex flex-col relative shadow-2xl border-0 md:border border-white/10">
             <button onclick="window.closeModals()" class="mobile-close-btn absolute top-4 right-4 z-50 w-10 h-10 rounded-full bg-black/80 text-white flex items-center justify-center hover:bg-red-500 transition-colors">
                 <i class="fas fa-times"></i>
@@ -363,6 +381,7 @@
         </div>
     </div>
 
+    <!-- MODAL: IMAGE LIGHTBOX -->
     <div id="lightbox" class="fixed inset-0 z-[200] hidden items-center justify-center opacity-0" onclick="if(event.target===this) window.closeLightbox()">
         <button onclick="window.closeLightbox()" class="absolute top-6 right-6 w-12 h-12 bg-white/10 rounded-full flex items-center justify-center text-white hover:bg-red-500 transition-colors z-50"><i class="fas fa-times"></i></button>
         <div class="absolute left-4 top-1/2 -translate-y-1/2 flex items-center justify-center w-12 h-12 bg-white/10 rounded-full text-white cursor-pointer hover:bg-emerald-500 transition-colors z-50" onclick="window.prevLightbox(event)"><i class="fas fa-chevron-left"></i></div>
@@ -370,6 +389,7 @@
         <img id="lightbox-img" loading="lazy" src="" class="zoom-img max-w-[90vw] max-h-[90vh] object-contain rounded-xl shadow-2xl" onclick="this.classList.toggle('zoomed')">
     </div>
 
+    <!-- MODAL: IMAGE CROPPER STUDIO -->
     <div id="modal-cropper" class="modal-overlay z-[150]" onclick="if(event.target===this) window.closeCropper()">
         <div class="glass-modal p-6 md:p-8 rounded-[2rem] w-full max-w-lg mx-4 border border-white/10 relative shadow-2xl flex flex-col">
             <button onclick="window.closeCropper()" class="mobile-close-btn absolute top-4 right-4 w-8 h-8 rounded-full bg-white/5 text-gray-400 flex items-center justify-center hover:text-white hover:bg-red-500 transition-all z-50"><i class="fas fa-times"></i></button>
@@ -393,6 +413,7 @@
         </div>
     </div>
 
+    <!-- MODAL: CONTACT SHEET -->
     <div id="modal-contact" class="modal-overlay" onclick="if(event.target===this) window.closeModals()">
         <div class="glass-modal w-full max-w-sm h-[90vh] md:h-auto md:rounded-[2rem] overflow-hidden flex flex-col relative shadow-2xl border-0 md:border border-white/10">
             <button onclick="window.closeModals()" class="mobile-close-btn absolute top-4 right-4 z-50 w-10 h-10 rounded-full bg-black/80 text-white flex items-center justify-center hover:bg-red-500 transition-colors"><i class="fas fa-times"></i></button>
@@ -407,6 +428,7 @@
         </div>
     </div>
 
+    <!-- MODAL: PROJECT DETAILS -->
     <div id="modal-details" class="modal-overlay" onclick="if(event.target===this) window.closeModals()">
         <div class="glass-modal w-full max-w-4xl h-[90vh] md:rounded-[2rem] overflow-hidden flex flex-col relative shadow-2xl border-0 md:border border-white/10">
             <div id="read-progress" class="absolute top-0 left-0 h-1 bg-emerald-500 w-0 z-50 transition-none"></div>
@@ -435,6 +457,7 @@
                     </div>
                 </div>
 
+                <!-- Canvas Slideshow -->
                 <div class="px-6 md:px-12 mb-6 relative">
                     <div id="swipe-container" class="aspect-video bg-black rounded-2xl md:rounded-3xl overflow-hidden border border-white/5 shadow-inner relative select-none cursor-ew-resize">
                         <canvas id="slideshow-canvas" class="w-full h-full absolute inset-0 cursor-pointer" onclick="window.openLightbox()"></canvas>
@@ -460,6 +483,7 @@
         </div>
     </div>
 
+    <!-- MODAL: ANALYTICS DASHBOARD WITH RESET BUTTONS -->
     <div id="modal-analytics" class="modal-overlay" onclick="if(event.target===this) window.closeModals()">
         <div class="glass-modal w-full max-w-3xl h-[90vh] md:h-auto md:max-h-[85vh] md:rounded-[2rem] overflow-hidden flex flex-col relative shadow-2xl border-0 md:border border-white/10">
             <button onclick="window.closeModals()" class="mobile-close-btn absolute top-4 md:top-6 right-4 md:right-6 z-50 w-10 h-10 rounded-full bg-black/80 text-white flex items-center justify-center hover:bg-red-500 transition-colors shadow-lg">
@@ -502,6 +526,7 @@
         </div>
     </div>
 
+    <!-- MODAL: RESET ANALYTICS PROMPT -->
     <div id="modal-reset-analytics" class="modal-overlay" onclick="if(event.target===this) window.closeModals()">
         <div class="glass-modal p-8 rounded-3xl w-full max-w-sm mx-4 text-center border border-red-900/50 shadow-2xl relative">
             <button onclick="window.closeModals()" class="mobile-close-btn absolute top-4 right-4 z-50 w-8 h-8 rounded-full bg-white/5 text-gray-400 hover:text-white hover:bg-white/10 transition-all"><i class="fas fa-times"></i></button>
@@ -516,6 +541,7 @@
         </div>
     </div>
 
+    <!-- MODAL: ADMIN LOGIN -->
     <div id="modal-login" class="modal-overlay" onclick="if(event.target===this) window.closeModals()">
         <div class="glass-modal w-full max-w-sm h-[90vh] md:h-auto md:max-h-[85vh] md:rounded-[2rem] overflow-hidden flex flex-col relative shadow-2xl border-0 md:border border-white/10">
             <button onclick="window.closeModals()" class="mobile-close-btn absolute top-4 right-4 z-50 w-10 h-10 rounded-full bg-black/80 text-white flex items-center justify-center hover:bg-red-500 transition-colors"><i class="fas fa-times"></i></button>
@@ -531,6 +557,7 @@
         </div>
     </div>
 
+    <!-- MODAL: SYSTEM SETTINGS AUTHENTICATION -->
     <div id="modal-sys-auth" class="modal-overlay" onclick="if(event.target===this) window.closeModals()">
         <div class="glass-modal w-full max-w-sm h-[90vh] md:h-auto md:max-h-[85vh] md:rounded-[2rem] overflow-hidden flex flex-col relative shadow-2xl border-0 md:border border-white/10">
             <button onclick="window.closeModals()" class="mobile-close-btn absolute top-4 right-4 z-50 w-10 h-10 rounded-full bg-black/80 text-white flex items-center justify-center hover:bg-red-500 transition-colors"><i class="fas fa-times"></i></button>
@@ -546,6 +573,7 @@
         </div>
     </div>
 
+    <!-- MODAL: SYSTEM CONFIGURATION SETTINGS (WHITE LABEL EXPORTER) -->
     <div id="modal-sys-config" class="modal-overlay" onclick="if(event.target===this) window.closeModals()">
         <div class="glass-modal w-full max-w-2xl h-[90vh] md:h-auto md:max-h-[85vh] md:rounded-[2rem] overflow-hidden flex flex-col relative shadow-2xl border-0 md:border border-white/10">
             <button onclick="window.closeModals()" class="mobile-close-btn absolute top-4 right-4 z-50 w-10 h-10 rounded-full bg-black/80 text-white flex items-center justify-center hover:bg-red-500 transition-colors"><i class="fas fa-times"></i></button>
@@ -574,6 +602,7 @@
         </div>
     </div>
 
+    <!-- MODAL: PROFILE EDITOR -->
     <div id="modal-profile" class="modal-overlay" onclick="if(event.target===this) window.closeModals()">
         <div class="glass-modal w-full max-w-2xl h-[90vh] md:h-auto md:max-h-[85vh] md:rounded-[2rem] overflow-hidden flex flex-col relative shadow-2xl border-0 md:border border-white/10">
             <button onclick="window.closeModals()" class="mobile-close-btn absolute top-4 right-4 z-50 w-10 h-10 rounded-full bg-black/80 text-white flex items-center justify-center hover:bg-red-500 transition-colors"><i class="fas fa-times"></i></button>
@@ -632,7 +661,11 @@
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div><label class="text-xs text-gray-500 uppercase font-bold mb-2 block">Hero Button Text</label><input type="text" id="edit-btn-main" class="w-full bg-black/50 border border-white/10 rounded-lg px-4 py-3 text-sm text-white focus:border-emerald-500 outline-none transition-colors"></div>
-                        <div><label class="text-xs text-gray-500 uppercase font-bold mb-2 block">Profile Image (Crop 1:1)</label><input type="file" id="edit-img" accept="image/*" class="w-full text-xs text-gray-500 file:mr-2 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-emerald-400 file:bg-emerald-500/10 cursor-pointer border border-white/5 rounded-lg p-1 bg-black/50"></div>
+                        <div>
+                            <label class="text-xs text-gray-500 uppercase font-bold mb-2 block">Profile Image</label>
+                            <input type="file" id="edit-img" accept="image/*" class="w-full text-xs text-gray-500 file:mr-2 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-emerald-400 file:bg-emerald-500/10 cursor-pointer border border-white/5 rounded-lg p-1 bg-black/50">
+                            <input type="text" id="edit-img-url" class="w-full bg-black/50 border border-white/10 rounded-lg px-3 py-2 text-xs text-white focus:border-emerald-500 outline-none mt-2" placeholder="OR Paste Direct Image URL (.jpg/.png)">
+                        </div>
                     </div>
 
                     <div class="p-4 md:p-5 bg-emerald-900/10 rounded-2xl border border-emerald-500/20 border-dashed">
@@ -652,6 +685,7 @@
         </div>
     </div>
 
+    <!-- MODAL: EXPERIENCE EDITOR -->
     <div id="modal-exp" class="modal-overlay" onclick="if(event.target===this) window.closeModals()">
         <div class="glass-modal w-full max-w-2xl h-[90vh] md:h-auto md:max-h-[85vh] md:rounded-[2rem] overflow-hidden flex flex-col relative shadow-2xl border-0 md:border border-white/10">
             <button onclick="window.closeModals()" class="mobile-close-btn absolute top-4 right-4 z-50 w-10 h-10 rounded-full bg-black/80 text-white flex items-center justify-center hover:bg-red-500 transition-colors">
@@ -684,8 +718,9 @@
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div><label class="text-xs text-gray-500 uppercase font-bold mb-2 block">Company Website Link</label><input type="url" id="exp-link" class="w-full bg-black/50 border border-white/10 rounded-lg px-4 py-3 text-sm text-white focus:border-emerald-500 outline-none transition-colors" placeholder="https://..."></div>
                         <div>
-                            <label class="text-[10px] text-gray-400 uppercase font-bold mb-2 flex justify-between items-center"><span>Company Logo (Crop 1:1)</span><span class="text-emerald-500 font-normal normal-case">Or leave blank to auto-fetch</span></label>
+                            <label class="text-[10px] text-gray-400 uppercase font-bold mb-2 flex justify-between items-center"><span>Company Logo</span><span class="text-emerald-500 font-normal normal-case">Or leave blank to auto-fetch</span></label>
                             <input type="file" id="exp-icon-file" accept="image/*" class="w-full text-xs text-gray-500 file:mr-2 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-emerald-400 file:bg-emerald-500/10 cursor-pointer bg-black/50 border border-white/5 p-1 rounded-lg">
+                            <input type="text" id="exp-icon-url" class="w-full bg-black/50 border border-white/10 rounded-lg px-3 py-2 text-xs text-white focus:border-emerald-500 outline-none mt-2" placeholder="OR Paste Direct Logo URL">
                         </div>
                     </div>
 
@@ -722,6 +757,7 @@
         </div>
     </div>
 
+    <!-- MODAL: CATEGORY EDITOR -->
     <div id="modal-cat" class="modal-overlay" onclick="if(event.target===this) window.closeModals()">
         <div class="glass-modal w-full max-w-md h-[90vh] md:h-auto md:max-h-[85vh] md:rounded-[2rem] overflow-hidden flex flex-col relative shadow-2xl border-0 md:border border-white/10">
             <button onclick="window.closeModals()" class="mobile-close-btn absolute top-4 right-4 z-50 w-10 h-10 rounded-full bg-black/80 text-white flex items-center justify-center hover:bg-red-500 transition-colors"><i class="fas fa-times"></i></button>
@@ -734,13 +770,18 @@
                         <div class="w-24"><label class="text-xs text-gray-500 uppercase font-bold mb-2 block">Rank</label><input type="number" id="cat-order" value="99" class="w-full bg-black/50 border border-white/10 rounded-lg px-4 py-3 text-sm text-white focus:border-emerald-500 outline-none text-center transition-colors"></div>
                     </div>
                     <div><label class="text-xs text-gray-500 uppercase font-bold mb-2 block">Description</label><textarea id="cat-desc" rows="2" class="w-full bg-black/50 border border-white/10 rounded-lg px-4 py-3 text-sm text-white focus:border-emerald-500 outline-none transition-colors"></textarea></div>
-                    <div><label class="text-xs text-gray-500 uppercase font-bold mb-2 block">Cover Image (Crop 16:9)</label><input type="file" id="cat-file" accept="image/*" class="w-full text-xs text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-emerald-400 file:bg-emerald-500/10 cursor-pointer bg-black/50 border border-white/5 p-1 rounded-lg"></div>
+                    <div>
+                        <label class="text-xs text-gray-500 uppercase font-bold mb-2 block">Cover Image</label>
+                        <input type="file" id="cat-file" accept="image/*" class="w-full text-xs text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-emerald-400 file:bg-emerald-500/10 cursor-pointer bg-black/50 border border-white/5 p-1 rounded-lg">
+                        <input type="text" id="cat-file-url" class="w-full bg-black/50 border border-white/10 rounded-lg px-3 py-2 text-xs text-white focus:border-emerald-500 outline-none mt-2" placeholder="OR Paste Direct Cover URL">
+                    </div>
                     <button onclick="window.saveCategory()" id="save-cat-btn" class="w-full py-4 bg-emerald-600 hover:bg-emerald-500 rounded-xl font-bold text-white hover-glow shadow-lg mt-4 transition-all active:scale-95">Save Workspace</button>
                 </div>
             </div>
         </div>
     </div>
 
+    <!-- MODAL: PROJECT EDITOR -->
     <div id="modal-proj" class="modal-overlay" onclick="if(event.target===this) window.closeModals()">
         <div class="glass-modal w-full max-w-3xl h-[90vh] md:h-auto md:max-h-[85vh] md:rounded-[2rem] overflow-hidden flex flex-col relative shadow-2xl border-0 md:border border-white/10">
             <button onclick="window.closeModals()" class="mobile-close-btn absolute top-4 right-4 z-50 w-10 h-10 rounded-full bg-black/80 text-white flex items-center justify-center hover:bg-red-500 transition-colors"><i class="fas fa-times"></i></button>
@@ -754,6 +795,7 @@
                         <label class="text-sm text-white font-medium cursor-pointer" for="proj-draft"><i class="fas fa-eye-slash text-gray-500 mr-2"></i> Hide from public view (Draft Mode)</label>
                     </div>
 
+                    <!-- Workspace selection dropdown -->
                     <div class="flex flex-col md:flex-row gap-4">
                         <div class="flex-1"><label class="text-xs text-gray-500 uppercase font-bold mb-2 block">Project Title <span class="text-red-500">*</span></label><input type="text" id="proj-name" class="w-full bg-black/50 border border-white/10 rounded-lg px-4 py-3 text-sm text-white focus:border-emerald-500 outline-none transition-colors"></div>
                         <div class="w-full md:w-48"><label class="text-xs text-gray-500 uppercase font-bold mb-2 block">Workspace Folder</label><select id="proj-category-select" class="w-full bg-black/50 border border-white/10 rounded-lg px-4 py-3 text-sm text-white focus:border-emerald-500 outline-none transition-colors"></select></div>
@@ -766,11 +808,16 @@
                     </div>
                     
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 bg-black/30 rounded-xl border border-white/5">
-                        <div><label class="text-[10px] text-gray-400 uppercase font-bold mb-2 block">App Icon (Crop 1:1)</label><input type="file" id="proj-icon-file" accept="image/*" class="w-full text-xs text-gray-500 file:mr-2 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-emerald-400 file:bg-emerald-500/10 cursor-pointer bg-black/50 border border-white/5 p-1 rounded-lg"></div>
                         <div>
-                            <label class="text-[10px] text-gray-400 uppercase font-bold mb-2 flex justify-between items-center"><span>Gallery Slides (Crop 16:9)</span><button type="button" onclick="document.getElementById('proj-clear-gallery').value='true'; window.showToast('Gallery marked for clearing.', 'info');" class="text-red-400 hover:text-red-300 mr-2 transition-colors"><i class="fas fa-trash"></i> Reset</button></label>
+                            <label class="text-[10px] text-gray-400 uppercase font-bold mb-2 block">App Icon</label>
+                            <input type="file" id="proj-icon-file" accept="image/*" class="w-full text-xs text-gray-500 file:mr-2 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-emerald-400 file:bg-emerald-500/10 cursor-pointer bg-black/50 border border-white/5 p-1 rounded-lg">
+                            <input type="text" id="proj-icon-url" class="w-full bg-black/50 border border-white/10 rounded-lg px-3 py-2 text-xs text-white focus:border-emerald-500 outline-none mt-2" placeholder="OR Paste Direct Icon URL">
+                        </div>
+                        <div>
+                            <label class="text-[10px] text-gray-400 uppercase font-bold mb-2 flex justify-between items-center"><span>Gallery Slides</span><button type="button" onclick="document.getElementById('proj-clear-gallery').value='true'; window.showToast('Gallery marked for clearing.', 'info');" class="text-red-400 hover:text-red-300 mr-2 transition-colors"><i class="fas fa-trash"></i> Reset</button></label>
                             <input type="hidden" id="proj-clear-gallery" value="false">
                             <input type="file" id="proj-gallery-files" accept="image/*" multiple class="w-full text-xs text-gray-500 file:mr-2 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-emerald-400 file:bg-emerald-500/10 cursor-pointer bg-black/50 border border-white/5 p-1 rounded-lg">
+                            <input type="text" id="proj-gallery-urls" class="w-full bg-black/50 border border-white/10 rounded-lg px-3 py-2 text-xs text-white focus:border-emerald-500 outline-none mt-2" placeholder="OR Paste Image URLs separated by commas">
                         </div>
                     </div>
 
@@ -796,6 +843,7 @@
         </div>
     </div>
 
+    <!-- MODAL: SECURE DELETE -->
     <div id="modal-confirm-delete" class="modal-overlay" onclick="if(event.target===this) window.closeModals()">
         <div class="glass-modal p-8 rounded-3xl w-full max-w-sm mx-4 text-center border border-red-900/50 shadow-2xl relative">
             <button onclick="window.closeModals()" class="absolute top-4 right-4 z-50 w-8 h-8 rounded-full bg-white/5 text-gray-400 flex items-center justify-center hover:text-white hover:bg-white/10 transition-all mobile-close-btn"><i class="fas fa-times"></i></button>
@@ -840,15 +888,6 @@
             STATE.dbActive = true;
         }
 
-        window.addEventListener('DOMContentLoaded', () => {
-            const urlParams = new URLSearchParams(window.location.search);
-            const projectId = urlParams.get('project');
-            if (projectId) {
-                setTimeout(() => window.openProjectDeep(projectId), 600);
-            }
-        });
-
-        // FIXED: Strengthened sanitization
         window.sanitizeRichHTML = (html) => {
             if (!html) return '';
             let temp = document.createElement('div');
@@ -878,8 +917,9 @@
         };
 
         let adminIdleTime = 0;
-        window.addEventListener('mousemove', () => adminIdleTime = 0, {passive: true});
-        window.addEventListener('keypress', () => adminIdleTime = 0, {passive: true});
+        ['mousemove','keypress','touchstart','scroll'].forEach(evt => {
+            window.addEventListener(evt, () => adminIdleTime = 0, {passive: true});
+        });
         setInterval(() => {
             if(STATE.isAdmin) {
                 adminIdleTime++;
@@ -938,13 +978,7 @@
                 }
 
                 let a = STATE.analytics || { views: 0, cvDownloads: 0, contacts: 0, projectClicks: {} };
-                
-                if (remoteData && remoteData.content) {
-                    a = remoteData.content;
-                } else if (fetchErr && fetchErr.code !== 'PGRST116') {
-                    return;
-                }
-
+                if (remoteData && remoteData.content) a = remoteData.content;
                 if (!a.projectClicks) a.projectClicks = {};
                 
                 if(eventName === 'project_view' && params.proj_id) {
@@ -964,7 +998,6 @@
 
                 STATE.analytics = a;
                 localStorage.setItem('portfolio_analytics_local', JSON.stringify(a));
-                
                 await supabaseClient.from('portfolio_data').upsert({ id: 'analytics_main', content: a, updated_at: new Date() });
             } catch(e) { console.error("Analytics Error", e); }
         };
@@ -1044,7 +1077,6 @@
 
         window.handleHeroCTA = () => {
             if(!STATE.profile) return window.showToast("Profile loading...", true);
-            
             window.trackEvent('cv_download');
             
             if (STATE.profile.cvLink && STATE.profile.cvLink.trim() !== '') {
@@ -1133,6 +1165,9 @@
             const safeSet = (id, val) => { const el = document.getElementById(id); if(el) el.value = val; };
             safeSet('admin-pass', ''); safeSet('sys-pass', ''); safeSet('del-pwd', ''); safeSet('reset-pwd', '');
             
+            const iframe = document.getElementById('resume-iframe');
+            if(iframe) iframe.src = ''; // Prevents embedded media from playing when closed
+            
             document.title = STATE.profile?.title ? `${STATE.profile.title} | Portfolio` : "Live Portfolio";
         };
 
@@ -1180,7 +1215,11 @@
             sheet.addEventListener('touchend', () => {
                 if (touchStartY === -1) { touchStartY = 0; return; }
                 const deltaY = touchMoveY - touchStartY;
-                if (deltaY > 150) { window.closeModals(); window.haptic(); }
+                if (deltaY > 150) { 
+                    if(sheet.closest('#modal-cropper')) window.closeCropper();
+                    else window.closeModals(); 
+                    window.haptic(); 
+                }
                 sheet.style.transform = ''; sheet.style.transition = ''; touchStartY = 0; touchMoveY = 0;
             });
         };
@@ -1231,7 +1270,9 @@
         window.addEventListener('keydown', (e) => { 
             if (e.key === 'Escape') {
                 const lightbox = document.getElementById('lightbox');
+                const cropper = document.getElementById('modal-cropper');
                 if(lightbox && !lightbox.classList.contains('hidden')) { window.closeLightbox(); }
+                else if(cropper && cropper.classList.contains('active')) { window.closeCropper(); }
                 else { window.closeModals(); }
             }
             if(document.getElementById('modal-details').classList.contains('active') || !document.getElementById('lightbox').classList.contains('hidden')) {
@@ -1268,8 +1309,14 @@
         }
         window.handleSwipe = () => {
             if(!STATE.currentSlideshow || STATE.currentSlideshow.length <= 1) return;
-            if (touchendX < touchstartX - 50) { window.nextLightbox(); }
-            if (touchendX > touchstartX + 50) { window.prevLightbox(); }
+            if (touchendX < touchstartX - 50) { 
+                STATE.slideIdx = (STATE.slideIdx + 1) % STATE.currentSlideshow.length;
+                window.renderSlideFrame(); window.haptic();
+            }
+            if (touchendX > touchstartX + 50) { 
+                STATE.slideIdx = (STATE.slideIdx - 1 + STATE.currentSlideshow.length) % STATE.currentSlideshow.length;
+                window.renderSlideFrame(); window.haptic();
+            }
         };
 
         // --- CROPPER ENGINE ---
@@ -1299,7 +1346,7 @@
                         if(cvs) cvs.style.aspectRatio = aspectRatioStr || '16/9';
                         
                         window.updateCropView();
-                        window.openModal('modal-cropper');
+                        document.getElementById('modal-cropper').classList.add('active'); // Open cropper directly
                     };
                 };
                 reader.onerror = reject;
@@ -1330,7 +1377,7 @@
 
         window.closeCropper = () => {
             if(rejectCropFile) rejectCropFile(new Error("Cropping cancelled"));
-            window.closeModals();
+            document.getElementById('modal-cropper').classList.remove('active');
         };
 
         window.executeCrop = () => {
@@ -1349,7 +1396,7 @@
             const targetW = target.clientWidth;
             
             const scaledW = targetW * currentCropScale;
-            const scaledH = (nativeH / nativeW) * targetW * currentCropScale;
+            const scaledH = (nativeH / Math.max(1, nativeW)) * targetW * currentCropScale; // Safe math max
             
             const dx = (canvas.width - scaledW) / 2 + currentCropX;
             const dy = (canvas.height - scaledH) / 2 + currentCropY;
@@ -1365,7 +1412,8 @@
             } else {
                 resolveCropFile.resolve(canvas.toDataURL('image/jpeg', resolveCropFile.quality));
             }
-            window.closeModals();
+            resolveCropFile = null; rejectCropFile = null;
+            document.getElementById('modal-cropper').classList.remove('active');
             window.showToast("Image processed!");
             window.haptic();
         };
@@ -1487,6 +1535,7 @@
             if (STATE.profile && STATE.profile.accentColor) {
                 window.applyAccentStyle(STATE.profile.accentColor, STATE.profile.accentColorRgb, STATE.profile.accentColorDark);
             }
+            
             window.renderAll();
 
             const loader = document.getElementById('app-loader');
@@ -1497,6 +1546,13 @@
             const wrapper = document.getElementById('app-wrapper');
             if(wrapper) {
                 wrapper.classList.remove('opacity-0');
+            }
+
+            // Fixed Race Condition: Parse URL Deep Link ONLY after data is fully loaded
+            const urlParams = new URLSearchParams(window.location.search);
+            const projectId = urlParams.get('project');
+            if (projectId) {
+                setTimeout(() => window.openProjectDeep(projectId), 100);
             }
         };
 
@@ -1999,6 +2055,7 @@
             if(titleEl) {
                 titleEl.textContent = p.name;
                 delete titleEl.dataset.originalText;
+                window.decodeTextEffect(titleEl); // Gives hacker effect on opening
             }
             const iconEl = document.getElementById('det-icon'); if(iconEl) iconEl.src = p.icon;
             const descEl = document.getElementById('det-desc'); if(descEl) descEl.innerHTML = p.desc || 'No description provided.';
@@ -2126,9 +2183,7 @@
         window.setThemeAccent = (color, rgb, dark) => {
             window.haptic(); window.applyAccentStyle(color, rgb, dark);
             const safeSet = (id, val) => { const el = document.getElementById(id); if(el) el.value = val; };
-            safeSet('edit-accent', color);
-            safeSet('edit-accent-rgb', rgb);
-            safeSet('edit-accent-dark', dark);
+            safeSet('edit-accent', color); safeSet('edit-accent-rgb', rgb); safeSet('edit-accent-dark', dark);
             window.showToast("Accent Theme preview configured!");
         };
 
@@ -2156,6 +2211,8 @@
             safeSet('edit-twitter', p.socials?.twitter || '');
             safeSet('edit-instagram', p.socials?.instagram || '');
             
+            if(p.img && p.img.startsWith('http')) { safeSet('edit-img-url', p.img); } else { safeSet('edit-img-url', ''); }
+            
             window.openModal('modal-profile');
         };
 
@@ -2175,13 +2232,15 @@
                 const getVal = (id) => { const el = document.getElementById(id); return el ? el.value.trim() : ''; };
                 const sanitizeUrl = (url) => { if(!url) return ''; return url.startsWith('http') ? url : 'https://' + url; };
 
+                let finalImgUrl = getVal('edit-img-url') || STATE.profile?.img || null;
+
                 const payload = {
                     logo: getVal('edit-logo'), prefix: getVal('edit-prefix'), title: nameEl.value.trim(), bio: getVal('edit-bio'),
                     btnMain: getVal('edit-btn-main'), cvLink: getVal('edit-cv-link'),
                     accentColor: getVal('edit-accent') || '#10b981', accentColorRgb: getVal('edit-accent-rgb') || '16, 185, 129', accentColorDark: getVal('edit-accent-dark') || '#059669',
                     contact: { whatsapp: getVal('edit-whatsapp'), phone: getVal('edit-phone'), email: getVal('edit-email') },
                     socials: { github: sanitizeUrl(getVal('edit-github')), linkedin: sanitizeUrl(getVal('edit-linkedin')), twitter: sanitizeUrl(getVal('edit-twitter')), instagram: sanitizeUrl(getVal('edit-instagram')) },
-                    img: STATE.profile?.img || null, cvFile: STATE.profile?.cvFile || null
+                    img: finalImgUrl, cvFile: STATE.profile?.cvFile || null
                 };
                 
                 const imgFileInput = document.getElementById('edit-img');
@@ -2222,15 +2281,11 @@
             const safeSet = (id, val) => { const el = document.getElementById(id); if(el) el.value = val; };
             safeSet('exp-id', ''); safeSet('exp-role', ''); safeSet('exp-company', ''); safeSet('exp-type', 'Full-Time'); 
             safeSet('exp-location', ''); safeSet('exp-link', ''); safeSet('exp-duration', ''); safeSet('exp-icon-file', ''); 
-            safeSet('exp-tags', ''); safeSet('exp-order', '99');
+            safeSet('exp-tags', ''); safeSet('exp-order', '99'); safeSet('exp-icon-url', '');
             
             const draftEl = document.getElementById('exp-draft'); if(draftEl) draftEl.checked = false;
-            
-            const durEl = document.getElementById('exp-duration');
-            if(durEl) { durEl.disabled = false; durEl.classList.remove('opacity-50'); }
-            
+            const durEl = document.getElementById('exp-duration'); if(durEl) { durEl.disabled = false; durEl.classList.remove('opacity-50'); }
             const curEl = document.getElementById('exp-current'); if(curEl) curEl.checked = false;
-            
             const descEl = document.getElementById('exp-desc'); if(descEl) descEl.innerHTML = ''; 
             
             window.restoreDraftEditor('exp-desc', 'exp_draft'); 
@@ -2246,16 +2301,14 @@
             safeSet('exp-duration', e.duration || ''); safeSet('exp-icon-file', ''); safeSet('exp-tags', e.tags || '');
             safeSet('exp-order', e.order !== undefined ? e.order : 99);
             
+            if(e.icon && e.icon.startsWith('http')) { safeSet('exp-icon-url', e.icon); } else { safeSet('exp-icon-url', ''); }
+
             const draftEl = document.getElementById('exp-draft'); if(draftEl) draftEl.checked = e.isDraft || false;
-            
             const isCurrent = e.isCurrent || (e.duration && e.duration.toLowerCase().includes('present'));
             const curEl = document.getElementById('exp-current'); if(curEl) curEl.checked = isCurrent;
             
             const durEl = document.getElementById('exp-duration');
-            if(durEl) {
-                durEl.disabled = isCurrent;
-                if(isCurrent) durEl.classList.add('opacity-50'); else durEl.classList.remove('opacity-50');
-            }
+            if(durEl) { durEl.disabled = isCurrent; if(isCurrent) durEl.classList.add('opacity-50'); else durEl.classList.remove('opacity-50'); }
 
             const descEl = document.getElementById('exp-desc'); if(descEl) descEl.innerHTML = e.desc || ''; 
             window.openModal('modal-exp');
@@ -2264,7 +2317,6 @@
         window.saveExperience = async () => {
             if(!STATE.isAdmin) return;
             const getVal = (id) => { const el = document.getElementById(id); return el ? el.value.trim() : ''; };
-            
             const idInput = getVal('exp-id');
             const roleEl = document.getElementById('exp-role');
             const compEl = document.getElementById('exp-company');
@@ -2276,38 +2328,24 @@
 
             const role = roleEl.value.trim();
             const company = compEl.value.trim();
-            const type = getVal('exp-type'); 
-            const location = getVal('exp-location'); 
-            const link = getVal('exp-link'); 
-            const duration = getVal('exp-duration'); 
-            const tags = getVal('exp-tags'); 
-            const orderInput = parseInt(getVal('exp-order')) || 0;
-            
-            const draftEl = document.getElementById('exp-draft'); const isDraft = draftEl ? draftEl.checked : false;
-            const descEl = document.getElementById('exp-desc'); const desc = descEl ? descEl.innerHTML : '';
-            
-            const currEl = document.getElementById('exp-current'); const isCurrentWork = currEl ? currEl.checked : false;
+            const type = getVal('exp-type'); const location = getVal('exp-location'); const link = getVal('exp-link'); const duration = getVal('exp-duration'); const tags = getVal('exp-tags'); const orderInput = parseInt(getVal('exp-order')) || 0;
+            const isDraft = document.getElementById('exp-draft')?.checked || false;
+            const desc = document.getElementById('exp-desc')?.innerHTML || '';
+            const isCurrentWork = document.getElementById('exp-current')?.checked || false;
             const finalDuration = isCurrentWork ? "Present" : duration;
 
             const btn = document.getElementById('save-exp-btn'); if(btn) { btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...'; }
             try {
                 let tempExp = JSON.parse(JSON.stringify(STATE.experience));
                 const existing = idInput ? tempExp.find(x => x.id === idInput) : null;
-                let icon = existing ? existing.icon : null; 
                 
+                let icon = getVal('exp-icon-url') || (existing ? existing.icon : null); 
                 const iconFileInput = document.getElementById('exp-icon-file');
-                if(iconFileInput && iconFileInput.files[0]) {
-                     icon = await window.fileToBase64(iconFileInput.files[0], 200, 0.7, '1/1');
-                }
+                if(iconFileInput && iconFileInput.files[0]) icon = await window.fileToBase64(iconFileInput.files[0], 200, 0.7, '1/1');
 
                 const payload = { id: idInput || 'exp_' + Date.now(), role, company, type, location, link, icon, duration: finalDuration, isCurrent: isCurrentWork, tags, isDraft, order: orderInput, desc: window.sanitizeRichHTML(desc) };
 
-                if(existing) {
-                    const idx = tempExp.findIndex(x => x.id === idInput);
-                    if(idx > -1) { tempExp[idx] = payload; }
-                } else {
-                    tempExp.push(payload);
-                }
+                if(existing) { const idx = tempExp.findIndex(x => x.id === idInput); if(idx > -1) tempExp[idx] = payload; } else { tempExp.push(payload); }
                 
                 if (window.getByteSize(JSON.stringify(tempExp)) > 1500000) { window.showToast("Experience payload too large.", true); } 
                 else {
@@ -2321,7 +2359,7 @@
 
         window.openCategoryModal = () => { 
             const safeSet = (id, val) => { const el = document.getElementById(id); if(el) el.value = val; };
-            safeSet('cat-id', ''); safeSet('cat-name', ''); safeSet('cat-order', '99'); safeSet('cat-desc', ''); safeSet('cat-file', '');
+            safeSet('cat-id', ''); safeSet('cat-name', ''); safeSet('cat-order', '99'); safeSet('cat-desc', ''); safeSet('cat-file', ''); safeSet('cat-file-url', '');
             window.openModal('modal-cat'); 
         };
         
@@ -2329,6 +2367,7 @@
             const c = STATE.categories.find(x => x.id === id); if(!c) return; 
             const safeSet = (id, val) => { const el = document.getElementById(id); if(el) el.value = val; };
             safeSet('cat-id', c.id); safeSet('cat-name', c.name); safeSet('cat-order', c.order !== undefined ? c.order : 99); safeSet('cat-desc', c.desc || ''); safeSet('cat-file', '');
+            if(c.img && c.img.startsWith('http')) { safeSet('cat-file-url', c.img); } else { safeSet('cat-file-url', ''); }
             window.openModal('modal-cat'); 
         };
         
@@ -2338,28 +2377,24 @@
             if(!nameEl || !nameEl.value.trim()) { if(nameEl) { nameEl.classList.add('error-shake'); setTimeout(() => nameEl.classList.remove('error-shake'), 400); } return window.showToast("Name required", true); }
 
             const getVal = (id) => { const el = document.getElementById(id); return el ? el.value.trim() : ''; };
-            const idInput = getVal('cat-id'); 
-            const name = nameEl.value.trim(); 
-            const orderInput = parseInt(getVal('cat-order')) || 0;
-            const desc = getVal('cat-desc');
+            const idInput = getVal('cat-id'); const name = nameEl.value.trim(); const orderInput = parseInt(getVal('cat-order')) || 0; const desc = getVal('cat-desc');
             
             const btn = document.getElementById('save-cat-btn'); if(btn) { btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...'; }
             
             try {
+                let imgData = getVal('cat-file-url') || null;
                 const imgFileInput = document.getElementById('cat-file');
-                let imgData = null;
                 
                 if(imgFileInput && imgFileInput.files[0]) { 
                     imgData = await window.fileToBase64(imgFileInput.files[0], 400, 0.7, '16/9'); 
-                } else if(idInput) { 
-                    const existing = STATE.categories.find(x => x.id === idInput); 
-                    if(existing) imgData = existing.img; 
+                } else if(!imgData && idInput) { 
+                    const existing = STATE.categories.find(x => x.id === idInput); if(existing) imgData = existing.img; 
                 }
                 
                 let tempCats = JSON.parse(JSON.stringify(STATE.categories));
                 if (idInput) { 
                     const idx = tempCats.findIndex(x => x.id === idInput); 
-                    if(idx > -1) { tempCats[idx].name = name; tempCats[idx].desc = desc; tempCats[idx].order = orderInput; if(imgData) tempCats[idx].img = imgData; } 
+                    if(idx > -1) { tempCats[idx].name = name; tempCats[idx].desc = desc; tempCats[idx].order = orderInput; tempCats[idx].img = imgData; } 
                 } else { tempCats.push({ id: 'cat_' + Date.now(), name, desc, img: imgData, order: orderInput }); }
 
                 if (window.getByteSize(JSON.stringify(tempCats)) > 1500000) { window.showToast("Workspaces payload too large.", true); } 
@@ -2370,14 +2405,13 @@
 
         window.openProjectModal = () => { 
             if(!STATE.activeCat) { window.showToast("Please select a workspace folder first to upload.", true); return; }
-            
             const safeSet = (id, val) => { const el = document.getElementById(id); if(el) el.value = val; };
             safeSet('proj-id', ''); safeSet('proj-name', ''); safeSet('proj-order', '99'); safeSet('proj-link-in', ''); 
             safeSet('proj-tags-in', ''); safeSet('proj-icon-file', ''); safeSet('proj-gallery-files', ''); safeSet('proj-clear-gallery', 'false');
+            safeSet('proj-icon-url', ''); safeSet('proj-gallery-urls', '');
             
             const draftEl = document.getElementById('proj-draft'); if(draftEl) draftEl.checked = false;
             const edEl = document.getElementById('proj-editor'); if(edEl) edEl.innerHTML = '';
-            
             window.restoreDraftEditor('proj-editor', 'proj_draft'); 
             
             const catSelect = document.getElementById('proj-category-select');
@@ -2385,18 +2419,22 @@
                 catSelect.innerHTML = STATE.categories.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
                 if(STATE.activeCat) catSelect.value = STATE.activeCat;
             }
-
             window.openModal('modal-proj'); 
         };
 
         window.editProject = (id) => { 
             const p = STATE.projects.find(x => x.id === id); if(!p) return; 
-            
             const safeSet = (id, val) => { const el = document.getElementById(id); if(el) el.value = val; };
             safeSet('proj-id', p.id); safeSet('proj-name', p.name); safeSet('proj-order', p.order !== undefined ? p.order : 99); 
             safeSet('proj-link-in', p.link || ''); safeSet('proj-tags-in', p.tags || ''); safeSet('proj-icon-file', ''); 
             safeSet('proj-gallery-files', ''); safeSet('proj-clear-gallery', 'false');
             
+            if(p.icon && p.icon.startsWith('http')) { safeSet('proj-icon-url', p.icon); } else { safeSet('proj-icon-url', ''); }
+            
+            if(p.gallery && p.gallery.length && p.gallery[0].startsWith('http')) {
+                safeSet('proj-gallery-urls', p.gallery.join(', '));
+            } else { safeSet('proj-gallery-urls', ''); }
+
             const edEl = document.getElementById('proj-editor'); if(edEl) edEl.innerHTML = p.desc || '';
             const draftEl = document.getElementById('proj-draft'); if(draftEl) draftEl.checked = p.isDraft || false;
             
@@ -2405,7 +2443,6 @@
                 catSelect.innerHTML = STATE.categories.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
                 catSelect.value = p.catId;
             }
-            
             window.openModal('modal-proj'); 
         };
         
@@ -2415,51 +2452,47 @@
             if(!nameEl || !nameEl.value.trim()) { if(nameEl) { nameEl.classList.add('error-shake'); setTimeout(() => nameEl.classList.remove('error-shake'), 400); } return window.showToast("Title required", true); }
 
             const getVal = (id) => { const el = document.getElementById(id); return el ? el.value.trim() : ''; };
-            
-            const idInput = getVal('proj-id'); 
-            const name = nameEl.value.trim(); 
-            const orderInput = parseInt(getVal('proj-order')) || 0;
-            const tags = getVal('proj-tags-in'); 
-            
-            const draftEl = document.getElementById('proj-draft'); const isDraft = draftEl ? draftEl.checked : false;
-            const catSelect = document.getElementById('proj-category-select'); const targetCatId = catSelect ? catSelect.value : STATE.activeCat;
+            const idInput = getVal('proj-id'); const name = nameEl.value.trim(); const orderInput = parseInt(getVal('proj-order')) || 0; const tags = getVal('proj-tags-in'); 
+            const isDraft = document.getElementById('proj-draft')?.checked || false;
+            const targetCatId = document.getElementById('proj-category-select')?.value || STATE.activeCat;
             
             if(!targetCatId) return window.showToast("No workspace selected", true);
-            
             const btn = document.getElementById('save-proj-btn'); if(btn) { btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Uploading...'; }
             
             try {
                 const existing = idInput ? STATE.projects.find(x => x.id === idInput) : null;
-                let icon = existing ? existing.icon : 'https://placehold.co/400x400/10b981/ffffff?text=App'; 
                 
+                let icon = getVal('proj-icon-url') || (existing ? existing.icon : 'https://placehold.co/400x400/10b981/ffffff?text=App'); 
                 const iconFileInput = document.getElementById('proj-icon-file');
-                if(iconFileInput && iconFileInput.files[0]) {
-                    icon = await window.fileToBase64(iconFileInput.files[0], 300, 0.7, '1/1');
-                }
+                if(iconFileInput && iconFileInput.files[0]) icon = await window.fileToBase64(iconFileInput.files[0], 300, 0.7, '1/1');
                 
                 let gallery = []; 
                 const clearGalEl = document.getElementById('proj-clear-gallery'); const clearGal = clearGalEl ? clearGalEl.value === 'true' : false; 
                 const gallFileInput = document.getElementById('proj-gallery-files');
                 const gallFiles = gallFileInput ? gallFileInput.files : [];
                 
+                const rawGalleryUrls = getVal('proj-gallery-urls');
+                if (rawGalleryUrls) {
+                    gallery = rawGalleryUrls.split(',').map(url => url.trim()).filter(url => url !== '');
+                }
+
                 if(gallFiles.length > 0) { 
-                    const scaleWidth = gallFiles.length > 3 ? 500 : 700; 
-                    const scaleQuality = gallFiles.length > 3 ? 0.5 : 0.6;
+                    const scaleWidth = gallFiles.length > 3 ? 500 : 700; const scaleQuality = gallFiles.length > 3 ? 0.5 : 0.6;
                     for(let f of gallFiles) { gallery.push(await window.fileToBase64(f, scaleWidth, scaleQuality, '16/9')); }
-                } else if (!clearGal && existing && existing.gallery) { gallery = existing.gallery; }
+                } else if (gallery.length === 0 && !clearGal && existing && existing.gallery) { 
+                    gallery = existing.gallery; 
+                }
                 if(!gallery.length) gallery = [icon];
                 
-                let finalLink = getVal('proj-link-in'); 
-                if(finalLink && !finalLink.startsWith('http')) finalLink = 'https://' + finalLink;
+                let finalLink = getVal('proj-link-in'); if(finalLink && !finalLink.startsWith('http')) finalLink = 'https://' + finalLink;
+                const desc = document.getElementById('proj-editor')?.innerHTML || '';
                 
-                const edEl = document.getElementById('proj-editor'); const desc = edEl ? edEl.innerHTML : '';
                 const payload = { id: idInput || ('proj_' + Date.now()), catId: targetCatId, name, tags, isDraft, icon, gallery, order: orderInput, desc: window.sanitizeRichHTML(desc), link: finalLink };
                 
                 let tempProjects = JSON.parse(JSON.stringify(STATE.projects));
-                if(existing) { const idx = tempProjects.findIndex(x => x.id === idInput); tempProjects[idx] = payload; } 
-                else { tempProjects.push(payload); }
+                if(existing) { const idx = tempProjects.findIndex(x => x.id === idInput); tempProjects[idx] = payload; } else { tempProjects.push(payload); }
 
-                if(window.getByteSize(JSON.stringify(tempProjects)) > 2000000) { window.showToast("Projects payload exceeds limit. Squeeze down images or use fewer gallery slides.", true); } 
+                if(window.getByteSize(JSON.stringify(tempProjects)) > 2000000) { window.showToast("Payload limit exceeded.", true); } 
                 else { 
                     STATE.projects = tempProjects; 
                     sessionStorage.removeItem('proj_draft'); 
@@ -2471,8 +2504,7 @@
 
         window.triggerDelete = (id) => { 
             const safeSet = (idName, val) => { const el = document.getElementById(idName); if(el) el.value = val; };
-            safeSet('del-id', id); 
-            safeSet('del-pwd', '');
+            safeSet('del-id', id); safeSet('del-pwd', '');
             window.openModal('modal-confirm-delete'); 
         };
 
