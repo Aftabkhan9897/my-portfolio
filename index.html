@@ -177,7 +177,7 @@
         /* Print Specific Styles */
         @media print {
             body { background: white !important; color: black !important; padding: 0; margin: 0; }
-            .accent-glow, header, nav, #fab-top, .modal-overlay, #scroll-progress, .admin-element, button, .profile-brim, #ai-chat-widget { display: none !important; }
+            .accent-glow, header, nav, #fab-top, .modal-overlay, #scroll-progress, .admin-element, button, .profile-brim { display: none !important; }
             .glass-card { background: white !important; border: 1px solid #ddd !important; box-shadow: none !important; break-inside: avoid; color: black !important; filter: none !important; backdrop-filter: none !important; }
             .text-white { color: black !important; }
             .text-gray-400, .text-gray-500 { color: #444 !important; }
@@ -266,6 +266,7 @@
                 </div>
 
                 <div class="w-48 h-48 md:w-80 md:h-80 relative shrink-0 mt-6 md:mt-0 group">
+                    <!-- Photo Brim Animation specifically around profile pic -->
                     <div class="profile-brim"></div>
                     <div class="absolute inset-0.5 rounded-full bg-[#050505] z-10"></div>
                     <img id="hero-img" loading="lazy" src="https://placehold.co/600x600/171717/white?text=User" onerror="this.onerror=null; this.src='https://placehold.co/600x600/171717/white?text=User'" class="absolute inset-2 w-[calc(100%-16px)] h-[calc(100%-16px)] object-cover rounded-full border-[3px] border-[#121212] z-20 shadow-2xl transition-transform duration-700 group-hover:scale-105">
@@ -469,21 +470,6 @@
                     <div id="det-gallery" class="flex gap-3 md:gap-4 overflow-x-auto hide-scroll pb-4 snap-x snap-mandatory font-mono"></div>
                 </div>
 
-                <!-- Gemini Pitch Drafter Module inside project details -->
-                <div class="px-6 md:px-12 mb-8 bg-white/5 py-6 rounded-[1.5rem] border border-white/10 mx-6 md:mx-12">
-                    <h5 class="text-sm font-bold text-white uppercase tracking-wider mb-2"><i class="fas fa-magic text-emerald-500 mr-2"></i> Custom Recruiter Pitch Drafter</h5>
-                    <p class="text-xs text-gray-400 mb-4">Generating a high-impact, tailored pitch explaining why I fit your role perfectly using this project.</p>
-                    <div class="flex flex-col md:flex-row gap-3">
-                        <input id="pitch-role" type="text" placeholder="Hiring Role (e.g. Frontend Developer)" class="flex-1 px-4 py-2.5 bg-black/60 border border-white/10 rounded-xl text-xs text-white focus:border-emerald-500 outline-none transition-colors">
-                        <input id="pitch-company" type="text" placeholder="Company Name" class="flex-1 px-4 py-2.5 bg-black/60 border border-white/10 rounded-xl text-xs text-white focus:border-emerald-500 outline-none transition-colors">
-                        <button onclick="generateTailoredPitch(this)" class="px-6 py-2.5 bg-emerald-600 hover:bg-emerald-500 rounded-xl text-xs font-bold text-white shadow hover-glow shrink-0">✨ Draft Pitch</button>
-                    </div>
-                    <div id="pitch-output-box" class="hidden mt-4 p-4 bg-black/80 rounded-xl border border-emerald-500/20 text-xs text-gray-300 leading-relaxed relative">
-                        <button onclick="copyPitchText()" class="absolute top-3 right-3 text-emerald-400 hover:text-white transition-colors" title="Copy to Clipboard"><i class="far fa-copy text-sm"></i></button>
-                        <div id="pitch-response" class="pr-8"></div>
-                    </div>
-                </div>
-
                 <div class="px-6 md:px-12 pb-6">
                     <h4 class="text-emerald-500 font-bold uppercase text-xs tracking-widest mb-4 flex items-center gap-2">Project Overview <i class="fas fa-arrow-right text-gray-500"></i></h4>
                     <div id="det-desc" class="text-gray-300 leading-relaxed space-y-4 text-sm md:text-[15px]"></div>
@@ -650,17 +636,10 @@
                     <div>
                         <div class="flex justify-between items-center mb-2">
                             <label class="text-xs text-gray-500 uppercase font-bold">Short Bio</label>
-                            <button onclick="aiEnhance(this, 'edit-bio', 'bio')" class="text-emerald-500 text-xs font-bold hover:text-emerald-400 transition-colors">✨ AI Polish</button>
                         </div>
                         <textarea id="edit-bio" rows="3" class="w-full bg-black/50 border border-white/10 rounded-lg px-4 py-3 text-sm text-white focus:border-emerald-500 outline-none transition-colors"></textarea>
                     </div>
 
-                    <div class="p-4 md:p-5 bg-emerald-900/10 rounded-2xl border border-emerald-500/20 border-dashed">
-                        <h4 class="text-xs font-bold text-emerald-400 mb-2 uppercase"><i class="fas fa-user-secret mr-1.5"></i> Private AI Notepad</h4>
-                        <p class="text-[10px] text-gray-400 mb-3">Hidden from public view. List hidden skills, preferences, and personal details so the Virtual AI Agent and Pitch Drafter know more about you.</p>
-                        <textarea id="edit-notepad" rows="4" class="w-full bg-black/50 border border-white/10 rounded-lg px-4 py-3 text-sm text-white focus:border-emerald-500 outline-none transition-colors" placeholder="e.g., Highly skilled in React, 5 years experience, prefer remote roles, have a dog named Max..."></textarea>
-                    </div>
-                    
                     <div class="p-4 md:p-5 bg-black/30 rounded-2xl border border-white/5">
                         <h4 class="text-xs font-bold text-emerald-400 mb-4 uppercase"><i class="fas fa-address-book"></i> Direct Contact Info</h4>
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -756,7 +735,6 @@
                     <div>
                         <div class="flex justify-between items-center mb-2">
                             <label class="text-xs text-gray-500 uppercase font-bold">Role Description</label>
-                            <button onclick="aiEnhance(this, 'exp-desc', 'rich-exp')" class="text-emerald-500 text-xs font-bold hover:text-emerald-400 transition-colors">✨ AI Polish (STAR Format)</button>
                         </div>
                         <div class="border border-white/10 rounded-xl overflow-hidden bg-black/50 focus-within:border-emerald-500 transition-colors">
                             <div class="p-2 border-b border-white/10 flex gap-2 bg-white/5 overflow-x-auto hide-scroll">
@@ -832,7 +810,6 @@
                             <label class="text-xs text-gray-500 uppercase font-bold">Deep Description</label>
                             <div class="flex items-center gap-3">
                                 <button onclick="restoreDraftEditor('proj-editor', 'proj_draft')" class="text-gray-500 text-xs font-bold hover:text-white transition-colors"><i class="fas fa-undo mr-1"></i> Restore</button>
-                                <button onclick="aiEnhance(this, 'proj-editor', 'rich')" class="text-emerald-500 text-xs font-bold hover:text-emerald-400 transition-colors"><i class="fas fa-magic"></i> AI</button>
                             </div>
                         </div>
                         <div class="border border-white/10 rounded-xl overflow-hidden bg-black/50 focus-within:border-emerald-500 transition-colors">
@@ -864,42 +841,6 @@
             <input type="password" id="del-pwd" class="w-full bg-black/50 border border-red-900/50 rounded-xl px-6 py-4 text-center text-white focus:border-red-500 outline-none mb-6 tracking-widest transition-colors" placeholder="••••••••">
             <button onclick="executeDelete()" id="btn-execute-del" class="w-full py-4 bg-red-600 hover:bg-red-500 rounded-xl font-bold text-white transition-colors shadow-lg">Authorize Deletion</button>
         </div>
-    </div>
-
-    <!-- FLOATING CHATBOT WIDGET -->
-    <div id="ai-chat-widget" class="fixed bottom-6 left-6 md:left-auto md:right-8 z-50 flex flex-col items-end print:hidden">
-        <div id="ai-chat-window" class="hidden w-[320px] md:w-[380px] h-[450px] mb-4 glass-card rounded-[2rem] border border-white/10 flex flex-col overflow-hidden shadow-2xl relative animate-fade-in">
-            <div class="px-5 py-4 border-b border-white/10 flex justify-between items-center bg-black/40">
-                <div class="flex items-center gap-2.5">
-                    <span class="relative flex h-3 w-3">
-                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 bg-emerald-400"></span>
-                        <span class="relative inline-flex rounded-full h-3 w-3 bg-emerald-500"></span>
-                    </span>
-                    <div>
-                        <h4 class="text-xs font-bold text-white uppercase tracking-wider bot-name-display">Virtual Agent</h4>
-                        <p class="text-[9px] text-gray-500">✨ AI Assistant Online</p>
-                    </div>
-                </div>
-                <button onclick="toggleChatWindow()" class="text-gray-400 hover:text-white transition-colors"><i class="fas fa-times text-xs"></i></button>
-            </div>
-            <div id="chat-messages" class="flex-1 overflow-y-auto p-4 space-y-3 hide-scroll text-xs">
-                <div class="bg-white/5 p-3 rounded-2xl rounded-tl-none text-gray-300 max-w-[85%] border border-white/5 bot-welcome-msg">
-                    Hi! I am the Virtual AI Agent for this portfolio. Ask me anything about skills, experience, workspaces, or availability! ✨
-                </div>
-            </div>
-            <div class="px-3 py-2 flex gap-1.5 overflow-x-auto hide-scroll shrink-0 border-t border-white/5 bg-black/10">
-                <button onclick="sendQuickPrompt('✨ Skills overview?')" class="px-2.5 py-1.5 bg-white/5 hover:bg-white/10 border border-white/10 rounded-full text-[10px] text-gray-300 whitespace-nowrap transition-colors">✨ Skills?</button>
-                <button onclick="sendQuickPrompt('✨ Are you available for work?')" class="px-2.5 py-1.5 bg-white/5 hover:bg-white/10 border border-white/10 rounded-full text-[10px] text-gray-300 whitespace-nowrap transition-colors">✨ Availability?</button>
-                <button onclick="sendQuickPrompt('✨ Introduce your projects')" class="px-2.5 py-1.5 bg-white/5 hover:bg-white/10 border border-white/10 rounded-full text-[10px] text-gray-300 whitespace-nowrap transition-colors">✨ Projects?</button>
-            </div>
-            <div class="p-3 border-t border-white/10 bg-black/40 flex gap-2">
-                <input id="chat-input" type="text" onkeydown="if(event.key==='Enter') sendChatMessage()" placeholder="Ask AI agent..." class="flex-1 px-4 py-2 bg-black/60 border border-white/10 rounded-xl text-xs text-white focus:border-emerald-500 outline-none transition-colors">
-                <button onclick="sendChatMessage()" class="w-10 h-10 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl flex items-center justify-center transition-colors shadow-lg hover-glow"><i class="fas fa-paper-plane text-xs"></i></button>
-            </div>
-        </div>
-        <button onclick="toggleChatWindow()" class="w-14 h-14 bg-gradient-to-tr from-emerald-500 to-emerald-600 text-white rounded-full flex items-center justify-center shadow-xl shadow-emerald-500/20 hover:scale-105 active:scale-95 transition-transform border border-white/10 z-50">
-            <i class="fas fa-robot text-xl"></i>
-        </button>
     </div>
 
     <script>
@@ -1172,11 +1113,6 @@
             const delEl = document.getElementById('del-pwd'); if(delEl) delEl.value = '';
             const resetPwd = document.getElementById('reset-pwd'); if(resetPwd) resetPwd.value = '';
             
-            document.getElementById('pitch-output-box')?.classList.add('hidden');
-            const pitchRes = document.getElementById('pitch-response'); if(pitchRes) pitchRes.innerHTML = '';
-            const pitchRole = document.getElementById('pitch-role'); if(pitchRole) pitchRole.value = '';
-            const pitchComp = document.getElementById('pitch-company'); if(pitchComp) pitchComp.value = '';
-            
             document.title = STATE.profile?.title ? `${STATE.profile.title} | Portfolio` : "Live Portfolio";
         }
 
@@ -1275,15 +1211,23 @@
         });
 
         function decodeTextEffect(el) {
-            const original = el.innerText; const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%&*"; let iterations = 0;
-            const interval = setInterval(() => {
-                el.innerText = original.split("").map((letter, index) => {
-                    if(index < iterations || letter === ' ') return original[index];
+            if (el.dataset.decodeInterval) clearInterval(parseInt(el.dataset.decodeInterval));
+            if (!el.dataset.originalText) el.dataset.originalText = el.innerText || el.textContent;
+            
+            const originalText = el.dataset.originalText;
+            const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%&*"; 
+            let iterations = 0;
+            
+            const intervalId = setInterval(() => {
+                el.innerText = originalText.split("").map((letter, index) => {
+                    if(index < iterations || letter === ' ') return originalText[index];
                     return letters[Math.floor(Math.random() * letters.length)];
                 }).join("");
-                if(iterations >= original.length) clearInterval(interval);
+                if(iterations >= originalText.length) clearInterval(intervalId);
                 iterations += 1/3;
             }, 20);
+            
+            el.dataset.decodeInterval = intervalId;
         }
 
         let touchstartX = 0; let touchendX = 0;
@@ -1421,8 +1365,6 @@
             if(draft) {
                 document.getElementById(targetId).innerHTML = draft;
                 showToast("Draft restored!");
-            } else {
-                showToast("No draft found.", true);
             }
         };
 
@@ -1657,10 +1599,6 @@
         function renderAll() {
             document.title = STATE.profile?.title ? `${STATE.profile.title} | Portfolio` : "Live Portfolio";
             updateSEOTags();
-            
-            const firstName = STATE.profile?.title ? STATE.profile.title.split(' ')[0] : 'Agent';
-            document.querySelectorAll('.bot-name-display').forEach(el => el.textContent = `Virtual ${firstName}`);
-            document.querySelectorAll('.bot-welcome-msg').forEach(el => el.innerHTML = `Hi! I am the Virtual AI Agent for ${firstName}. Ask me anything about their skills, experience, or projects! ✨`);
 
             renderHero();
             renderExperience();
@@ -1814,7 +1752,7 @@
             const locHTML = e.location ? `<a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(e.location)}" target="_blank" onclick="event.stopPropagation();" class="flex items-center gap-1.5 hover:text-white transition-colors"><span class="w-1 h-1 rounded-full bg-gray-500"></span> <i class="fas fa-map-marker-alt text-gray-500"></i> ${safeText(e.location)}</a>` : '';
 
             return `
-            <div class="glass-card p-6 md:p-8 rounded-3xl relative overflow-visible group cursor-pointer hover:border-emerald-500/30 transition-colors animate-stagger" style="animation-delay: ${idx * 0.1}s" onclick="toggleExpDesc('${e.id}')">
+            <div class="glass-card p-6 md:p-8 rounded-3xl relative overflow-visible group cursor-pointer hover:border-emerald-500/30 transition-colors animate-stagger hover-lift" style="animation-delay: ${idx * 0.1}s" onclick="toggleExpDesc('${e.id}')">
                 ${isTimeline ? `<div class="timeline-node ${isCurrent ? 'node-pulse' : ''}"></div>` : ''}
                 <div class="admin-element absolute top-4 right-4 z-30 flex gap-2">
                     <span class="absolute -top-3 -right-2 bg-emerald-500 text-black text-[10px] font-bold px-2 py-1 rounded-full shadow-lg">Rank ${e.order !== undefined ? e.order : 99}</span>
@@ -1858,7 +1796,7 @@
             `;
         }
 
-        function renderCategories() {
+        const renderCategories = () => {
             const catGrid = document.getElementById('grid-categories'); if(!catGrid) return;
             let sortedCats = [...STATE.categories].sort((a,b) => (a.order !== undefined && a.order !== null ? Number(a.order) : 99) - (b.order !== undefined && b.order !== null ? Number(b.order) : 99));
             
@@ -1886,7 +1824,7 @@
                     </div>
                 </div>
             `).join('');
-        }
+        };
 
         window.openWorkspace = (id) => {
             STATE.activeCat = id;
@@ -2024,9 +1962,6 @@
                 else { lnk.style.display = 'none'; }
             }
             
-            const pitchBtn = document.querySelector('[onclick="generateTailoredPitch(this)"]');
-            if (pitchBtn) pitchBtn.setAttribute('data-pid', id);
-            
             STATE.currentSlideshow = (p.gallery && p.gallery.length ? p.gallery : [p.icon]).filter(img => img && img.trim() !== '');
             STATE.slideIdx = 0;
             startModalSlideshow(); openModal('modal-details');
@@ -2146,7 +2081,6 @@
             document.getElementById('edit-prefix').value = p.prefix || '';
             document.getElementById('edit-title').value = p.title || ''; 
             document.getElementById('edit-bio').value = p.bio || '';
-            document.getElementById('edit-notepad').value = p.notepad || '';
             document.getElementById('edit-btn-main').value = p.btnMain || ''; 
             document.getElementById('edit-cv-link').value = p.cvLink || '';
             document.getElementById('edit-accent').value = p.accentColor || '#10b981';
@@ -2188,7 +2122,6 @@
 
                 const payload = {
                     logo: document.getElementById('edit-logo').value, prefix: document.getElementById('edit-prefix').value, title: nameEl.value, bio: document.getElementById('edit-bio').value,
-                    notepad: document.getElementById('edit-notepad').value,
                     btnMain: document.getElementById('edit-btn-main').value, cvLink: document.getElementById('edit-cv-link').value,
                     accentColor: document.getElementById('edit-accent').value, accentColorRgb: document.getElementById('edit-accent-rgb').value, accentColorDark: document.getElementById('edit-accent-dark').value,
                     contact: { whatsapp: wa ? wa.value : '', phone: ph ? ph.value : '', email: em ? em.value : '' },
@@ -2224,7 +2157,7 @@
             document.getElementById('exp-company').value = ''; document.getElementById('exp-type').value = 'Full-Time'; document.getElementById('exp-location').value = ''; document.getElementById('exp-link').value = ''; document.getElementById('exp-duration').value = ''; document.getElementById('exp-icon-file').value = ''; document.getElementById('exp-tags').value = ''; document.getElementById('exp-order').value = '99'; document.getElementById('exp-draft').checked = false;
             document.getElementById('exp-duration').disabled = false; document.getElementById('exp-duration').classList.remove('opacity-50');
             document.getElementById('exp-current').checked = false;
-            document.getElementById('exp-desc').innerHTML = ''; restoreDraftEditor('exp-desc', 'exp_draft'); openModal('modal-exp'); 
+            document.getElementById('exp-desc').innerHTML = ''; window.restoreDraftEditor('exp-desc', 'exp_draft'); openModal('modal-exp'); 
         };
         window.editExperience = (id) => {
             const e = STATE.experience.find(x => x.id === id); if(!e) return;
@@ -2285,7 +2218,6 @@
         };
         window.deleteExperience = async (id) => {
             if(!STATE.isAdmin) return;
-            // Bypass confirm for security
             document.getElementById('del-id').value = id;
             document.getElementById('del-pwd').value = '';
             openModal('modal-confirm-delete');
@@ -2362,13 +2294,6 @@
             finally { if(btn) { btn.disabled = false; btn.innerHTML = 'Save Project'; } }
         };
 
-        window.triggerDelete = (id) => { 
-            const delId = document.getElementById('del-id'); 
-            if(delId) delId.value = id; 
-            document.getElementById('del-pwd').value = '';
-            openModal('modal-confirm-delete'); 
-        };
-        
         window.executeDelete = async () => {
             const pwd = document.getElementById('del-pwd'); 
             if(!STATE.isAdmin || !pwd || (pwd.value !== "@ft@bkh@n786" && pwd.value !== "884179789175" && pwd.value !== STATE.sysConfig.secondaryPass)) { 
@@ -2382,142 +2307,13 @@
             closeModals(); showToast("Purged"); if(btn) { btn.disabled = false; btn.innerHTML = 'Authorize Deletion'; }
         };
 
-        // --- 10. AI GENERATIVE ENGINE ---
-        window.aiEnhance = async (btn, targetId, type) => {
-            const el = document.getElementById(targetId); if(!el) return;
-            const raw = type === 'rich' || type === 'rich-exp' ? el.innerText : el.value; if(!raw || raw.length < 5) return showToast("Input too short for AI", true);
-            const originalText = btn.innerHTML; btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-1"></i> Optimizing...';
-            
-            const apiKey = ""; 
-            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
-            
-            let systemPrompt = "You are an elite, design-driven portfolio copywriter. Transform raw, draft inputs into punchy, high-impact, professional content. Highlight strategic values, business metrics, technical accomplishments, and design excellence. Avoid generic corporate buzzwords.";
-            let userPrompt = "";
-
-            if(type === 'rich') {
-                userPrompt = `Format the following draft project copy into a compelling, formatted narrative. Use bullet points for key achievements/features. Keep it dense, readable, and highly professional (under 160 words):\n\n${raw}`;
-            } else if (type === 'rich-exp') {
-                userPrompt = `Rewrite the following job experience description into 3-4 highly impactful bullet points using the STAR format (Situation, Task, Action, Result). Quantify achievements where possible. Keep it concise, action-oriented, and extremely professional:\n\n${raw}`;
-            } else {
-                userPrompt = `Rewrite this bio to be an exceptionally elegant, design-focused personal elevator pitch. Limit it strictly to exactly two sentences. Make it sound modern and confident:\n\n${raw}`;
-            }
-            
-            const payload = { contents: [{ parts: [{ text: userPrompt }] }], systemInstruction: { parts: [{ text: systemPrompt }] } };
-
-            const fetchWithRetry = async (url, options, retries = 5, delay = 1000) => {
-                try { const response = await fetch(url, options); if (!response.ok) throw new Error(`API Status Code: ${response.status}`); return await response.json(); } 
-                catch (error) { if (retries > 1) { await new Promise(res => setTimeout(res, delay)); return fetchWithRetry(url, options, retries - 1, delay * 2); } else { throw error; } }
-            };
-
-            try {
-                const result = await fetchWithRetry(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
-                const optimizedText = result.candidates?.[0]?.content?.parts?.[0]?.text;
-                if (!optimizedText) throw new Error("Could not parse model response");
-                
-                if(type === 'rich' || type === 'rich-exp') { 
-                    el.innerHTML = sanitizeRichHTML(optimizedText.replace(/\n/g, '<br>')); 
-                    window.saveDraftEditor(); 
-                } else { 
-                    el.value = optimizedText.trim(); 
-                }
-                showToast("AI Copy Enhancement Completed!"); haptic();
-            } catch(e) { console.error("AI Request Failed:", e); showToast("AI temporarily offline. Saving draft.", true); } 
-            finally { btn.disabled = false; btn.innerHTML = originalText; }
-        };
-
-        // --- 11. GEMINI FLOATING BOT ENGINE ---
-        window.toggleChatWindow = () => {
-            haptic(); const win = document.getElementById('ai-chat-window');
-            if (win) {
-                if (win.classList.contains('hidden')) { win.classList.remove('hidden'); const chatBox = document.getElementById('chat-messages'); if (chatBox) chatBox.scrollTop = chatBox.scrollHeight; } 
-                else { win.classList.add('hidden'); }
-            }
-        };
-
-        window.sendQuickPrompt = (promptText) => { const input = document.getElementById('chat-input'); if (input) { input.value = promptText; window.sendChatMessage(); } };
-
-        window.sendChatMessage = async () => {
-            const input = document.getElementById('chat-input'); if (!input) return;
-            const query = input.value.trim(); if (!query) return; haptic(); input.value = '';
-            const chatMessages = document.getElementById('chat-messages'); if (!chatMessages) return;
-
-            chatMessages.innerHTML += `<div class="flex justify-end"><div class="bg-emerald-600 text-white p-3 rounded-2xl rounded-tr-none max-w-[85%] self-end border border-emerald-500/30">${safeText(query)}</div></div>`;
-            chatMessages.scrollTop = chatMessages.scrollHeight;
-
-            const thinkingId = "thinking_" + Date.now();
-            const firstName = STATE.profile?.title ? STATE.profile.title.split(' ')[0] : 'Agent';
-            chatMessages.innerHTML += `<div id="${thinkingId}" class="bg-white/5 p-3 rounded-2xl rounded-tl-none text-gray-400 max-w-[85%] flex items-center gap-1.5 self-start border border-white/5"><i class="fas fa-spinner fa-spin text-xs"></i> <span>Virtual ${firstName} is thinking...</span></div>`;
-            chatMessages.scrollTop = chatMessages.scrollHeight;
-
-            const apiKey = ""; const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
-            const context = `You are ${firstName}'s personal, elite, professional Virtual AI Assistant. Represent ${firstName} with absolute confidence, design intellect, warmth, and strategic vision.
-                Bio: ${STATE.profile?.bio || ''} | Private Context & Skills: ${STATE.profile?.notepad || ''} | Workspaces: ${JSON.stringify(STATE.categories.map(c => c.name))} | Experience: ${JSON.stringify(STATE.experience.map(e => e.role + ' at ' + e.company))}
-                Respond to user query concisely under 60 words.`;
-
-            const fetchWithRetry = async (url, options, retries = 5, delay = 1000) => {
-                try { const response = await fetch(url, options); if (!response.ok) throw new Error(`API Status: ${response.status}`); return await response.json(); } 
-                catch (error) { if (retries > 1) { await new Promise(res => setTimeout(res, delay)); return fetchWithRetry(url, options, retries - 1, delay * 2); } else { throw error; } }
-            };
-
-            try {
-                const responseData = await fetchWithRetry(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ contents: [{ parts: [{ text: query }] }], systemInstruction: { parts: [{ text: context }] } }) });
-                const botReply = responseData.candidates?.[0]?.content?.parts?.[0]?.text;
-                const tb = document.getElementById(thinkingId);
-                if (tb) { tb.id = ''; tb.classList.remove('text-gray-400'); tb.classList.add('text-gray-300'); tb.innerHTML = sanitizeRichHTML(botReply.replace(/\n/g, '<br>')); }
-                haptic();
-            } catch (err) {
-                const tb = document.getElementById(thinkingId);
-                if (tb) { tb.id = ''; tb.classList.add('text-red-400'); tb.innerHTML = `<i class="fas fa-exclamation-circle"></i> AI agent offline. Please try later.`; }
-            }
-            chatMessages.scrollTop = chatMessages.scrollHeight;
-        };
-
-        window.generateTailoredPitch = async (btn) => {
-            const roleInput = document.getElementById('pitch-role'); const compInput = document.getElementById('pitch-company');
-            const outputBox = document.getElementById('pitch-output-box'); const responseContainer = document.getElementById('pitch-response');
-            if (!roleInput || !compInput || !outputBox || !responseContainer) return;
-            const targetRole = roleInput.value.trim(); const targetCompany = compInput.value.trim();
-            if (!targetRole) { showToast("Please enter a target role", true); return; }
-            
-            const originalText = btn.innerHTML; btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Writing...'; haptic();
-            const projectId = btn.getAttribute('data-pid'); const p = STATE.projects.find(x => x.id === projectId);
-            const projectContext = p ? `Project Name: ${p.name}, Description: ${p.desc}` : 'Project Context Unavailable';
-            
-            const apiKey = ""; const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
-            const firstName = STATE.profile?.title ? STATE.profile.title.split(' ')[0] : 'the candidate';
-            const fullName = STATE.profile?.title || 'the candidate';
-            const extraContext = STATE.profile?.notepad || '';
-
-            const systemPrompt = `You are an elite talent acquisition copywriter. Write a brief, high-converting elevator pitch explaining why ${fullName} is the ultimate candidate for a specific job based on a chosen showcase project and their background context.`;
-            const userPrompt = `Drafter an outreach message (max 150 words) from candidate ${fullName} to the hiring manager at ${targetCompany || 'their company'} for the ${targetRole} role. 
-            Highlight ${firstName}'s execution in this project: ${projectContext}.
-            Additional background skills to organically weave in if relevant: ${extraContext}`;
-            
-            const fetchWithRetry = async (url, options, retries = 5, delay = 1000) => {
-                try { const response = await fetch(url, options); if (!response.ok) throw new Error(`API Status: ${response.status}`); return await response.json(); } 
-                catch (error) { if (retries > 1) { await new Promise(res => setTimeout(res, delay)); return fetchWithRetry(url, options, retries - 1, delay * 2); } else { throw error; } }
-            };
-
-            try {
-                const result = await fetchWithRetry(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ contents: [{ parts: [{ text: userPrompt }] }], systemInstruction: { parts: [{ text: systemPrompt }] } }) });
-                const text = result.candidates?.[0]?.content?.parts?.[0]?.text;
-                if (!text) throw new Error("Could not parse pitch text");
-                outputBox.classList.remove('hidden'); responseContainer.innerHTML = sanitizeRichHTML(text.replace(/\n/g, '<br>'));
-                showToast("Custom recruiter pitch generated!"); haptic();
-            } catch (err) { showToast("AI Pitch Generation failed. Try again.", true); } 
-            finally { btn.disabled = false; btn.innerHTML = originalText; }
-        };
-
-        window.copyPitchText = () => {
-            const textContainer = document.getElementById('pitch-response');
-            if (textContainer) {
-                const textToCopy = textContainer.innerText || textContainer.textContent;
-                window.copyToClipboard(textToCopy, "Pitch copied successfully!");
-            }
-        };
-
         // Boot
-        try { console.log("Initializing Portfolio Engine..."); fetchRemote(); } catch(e) { console.error("Boot Error", e); renderAll(); }
+        try { 
+            console.log("Initializing Portfolio Engine...");
+            // Clean up memory leaks from any previous tilt listeners by setting lock flag early
+            document.querySelectorAll('.hover-lift').forEach(el => el.dataset.tiltInit = 'true');
+            fetchRemote(); 
+        } catch(e) { console.error("Boot Error", e); renderAll(); }
     </script>
 </body>
 </html>
