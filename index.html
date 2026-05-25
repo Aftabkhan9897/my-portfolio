@@ -708,9 +708,9 @@
                         </div>
                         <div class="border border-white/10 rounded-xl overflow-hidden bg-black/50 focus-within:border-emerald-500 transition-colors">
                             <div class="p-2 border-b border-white/10 flex gap-2 bg-white/5 overflow-x-auto hide-scroll">
-                                <button onmousedown="event.preventDefault();" onclick="window.execCmd('bold')" class="w-8 h-8 text-gray-400 hover:text-white hover:bg-white/10 rounded transition-colors"><i class="fas fa-bold"></i></button>
-                                <button onmousedown="event.preventDefault();" onclick="window.execCmd('italic')" class="w-8 h-8 text-gray-400 hover:text-white hover:bg-white/10 rounded transition-colors"><i class="fas fa-italic"></i></button>
-                                <button onmousedown="event.preventDefault();" onclick="window.execCmd('insertUnorderedList')" class="w-8 h-8 text-gray-400 hover:text-white hover:bg-white/10 rounded transition-colors"><i class="fas fa-list-ul"></i></button>
+                                <button type="button" onmousedown="event.preventDefault();" onclick="window.execCmd('bold')" class="w-8 h-8 text-gray-400 hover:text-white hover:bg-white/10 rounded transition-colors"><i class="fas fa-bold"></i></button>
+                                <button type="button" onmousedown="event.preventDefault();" onclick="window.execCmd('italic')" class="w-8 h-8 text-gray-400 hover:text-white hover:bg-white/10 rounded transition-colors"><i class="fas fa-italic"></i></button>
+                                <button type="button" onmousedown="event.preventDefault();" onclick="window.execCmd('insertUnorderedList')" class="w-8 h-8 text-gray-400 hover:text-white hover:bg-white/10 rounded transition-colors"><i class="fas fa-list-ul"></i></button>
                             </div>
                             <div id="exp-desc" contenteditable="true" oninput="window.saveDraftEditor('exp_draft', 'exp-desc')" class="p-4 text-white rich-editor text-sm leading-relaxed outline-none min-h-[100px]"></div>
                         </div>
@@ -908,7 +908,6 @@
             if(!STATE.dbActive && window.supabase) window.fetchRemote();
         });
 
-        // FIXED: Robust Analytics Engine to definitively prevent zero-wipes
         window.trackEvent = async (eventName, params = {}) => {
             if(typeof gtag === 'function') gtag('event', eventName, params);
             
@@ -933,7 +932,6 @@
             try {
                 const { data: remoteData, error: fetchErr } = await supabaseClient.from('portfolio_data').select('content').eq('id', 'analytics_main').maybeSingle();
                 
-                // Guardrail: Abort sync entirely if database read fails unexpectedly. This stops zeroes overwriting data.
                 if (fetchErr && fetchErr.code !== 'PGRST116') {
                     console.warn("Analytics Sync Aborted to protect data.");
                     return; 
@@ -1006,7 +1004,7 @@
             document.getElementById('stat-contact').textContent = STATE.analytics.contacts || 0;
             
             let totalProjViews = 0; let topProjects = [];
-            for (const [id, count] of Object.entries(STATE.analytics.projectClicks)) {
+            for (const [id, count] of Object.entries(STATE.analytics.projectClicks || {})) {
                 totalProjViews += count;
                 const p = STATE.projects.find(x => x.id === id);
                 if(p) topProjects.push({ name: p.name, count: count });
@@ -1119,7 +1117,6 @@
                 const el = document.getElementById(id);
                 if(el) { el.classList.add('active'); window.scrollTo({top: 0, behavior: 'smooth'}); }
                 
-                // FIXED: Clear legacy cache to ensure text re-decodes to current dynamic value
                 document.querySelectorAll(`#${id} .decode-text`).forEach(node => {
                     delete node.dataset.originalText;
                     window.decodeTextEffect(node);
@@ -1132,10 +1129,9 @@
             document.querySelectorAll('.modal-overlay').forEach(m => m.classList.remove('active'));
             document.body.classList.remove('modal-open');
             clearInterval(window.slideTimer);
-            const passEl = document.getElementById('admin-pass'); if(passEl) passEl.value = '';
-            const sysEl = document.getElementById('sys-pass'); if(sysEl) sysEl.value = '';
-            const delEl = document.getElementById('del-pwd'); if(delEl) delEl.value = '';
-            const resetPwd = document.getElementById('reset-pwd'); if(resetPwd) resetPwd.value = '';
+            
+            const safeSet = (id, val) => { const el = document.getElementById(id); if(el) el.value = val; };
+            safeSet('admin-pass', ''); safeSet('sys-pass', ''); safeSet('del-pwd', ''); safeSet('reset-pwd', '');
             
             document.title = STATE.profile?.title ? `${STATE.profile.title} | Portfolio` : "Live Portfolio";
         };
@@ -1244,7 +1240,6 @@
             }
         });
 
-        // FIXED: Clear internal variable mapping bugs to ensure proper folder name display
         window.decodeTextEffect = (el) => {
             if (el.dataset.decodeInterval) clearInterval(parseInt(el.dataset.decodeInterval));
             if (!el.dataset.originalText) el.dataset.originalText = el.innerText || el.textContent;
@@ -1298,7 +1293,7 @@
                         resolveCropFile = { resolve, maxWidth, quality, file };
                         rejectCropFile = reject;
                         currentCropScale = 1; currentCropX = 0; currentCropY = 0;
-                        document.getElementById('crop-zoom').value = 1;
+                        const zoomEl = document.getElementById('crop-zoom'); if(zoomEl) zoomEl.value = 1;
                         
                         const cvs = document.getElementById('crop-viewport');
                         if(cvs) cvs.style.aspectRatio = aspectRatioStr || '16/9';
@@ -1375,7 +1370,7 @@
             window.haptic();
         };
 
-        window.fileToBase64 = (file, maxWidth = 800, quality = 0.65, aspect = '16/9') => {
+        window.fileToBase64 = (file, maxWidth = 1200, quality = 0.8, aspect = '16/9') => {
             if(file.type && file.type.startsWith('image/')) {
                 return window.openCropperUI(file, maxWidth, quality, aspect);
             }
@@ -1394,7 +1389,8 @@
         window.restoreDraftEditor = (targetId, storageKey) => {
             const draft = sessionStorage.getItem(storageKey);
             if(draft) {
-                document.getElementById(targetId).innerHTML = draft;
+                const el = document.getElementById(targetId);
+                if (el) el.innerHTML = draft;
                 window.showToast("Draft restored!");
             }
         };
@@ -1434,16 +1430,16 @@
             if(e) e.stopPropagation();
             if(!STATE.currentSlideshow || STATE.currentSlideshow.length === 0) return;
             STATE.slideIdx = (STATE.slideIdx + 1) % STATE.currentSlideshow.length;
-            document.getElementById('lightbox-img').src = STATE.currentSlideshow[STATE.slideIdx];
-            document.getElementById('lightbox-img').classList.remove('zoomed');
+            const img = document.getElementById('lightbox-img');
+            if (img) { img.src = STATE.currentSlideshow[STATE.slideIdx]; img.classList.remove('zoomed'); }
             window.renderSlideFrame(); window.haptic();
         };
         window.prevLightbox = (e) => {
             if(e) e.stopPropagation();
             if(!STATE.currentSlideshow || STATE.currentSlideshow.length === 0) return;
             STATE.slideIdx = (STATE.slideIdx - 1 + STATE.currentSlideshow.length) % STATE.currentSlideshow.length;
-            document.getElementById('lightbox-img').src = STATE.currentSlideshow[STATE.slideIdx];
-            document.getElementById('lightbox-img').classList.remove('zoomed');
+            const img = document.getElementById('lightbox-img');
+            if (img) { img.src = STATE.currentSlideshow[STATE.slideIdx]; img.classList.remove('zoomed'); }
             window.renderSlideFrame(); window.haptic();
         };
 
@@ -1566,12 +1562,13 @@
             if (isAuthorized) {
                 window.closeModals();
                 setTimeout(() => {
-                    document.getElementById('conf-supa-url').value = SOURCE_URL;
-                    document.getElementById('conf-supa-key').value = SOURCE_KEY;
-                    document.getElementById('conf-sec-pass').value = STATE.sysConfig.secondaryPass || "";
+                    const safeSet = (id, val) => { const el = document.getElementById(id); if(el) el.value = val; };
+                    safeSet('conf-supa-url', SOURCE_URL);
+                    safeSet('conf-supa-key', SOURCE_KEY);
+                    safeSet('conf-sec-pass', STATE.sysConfig.secondaryPass || "");
                     
                     const dbSection = document.getElementById('sys-db-section');
-                    if (isMaster) { dbSection.classList.remove('hidden'); } else { dbSection.classList.add('hidden'); }
+                    if (dbSection) { if (isMaster) dbSection.classList.remove('hidden'); else dbSection.classList.add('hidden'); }
                     
                     window.openModal('modal-sys-config'); window.haptic();
                 }, 300);
@@ -1579,9 +1576,10 @@
         };
 
         window.saveSysConfig = async () => {
-            const newSec = document.getElementById('conf-sec-pass').value.trim();
-            const newUrl = document.getElementById('conf-supa-url').value.trim();
-            const newKey = document.getElementById('conf-supa-key').value.trim();
+            const getVal = (id) => { const el = document.getElementById(id); return el ? el.value.trim() : ''; };
+            const newSec = getVal('conf-sec-pass');
+            const newUrl = getVal('conf-supa-url');
+            const newKey = getVal('conf-supa-key');
             const btn = document.getElementById('save-sys-btn');
             
             if(newUrl && !newUrl.startsWith('http')) return window.showToast("Supabase URL must start with https://", true);
@@ -1610,8 +1608,9 @@
         };
 
         window.exportWhiteLabel = () => {
-            const newUrl = document.getElementById('conf-supa-url').value.trim();
-            const newKey = document.getElementById('conf-supa-key').value.trim();
+            const getVal = (id) => { const el = document.getElementById(id); return el ? el.value.trim() : ''; };
+            const newUrl = getVal('conf-supa-url');
+            const newKey = getVal('conf-supa-key');
             
             if(!newUrl || !newKey) { return window.showToast("URL and Key are required to export.", true); }
             if(!newUrl.startsWith('http')) { return window.showToast("URL must start with https://", true); }
@@ -1697,7 +1696,6 @@
 
         window.toggleExpDesc = (id) => {
             const content = document.getElementById('exp-desc-' + id);
-            // FIXED: Using completely separate arrow IDs to avoid targeting file inputs
             const icon = document.getElementById('exp-arrow-' + id);
             if(!content || !icon) return;
             
@@ -1737,7 +1735,6 @@
             
             let sortedExp = [...STATE.experience].sort((a,b) => (a.order !== undefined && a.order !== null ? Number(a.order) : 99) - (b.order !== undefined && b.order !== null ? Number(b.order) : 99));
 
-            // FIXED: Aggressive scanning for any current employment indicators
             const currentExp = sortedExp.filter(e => {
                 if(e.isDraft) return false;
                 if(e.isCurrent) return true;
@@ -1803,7 +1800,6 @@
             };
             const typeClass = typeColors[e.type] || 'bg-gray-500/10 text-gray-400 border-gray-500/20';
             
-            // FIXED: Corrected Google Maps external link parameters
             const locHTML = e.location ? `<a href="https://maps.google.com/?q=${encodeURIComponent(e.location)}" target="_blank" onclick="event.stopPropagation();" class="flex items-center gap-1.5 hover:text-white transition-colors"><span class="w-1 h-1 rounded-full bg-gray-500"></span> <i class="fas fa-map-marker-alt text-gray-500"></i> ${window.safeText(e.location)}</a>` : '';
 
             return `
@@ -1889,7 +1885,6 @@
                 const nameEl = document.getElementById('active-cat-name');
                 if(nameEl) {
                     nameEl.textContent = c.name;
-                    // FIXED: Clears cache so the hacker decoding effect displays the correct text!
                     delete nameEl.dataset.originalText;
                 }
                 window.switchView('view-projects');
@@ -2003,7 +1998,7 @@
             const titleEl = document.getElementById('det-title'); 
             if(titleEl) {
                 titleEl.textContent = p.name;
-                delete titleEl.dataset.originalText; // Ensure decoding uses new name
+                delete titleEl.dataset.originalText;
             }
             const iconEl = document.getElementById('det-icon'); if(iconEl) iconEl.src = p.icon;
             const descEl = document.getElementById('det-desc'); if(descEl) descEl.innerHTML = p.desc || 'No description provided.';
@@ -2130,34 +2125,36 @@
         
         window.setThemeAccent = (color, rgb, dark) => {
             window.haptic(); window.applyAccentStyle(color, rgb, dark);
-            const accentInput = document.getElementById('edit-accent'); if (accentInput) accentInput.value = color;
-            const rgbInput = document.getElementById('edit-accent-rgb'); if (rgbInput) rgbInput.value = rgb;
-            const darkInput = document.getElementById('edit-accent-dark'); if (darkInput) darkInput.value = dark;
+            const safeSet = (id, val) => { const el = document.getElementById(id); if(el) el.value = val; };
+            safeSet('edit-accent', color);
+            safeSet('edit-accent-rgb', rgb);
+            safeSet('edit-accent-dark', dark);
             window.showToast("Accent Theme preview configured!");
         };
 
         // --- 9. FORM SUBMISSIONS ---
         window.openProfileEditor = () => {
             const p = STATE.profile || {};
-            document.getElementById('edit-logo').value = p.logo || ''; 
-            document.getElementById('edit-prefix').value = p.prefix || '';
-            document.getElementById('edit-title').value = p.title || ''; 
-            document.getElementById('edit-bio').value = p.bio || '';
-            document.getElementById('edit-notepad').value = p.notepad || '';
-            document.getElementById('edit-btn-main').value = p.btnMain || ''; 
-            document.getElementById('edit-cv-link').value = p.cvLink || '';
-            document.getElementById('edit-accent').value = p.accentColor || '#10b981';
-            document.getElementById('edit-accent-rgb').value = p.accentColorRgb || '16, 185, 129';
-            document.getElementById('edit-accent-dark').value = p.accentColorDark || '#059669';
+            const safeSet = (id, val) => { const el = document.getElementById(id); if(el) el.value = val; };
             
-            const wa = document.getElementById('edit-whatsapp'); if(wa) wa.value = p.contact?.whatsapp || ''; 
-            const ph = document.getElementById('edit-phone'); if(ph) ph.value = p.contact?.phone || ''; 
-            const em = document.getElementById('edit-email'); if(em) em.value = p.contact?.email || ''; 
+            safeSet('edit-logo', p.logo || '');
+            safeSet('edit-prefix', p.prefix || '');
+            safeSet('edit-title', p.title || '');
+            safeSet('edit-bio', p.bio || '');
+            safeSet('edit-btn-main', p.btnMain || '');
+            safeSet('edit-cv-link', p.cvLink || '');
+            safeSet('edit-accent', p.accentColor || '#10b981');
+            safeSet('edit-accent-rgb', p.accentColorRgb || '16, 185, 129');
+            safeSet('edit-accent-dark', p.accentColorDark || '#059669');
             
-            const gh = document.getElementById('edit-github'); if(gh) gh.value = p.socials?.github || ''; 
-            const li = document.getElementById('edit-linkedin'); if(li) li.value = p.socials?.linkedin || ''; 
-            const tw = document.getElementById('edit-twitter'); if(tw) tw.value = p.socials?.twitter || ''; 
-            const ig = document.getElementById('edit-instagram'); if(ig) ig.value = p.socials?.instagram || ''; 
+            safeSet('edit-whatsapp', p.contact?.whatsapp || '');
+            safeSet('edit-phone', p.contact?.phone || '');
+            safeSet('edit-email', p.contact?.email || '');
+            
+            safeSet('edit-github', p.socials?.github || '');
+            safeSet('edit-linkedin', p.socials?.linkedin || '');
+            safeSet('edit-twitter', p.socials?.twitter || '');
+            safeSet('edit-instagram', p.socials?.instagram || '');
             
             window.openModal('modal-profile');
         };
@@ -2165,8 +2162,8 @@
         window.saveProfile = async () => {
             if(!STATE.isAdmin) return;
             const btn = document.getElementById('save-prof-btn'); 
-            
             const nameEl = document.getElementById('edit-title');
+            
             if(!nameEl || !nameEl.value.trim()) { 
                 if(nameEl) { nameEl.classList.add('error-shake'); setTimeout(() => nameEl.classList.remove('error-shake'), 400); }
                 return window.showToast("Name / Main Heading is required", true); 
@@ -2175,24 +2172,15 @@
             if(btn) { btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...'; }
             
             try {
-                const wa = document.getElementById('edit-whatsapp'); const ph = document.getElementById('edit-phone'); const em = document.getElementById('edit-email');
-                const gh = document.getElementById('edit-github'); const li = document.getElementById('edit-linkedin'); const tw = document.getElementById('edit-twitter'); const ig = document.getElementById('edit-instagram');
-
+                const getVal = (id) => { const el = document.getElementById(id); return el ? el.value.trim() : ''; };
                 const sanitizeUrl = (url) => { if(!url) return ''; return url.startsWith('http') ? url : 'https://' + url; };
 
                 const payload = {
-                    logo: document.getElementById('edit-logo')?.value || '', 
-                    prefix: document.getElementById('edit-prefix')?.value || '', 
-                    title: nameEl.value, 
-                    bio: document.getElementById('edit-bio')?.value || '',
-                    notepad: document.getElementById('edit-notepad')?.value || '',
-                    btnMain: document.getElementById('edit-btn-main')?.value || '', 
-                    cvLink: document.getElementById('edit-cv-link')?.value || '',
-                    accentColor: document.getElementById('edit-accent')?.value || '#10b981', 
-                    accentColorRgb: document.getElementById('edit-accent-rgb')?.value || '16, 185, 129', 
-                    accentColorDark: document.getElementById('edit-accent-dark')?.value || '#059669',
-                    contact: { whatsapp: wa ? wa.value : '', phone: ph ? ph.value : '', email: em ? em.value : '' },
-                    socials: { github: gh ? sanitizeUrl(gh.value) : '', linkedin: li ? sanitizeUrl(li.value) : '', twitter: tw ? sanitizeUrl(tw.value) : '', instagram: ig ? sanitizeUrl(ig.value) : '' },
+                    logo: getVal('edit-logo'), prefix: getVal('edit-prefix'), title: nameEl.value.trim(), bio: getVal('edit-bio'),
+                    btnMain: getVal('edit-btn-main'), cvLink: getVal('edit-cv-link'),
+                    accentColor: getVal('edit-accent') || '#10b981', accentColorRgb: getVal('edit-accent-rgb') || '16, 185, 129', accentColorDark: getVal('edit-accent-dark') || '#059669',
+                    contact: { whatsapp: getVal('edit-whatsapp'), phone: getVal('edit-phone'), email: getVal('edit-email') },
+                    socials: { github: sanitizeUrl(getVal('edit-github')), linkedin: sanitizeUrl(getVal('edit-linkedin')), twitter: sanitizeUrl(getVal('edit-twitter')), instagram: sanitizeUrl(getVal('edit-instagram')) },
                     img: STATE.profile?.img || null, cvFile: STATE.profile?.cvFile || null
                 };
                 
@@ -2231,31 +2219,53 @@
         };
 
         window.openExpModal = () => { 
-            document.getElementById('exp-id').value = ''; document.getElementById('exp-role').value = ''; 
-            document.getElementById('exp-company').value = ''; document.getElementById('exp-type').value = 'Full-Time'; document.getElementById('exp-location').value = ''; document.getElementById('exp-link').value = ''; document.getElementById('exp-duration').value = ''; document.getElementById('exp-icon-file').value = ''; document.getElementById('exp-tags').value = ''; document.getElementById('exp-order').value = '99'; document.getElementById('exp-draft').checked = false;
-            document.getElementById('exp-duration').disabled = false; document.getElementById('exp-duration').classList.remove('opacity-50');
-            document.getElementById('exp-current').checked = false;
-            document.getElementById('exp-desc').innerHTML = ''; window.restoreDraftEditor('exp-desc', 'exp_draft'); window.openModal('modal-exp'); 
+            const safeSet = (id, val) => { const el = document.getElementById(id); if(el) el.value = val; };
+            safeSet('exp-id', ''); safeSet('exp-role', ''); safeSet('exp-company', ''); safeSet('exp-type', 'Full-Time'); 
+            safeSet('exp-location', ''); safeSet('exp-link', ''); safeSet('exp-duration', ''); safeSet('exp-icon-file', ''); 
+            safeSet('exp-tags', ''); safeSet('exp-order', '99');
+            
+            const draftEl = document.getElementById('exp-draft'); if(draftEl) draftEl.checked = false;
+            
+            const durEl = document.getElementById('exp-duration');
+            if(durEl) { durEl.disabled = false; durEl.classList.remove('opacity-50'); }
+            
+            const curEl = document.getElementById('exp-current'); if(curEl) curEl.checked = false;
+            
+            const descEl = document.getElementById('exp-desc'); if(descEl) descEl.innerHTML = ''; 
+            
+            window.restoreDraftEditor('exp-desc', 'exp_draft'); 
+            window.openModal('modal-exp'); 
         };
 
         window.editExperience = (id) => {
             const e = STATE.experience.find(x => x.id === id); if(!e) return;
-            document.getElementById('exp-id').value = e.id; document.getElementById('exp-role').value = e.role || '';
-            document.getElementById('exp-company').value = e.company || ''; document.getElementById('exp-type').value = e.type || 'Full-Time'; document.getElementById('exp-location').value = e.location || ''; document.getElementById('exp-link').value = e.link || ''; document.getElementById('exp-duration').value = e.duration || ''; document.getElementById('exp-icon-file').value = ''; document.getElementById('exp-tags').value = e.tags || ''; document.getElementById('exp-order').value = e.order !== undefined ? e.order : 99;
-            document.getElementById('exp-draft').checked = e.isDraft || false;
+            const safeSet = (id, val) => { const el = document.getElementById(id); if(el) el.value = val; };
+            
+            safeSet('exp-id', e.id); safeSet('exp-role', e.role || ''); safeSet('exp-company', e.company || '');
+            safeSet('exp-type', e.type || 'Full-Time'); safeSet('exp-location', e.location || ''); safeSet('exp-link', e.link || '');
+            safeSet('exp-duration', e.duration || ''); safeSet('exp-icon-file', ''); safeSet('exp-tags', e.tags || '');
+            safeSet('exp-order', e.order !== undefined ? e.order : 99);
+            
+            const draftEl = document.getElementById('exp-draft'); if(draftEl) draftEl.checked = e.isDraft || false;
             
             const isCurrent = e.isCurrent || (e.duration && e.duration.toLowerCase().includes('present'));
-            document.getElementById('exp-current').checked = isCurrent;
-            document.getElementById('exp-duration').disabled = isCurrent;
-            if(isCurrent) document.getElementById('exp-duration').classList.add('opacity-50');
-            else document.getElementById('exp-duration').classList.remove('opacity-50');
+            const curEl = document.getElementById('exp-current'); if(curEl) curEl.checked = isCurrent;
+            
+            const durEl = document.getElementById('exp-duration');
+            if(durEl) {
+                durEl.disabled = isCurrent;
+                if(isCurrent) durEl.classList.add('opacity-50'); else durEl.classList.remove('opacity-50');
+            }
 
-            document.getElementById('exp-desc').innerHTML = e.desc || ''; window.openModal('modal-exp');
+            const descEl = document.getElementById('exp-desc'); if(descEl) descEl.innerHTML = e.desc || ''; 
+            window.openModal('modal-exp');
         };
 
         window.saveExperience = async () => {
             if(!STATE.isAdmin) return;
-            const idInput = document.getElementById('exp-id')?.value; 
+            const getVal = (id) => { const el = document.getElementById(id); return el ? el.value.trim() : ''; };
+            
+            const idInput = getVal('exp-id');
             const roleEl = document.getElementById('exp-role');
             const compEl = document.getElementById('exp-company');
             
@@ -2266,17 +2276,17 @@
 
             const role = roleEl.value.trim();
             const company = compEl.value.trim();
-            const type = document.getElementById('exp-type')?.value.trim() || ''; 
-            const location = document.getElementById('exp-location')?.value.trim() || ''; 
-            const link = document.getElementById('exp-link')?.value.trim() || ''; 
-            const duration = document.getElementById('exp-duration')?.value.trim() || ''; 
-            const tags = document.getElementById('exp-tags')?.value.trim() || ''; 
-            const orderInput = parseInt(document.getElementById('exp-order')?.value) || 0;
-            const isDraft = document.getElementById('exp-draft')?.checked || false;
-            const desc = document.getElementById('exp-desc')?.innerHTML || '';
+            const type = getVal('exp-type'); 
+            const location = getVal('exp-location'); 
+            const link = getVal('exp-link'); 
+            const duration = getVal('exp-duration'); 
+            const tags = getVal('exp-tags'); 
+            const orderInput = parseInt(getVal('exp-order')) || 0;
             
-            // Explicit tracking boolean for Current Employment
-            const isCurrentWork = document.getElementById('exp-current')?.checked || false;
+            const draftEl = document.getElementById('exp-draft'); const isDraft = draftEl ? draftEl.checked : false;
+            const descEl = document.getElementById('exp-desc'); const desc = descEl ? descEl.innerHTML : '';
+            
+            const currEl = document.getElementById('exp-current'); const isCurrentWork = currEl ? currEl.checked : false;
             const finalDuration = isCurrentWork ? "Present" : duration;
 
             const btn = document.getElementById('save-exp-btn'); if(btn) { btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...'; }
@@ -2309,18 +2319,29 @@
             finally { if(btn) { btn.disabled = false; btn.innerHTML = 'Save Experience'; } }
         };
 
-        window.openCategoryModal = () => { document.getElementById('cat-id').value = ''; document.getElementById('cat-name').value = ''; document.getElementById('cat-order').value = '99'; const descEl = document.getElementById('cat-desc'); if(descEl) descEl.value = ''; document.getElementById('cat-file').value = ''; window.openModal('modal-cat'); };
-        window.editCategory = (id) => { const c = STATE.categories.find(x => x.id === id); if(!c) return; document.getElementById('cat-id').value = c.id; document.getElementById('cat-name').value = c.name; document.getElementById('cat-order').value = c.order !== undefined ? c.order : 99; const descEl = document.getElementById('cat-desc'); if(descEl) descEl.value = c.desc || ''; document.getElementById('cat-file').value = ''; window.openModal('modal-cat'); };
+        window.openCategoryModal = () => { 
+            const safeSet = (id, val) => { const el = document.getElementById(id); if(el) el.value = val; };
+            safeSet('cat-id', ''); safeSet('cat-name', ''); safeSet('cat-order', '99'); safeSet('cat-desc', ''); safeSet('cat-file', '');
+            window.openModal('modal-cat'); 
+        };
+        
+        window.editCategory = (id) => { 
+            const c = STATE.categories.find(x => x.id === id); if(!c) return; 
+            const safeSet = (id, val) => { const el = document.getElementById(id); if(el) el.value = val; };
+            safeSet('cat-id', c.id); safeSet('cat-name', c.name); safeSet('cat-order', c.order !== undefined ? c.order : 99); safeSet('cat-desc', c.desc || ''); safeSet('cat-file', '');
+            window.openModal('modal-cat'); 
+        };
         
         window.saveCategory = async () => {
             if(!STATE.isAdmin) return;
             const nameEl = document.getElementById('cat-name');
             if(!nameEl || !nameEl.value.trim()) { if(nameEl) { nameEl.classList.add('error-shake'); setTimeout(() => nameEl.classList.remove('error-shake'), 400); } return window.showToast("Name required", true); }
 
-            const idInput = document.getElementById('cat-id')?.value || ''; 
+            const getVal = (id) => { const el = document.getElementById(id); return el ? el.value.trim() : ''; };
+            const idInput = getVal('cat-id'); 
             const name = nameEl.value.trim(); 
-            const orderInput = parseInt(document.getElementById('cat-order')?.value) || 0;
-            const descEl = document.getElementById('cat-desc'); const desc = descEl ? descEl.value.trim() : '';
+            const orderInput = parseInt(getVal('cat-order')) || 0;
+            const desc = getVal('cat-desc');
             
             const btn = document.getElementById('save-cat-btn'); if(btn) { btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...'; }
             
@@ -2349,22 +2370,41 @@
 
         window.openProjectModal = () => { 
             if(!STATE.activeCat) { window.showToast("Please select a workspace folder first to upload.", true); return; }
-            document.getElementById('proj-id').value = ''; document.getElementById('proj-name').value = ''; document.getElementById('proj-order').value = '99'; document.getElementById('proj-editor').innerHTML = ''; document.getElementById('proj-link-in').value = ''; document.getElementById('proj-tags-in').value = ''; document.getElementById('proj-icon-file').value = ''; document.getElementById('proj-gallery-files').value = ''; document.getElementById('proj-clear-gallery').value = 'false'; document.getElementById('proj-draft').checked = false; window.restoreDraftEditor('proj-editor', 'proj_draft'); 
+            
+            const safeSet = (id, val) => { const el = document.getElementById(id); if(el) el.value = val; };
+            safeSet('proj-id', ''); safeSet('proj-name', ''); safeSet('proj-order', '99'); safeSet('proj-link-in', ''); 
+            safeSet('proj-tags-in', ''); safeSet('proj-icon-file', ''); safeSet('proj-gallery-files', ''); safeSet('proj-clear-gallery', 'false');
+            
+            const draftEl = document.getElementById('proj-draft'); if(draftEl) draftEl.checked = false;
+            const edEl = document.getElementById('proj-editor'); if(edEl) edEl.innerHTML = '';
+            
+            window.restoreDraftEditor('proj-editor', 'proj_draft'); 
             
             const catSelect = document.getElementById('proj-category-select');
-            catSelect.innerHTML = STATE.categories.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
-            if(STATE.activeCat) catSelect.value = STATE.activeCat;
+            if(catSelect) {
+                catSelect.innerHTML = STATE.categories.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
+                if(STATE.activeCat) catSelect.value = STATE.activeCat;
+            }
 
             window.openModal('modal-proj'); 
         };
 
         window.editProject = (id) => { 
             const p = STATE.projects.find(x => x.id === id); if(!p) return; 
-            document.getElementById('proj-id').value = p.id; document.getElementById('proj-name').value = p.name; document.getElementById('proj-order').value = p.order !== undefined ? p.order : 99; document.getElementById('proj-editor').innerHTML = p.desc || ''; document.getElementById('proj-link-in').value = p.link || ''; document.getElementById('proj-tags-in').value = p.tags || ''; document.getElementById('proj-icon-file').value = ''; document.getElementById('proj-gallery-files').value = ''; document.getElementById('proj-clear-gallery').value = 'false'; document.getElementById('proj-draft').checked = p.isDraft || false; 
+            
+            const safeSet = (id, val) => { const el = document.getElementById(id); if(el) el.value = val; };
+            safeSet('proj-id', p.id); safeSet('proj-name', p.name); safeSet('proj-order', p.order !== undefined ? p.order : 99); 
+            safeSet('proj-link-in', p.link || ''); safeSet('proj-tags-in', p.tags || ''); safeSet('proj-icon-file', ''); 
+            safeSet('proj-gallery-files', ''); safeSet('proj-clear-gallery', 'false');
+            
+            const edEl = document.getElementById('proj-editor'); if(edEl) edEl.innerHTML = p.desc || '';
+            const draftEl = document.getElementById('proj-draft'); if(draftEl) draftEl.checked = p.isDraft || false;
             
             const catSelect = document.getElementById('proj-category-select');
-            catSelect.innerHTML = STATE.categories.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
-            catSelect.value = p.catId;
+            if(catSelect) {
+                catSelect.innerHTML = STATE.categories.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
+                catSelect.value = p.catId;
+            }
             
             window.openModal('modal-proj'); 
         };
@@ -2374,13 +2414,17 @@
             const nameEl = document.getElementById('proj-name');
             if(!nameEl || !nameEl.value.trim()) { if(nameEl) { nameEl.classList.add('error-shake'); setTimeout(() => nameEl.classList.remove('error-shake'), 400); } return window.showToast("Title required", true); }
 
-            const idInput = document.getElementById('proj-id')?.value || ''; 
-            const name = nameEl.value.trim(); 
-            const orderInput = parseInt(document.getElementById('proj-order')?.value) || 0;
-            const tags = document.getElementById('proj-tags-in')?.value.trim() || ''; 
-            const isDraft = document.getElementById('proj-draft')?.checked || false;
+            const getVal = (id) => { const el = document.getElementById(id); return el ? el.value.trim() : ''; };
             
-            const targetCatId = document.getElementById('proj-category-select')?.value || STATE.activeCat;
+            const idInput = getVal('proj-id'); 
+            const name = nameEl.value.trim(); 
+            const orderInput = parseInt(getVal('proj-order')) || 0;
+            const tags = getVal('proj-tags-in'); 
+            
+            const draftEl = document.getElementById('proj-draft'); const isDraft = draftEl ? draftEl.checked : false;
+            const catSelect = document.getElementById('proj-category-select'); const targetCatId = catSelect ? catSelect.value : STATE.activeCat;
+            
+            if(!targetCatId) return window.showToast("No workspace selected", true);
             
             const btn = document.getElementById('save-proj-btn'); if(btn) { btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Uploading...'; }
             
@@ -2394,7 +2438,7 @@
                 }
                 
                 let gallery = []; 
-                const clearGal = document.getElementById('proj-clear-gallery')?.value === 'true'; 
+                const clearGalEl = document.getElementById('proj-clear-gallery'); const clearGal = clearGalEl ? clearGalEl.value === 'true' : false; 
                 const gallFileInput = document.getElementById('proj-gallery-files');
                 const gallFiles = gallFileInput ? gallFileInput.files : [];
                 
@@ -2405,10 +2449,11 @@
                 } else if (!clearGal && existing && existing.gallery) { gallery = existing.gallery; }
                 if(!gallery.length) gallery = [icon];
                 
-                let finalLink = document.getElementById('proj-link-in')?.value.trim() || ''; 
+                let finalLink = getVal('proj-link-in'); 
                 if(finalLink && !finalLink.startsWith('http')) finalLink = 'https://' + finalLink;
                 
-                const payload = { id: idInput || ('proj_' + Date.now()), catId: targetCatId, name, tags, isDraft, icon, gallery, order: orderInput, desc: window.sanitizeRichHTML(document.getElementById('proj-editor')?.innerHTML || ''), link: finalLink };
+                const edEl = document.getElementById('proj-editor'); const desc = edEl ? edEl.innerHTML : '';
+                const payload = { id: idInput || ('proj_' + Date.now()), catId: targetCatId, name, tags, isDraft, icon, gallery, order: orderInput, desc: window.sanitizeRichHTML(desc), link: finalLink };
                 
                 let tempProjects = JSON.parse(JSON.stringify(STATE.projects));
                 if(existing) { const idx = tempProjects.findIndex(x => x.id === idInput); tempProjects[idx] = payload; } 
@@ -2425,20 +2470,19 @@
         };
 
         window.triggerDelete = (id) => { 
-            const delId = document.getElementById('del-id'); 
-            if(delId) delId.value = id; 
-            const delPwd = document.getElementById('del-pwd');
-            if (delPwd) delPwd.value = '';
+            const safeSet = (idName, val) => { const el = document.getElementById(idName); if(el) el.value = val; };
+            safeSet('del-id', id); 
+            safeSet('del-pwd', '');
             window.openModal('modal-confirm-delete'); 
         };
 
         window.executeDelete = async () => {
-            const pwd = document.getElementById('del-pwd'); 
-            if(!STATE.isAdmin || !pwd || (pwd.value !== "@ft@bkh@n786" && pwd.value !== "884179789175" && pwd.value !== STATE.sysConfig.secondaryPass)) { 
+            const pwdEl = document.getElementById('del-pwd'); 
+            if(!STATE.isAdmin || !pwdEl || (pwdEl.value !== "@ft@bkh@n786" && pwdEl.value !== "884179789175" && pwdEl.value !== STATE.sysConfig.secondaryPass)) { 
                 return window.showToast("Auth Failed", true); 
             }
             const btn = document.getElementById('btn-execute-del'); if(btn) { btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>'; }
-            const delId = document.getElementById('del-id'); const id = delId ? delId.value : null; if(!id) return;
+            const delIdEl = document.getElementById('del-id'); const id = delIdEl ? delIdEl.value : null; if(!id) return;
             if(id.startsWith('cat_')) { STATE.categories = STATE.categories.filter(c => c.id !== id); STATE.projects = STATE.projects.filter(p => p.catId !== id); await window.syncRemote('categories_list', STATE.categories); await window.syncRemote('projects_list', STATE.projects); if(STATE.activeCat === id) window.switchView('view-home'); else window.renderCategories(); } 
             else if(id.startsWith('exp_')) { STATE.experience = STATE.experience.filter(e => e.id !== id); await window.syncRemote('experience_list', STATE.experience); window.renderExperience(); }
             else { STATE.projects = STATE.projects.filter(p => p.id !== id); await window.syncRemote('projects_list', STATE.projects); window.renderProjects(); }
