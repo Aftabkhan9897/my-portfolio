@@ -20,12 +20,20 @@
         body { 
             font-family: 'Inter', sans-serif; 
             background-color: var(--bg-color); 
-            background-image: radial-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 0);
-            background-size: 24px 24px;
             color: #e5e7eb; 
             overflow-x: hidden; 
             margin: 0; 
-            overscroll-behavior: none; 
+            overscroll-behavior: none; /* Prevents mobile scroll bounce glitches revealing background */
+        }
+        
+        /* Dedicated hardware-accelerated background to stop mobile grey-box rendering glitches */
+        #bg-layer {
+            position: fixed; inset: 0; z-index: -2;
+            background-color: var(--bg-color);
+            background-image: radial-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 0);
+            background-size: 24px 24px;
+            will-change: transform;
+            transform: translateZ(0);
             transition: background-color 0.3s ease;
         }
 
@@ -144,7 +152,7 @@
             #grid-projects.list-view .card-icon { display: block; }
         }
 
-        .accent-glow { position: fixed; border-radius: 50%; filter: blur(120px); z-index: -1; opacity: 0.12; pointer-events: none; will-change: transform; transition: transform 0.1s linear; }
+        .accent-glow { position: fixed; border-radius: 50%; filter: blur(120px); z-index: -1; opacity: 0.12; pointer-events: none; will-change: transform; transform: translateZ(0); transition: transform 0.1s linear; }
         .admin-element { display: none !important; }
         .admin-active .admin-element { display: inline-flex !important; }
         .admin-active .admin-element-block { display: block !important; }
@@ -202,6 +210,9 @@
     </style>
 </head>
 <body class="antialiased relative min-h-screen flex flex-col pb-safe">
+
+    <!-- Hardware Accelerated Background -->
+    <div id="bg-layer"></div>
 
     <!-- Feature: SEO Injection Hidden Meta -->
     <div id="seo-meta-injection" class="hidden"></div>
@@ -831,7 +842,7 @@
                                 <button type="button" onmousedown="event.preventDefault();" onclick="window.execCmd('italic')" class="w-8 h-8 text-gray-400 hover:text-white hover:bg-white/10 rounded transition-colors" title="Italic"><i class="fas fa-italic"></i></button>
                                 <button type="button" onmousedown="event.preventDefault();" onclick="window.execCmd('insertUnorderedList')" class="w-8 h-8 text-gray-400 hover:text-white hover:bg-white/10 rounded transition-colors" title="Bullet Points"><i class="fas fa-list-ul"></i></button>
                                 <div class="w-px h-6 bg-white/10 mx-1"></div>
-                                <select onchange="window.execCmd('fontSize', this.value); this.selectedIndex=0;" class="bg-black text-gray-300 border border-white/10 rounded px-2 h-8 text-xs outline-none hover:border-emerald-500 transition-colors focus:border-emerald-500 cursor-pointer">
+                                <select onchange="window.execCmd('fontSize', this.value); this.selectedIndex=0;" class="bg-black text-gray-300 border border-white/10 rounded px-2 h-8 text-xs outline-none hover:border-emerald-500 transition-colors focus:border-emerald-500 cursor-pointer" title="Excel-like Text Size">
                                     <option value="" disabled selected>Text Size</option>
                                     <option value="1">Size 1 (Smallest)</option>
                                     <option value="2">Size 2 (Small)</option>
@@ -928,7 +939,7 @@
                                 <button type="button" onmousedown="event.preventDefault();" onclick="window.execCmd('italic')" class="w-8 h-8 text-gray-400 hover:text-white hover:bg-white/10 rounded transition-colors" title="Italic"><i class="fas fa-italic"></i></button>
                                 <button type="button" onmousedown="event.preventDefault();" onclick="window.execCmd('insertUnorderedList')" class="w-8 h-8 text-gray-400 hover:text-white hover:bg-white/10 rounded transition-colors" title="Bullet Points"><i class="fas fa-list-ul"></i></button>
                                 <div class="w-px h-6 bg-white/10 mx-1"></div>
-                                <select onchange="window.execCmd('fontSize', this.value); this.selectedIndex=0;" class="bg-black text-gray-300 border border-white/10 rounded px-2 h-8 text-xs outline-none hover:border-emerald-500 transition-colors focus:border-emerald-500 cursor-pointer">
+                                <select onchange="window.execCmd('fontSize', this.value); this.selectedIndex=0;" class="bg-black text-gray-300 border border-white/10 rounded px-2 h-8 text-xs outline-none hover:border-emerald-500 transition-colors focus:border-emerald-500 cursor-pointer" title="Excel-like Text Size">
                                     <option value="" disabled selected>Text Size</option>
                                     <option value="1">Size 1 (Smallest)</option>
                                     <option value="2">Size 2 (Small)</option>
@@ -1409,13 +1420,14 @@
             }
         });
 
+        // FIXED: Immutable DecodeText Engine
         window.decodeTextEffect = (el, newText = null) => {
             if (el.dataset.decodeInterval) {
                 clearInterval(parseInt(el.dataset.decodeInterval));
             }
             if (newText !== null) {
                 el.dataset.originalText = newText;
-                el.textContent = newText;
+                el.textContent = newText; // Prevent sizing layout shifts during scramble
             } else if (!el.dataset.originalText) {
                 el.dataset.originalText = el.innerText || el.textContent;
             }
@@ -1423,6 +1435,9 @@
             const originalText = el.dataset.originalText;
             const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%&*"; 
             let iterations = 0;
+            
+            // Dynamic speed constraint: Ensures max animation time is ~1.5 seconds regardless of string length
+            const step = Math.max(1/3, originalText.length / 60);
             
             const intervalId = setInterval(() => {
                 el.innerText = originalText.split("").map((letter, index) => {
@@ -1434,7 +1449,7 @@
                     clearInterval(intervalId);
                     el.innerText = originalText;
                 }
-                iterations += 1/3;
+                iterations += step;
             }, 20);
             
             el.dataset.decodeInterval = intervalId;
@@ -1469,6 +1484,7 @@
                 reader.onload = (e) => {
                     if(file.type === 'application/pdf') return resolve(e.target.result);
                     cropOriginalImg.src = e.target.result;
+                    cropOriginalImg.onerror = () => reject(new Error("Failed to parse visual data."));
                     cropOriginalImg.onload = () => {
                         resolveCropFile = { resolve, maxWidth, quality, file };
                         rejectCropFile = reject;
@@ -2089,12 +2105,23 @@
             }
 
             grid.innerHTML = list.map((s, idx) => `
-                <div class="glass-card p-6 rounded-3xl hover-lift cursor-pointer group relative overflow-visible text-center flex flex-col items-center animate-stagger" style="animation-delay: ${idx * 0.1}s" onclick="window.openSkillView('${s.id}')">
-                    ${s.img ? `<img src="${s.img}" class="w-14 h-14 md:w-16 md:h-16 rounded-2xl object-cover mb-4 shadow-lg border border-white/10">` : `<div class="w-14 h-14 md:w-16 md:h-16 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center text-xl md:text-2xl text-emerald-500 mb-4 shadow-lg"><i class="fas fa-folder"></i></div>`}
-                    <h4 class="text-sm md:text-base font-bold text-white group-hover:text-emerald-500 transition-colors break-words w-full">${window.safeText(s.name)}</h4>
-                    <p class="text-[10px] md:text-xs text-gray-500 mt-1">${s.items ? s.items.split(',').length : 0} Skills</p>
+                <div class="glass-card p-6 md:p-8 rounded-3xl hover-lift cursor-pointer group relative overflow-hidden text-center flex flex-col items-center animate-stagger border border-transparent hover:border-emerald-500/30 transition-all duration-500" style="animation-delay: ${idx * 0.1}s" onclick="window.openSkillView('${s.id}')">
+                    <!-- Background glow effect on hover -->
+                    <div class="absolute inset-0 bg-gradient-to-b from-emerald-500/0 to-emerald-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
                     
-                    <div class="admin-element absolute top-2 right-2 z-30 flex flex-col gap-2 pointer-events-auto">
+                    <div class="relative w-16 h-16 md:w-20 md:h-20 mb-5 group-hover:scale-110 transition-transform duration-500">
+                        <div class="absolute inset-0 bg-emerald-500/20 rounded-2xl blur-xl group-hover:bg-emerald-500/40 transition-colors duration-500"></div>
+                        ${s.img ? `<img src="${s.img}" class="relative w-full h-full rounded-2xl object-cover shadow-lg border border-white/10 z-10">` : `<div class="relative w-full h-full rounded-2xl bg-gradient-to-br from-gray-800 to-black border border-white/10 flex items-center justify-center text-2xl md:text-3xl text-emerald-500 shadow-lg z-10"><i class="fas fa-folder"></i></div>`}
+                    </div>
+                    
+                    <h4 class="text-base md:text-lg font-bold text-white group-hover:text-emerald-400 transition-colors break-words w-full z-10">${window.safeText(s.name)}</h4>
+                    
+                    <div class="mt-4 px-4 py-1.5 bg-white/5 group-hover:bg-emerald-500/20 rounded-full border border-white/10 group-hover:border-emerald-500/30 transition-colors flex items-center gap-2 z-10">
+                        <span class="w-1.5 h-1.5 rounded-full bg-gray-500 group-hover:bg-emerald-500 group-hover:animate-pulse transition-colors"></span>
+                        <span class="text-[10px] md:text-xs text-gray-400 group-hover:text-emerald-400 font-bold uppercase tracking-wider transition-colors">${s.items ? s.items.split(',').length : 0} Skills mapped</span>
+                    </div>
+                    
+                    <div class="admin-element absolute top-3 right-3 z-30 flex flex-col gap-2 pointer-events-auto">
                         <button onclick="event.stopPropagation(); window.openSkillEditModal('${s.id}')" class="w-8 h-8 rounded-full bg-black/50 text-gray-300 hover:bg-blue-500 hover:text-white transition-all backdrop-blur shadow-md"><i class="fas fa-edit text-xs"></i></button>
                         <button onclick="event.stopPropagation(); window.triggerDelete('${s.id}')" class="w-8 h-8 rounded-full bg-red-500/20 text-red-500 hover:bg-red-500 hover:text-white transition-all backdrop-blur shadow-md"><i class="fas fa-trash text-xs"></i></button>
                     </div>
