@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Live Portfolio</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
@@ -152,15 +152,18 @@
         .hide-scroll { -ms-overflow-style: none; scrollbar-width: none; }
         
         canvas.slideshow-canvas { width: 100%; height: 100%; object-fit: contain; }
+        
         .rich-editor { min-height: 150px; outline: none; }
         .rich-editor:empty:before { content: attr(placeholder); color: #4b5563; }
+
         body.modal-open { overflow: hidden; }
         
         ::view-transition-old(root), ::view-transition-new(root) { animation-duration: 0.3s; }
         .decode-text { font-variant-numeric: tabular-nums; }
         
         #scroll-progress { position: fixed; top: 0; left: 0; height: 3px; background: linear-gradient(90deg, var(--primary-emerald) 0%, #06b6d4 100%); z-index: 9999; width: 0%; transition: width 0.1s ease-out; }
-        #swipe-container { touch-action: pan-y; }
+        
+        #swipe-container { touch-action: pan-y pinch-zoom; }
         
         .crop-area { cursor: grab; user-select: none; touch-action: none; }
         .crop-area:active { cursor: grabbing; }
@@ -312,12 +315,17 @@
 
             <!-- VIEW: SKILLS ARSENAL -->
             <main id="view-skills" class="view-section">
-                <div class="flex justify-between items-end mb-8 md:mb-12">
+                <div class="flex flex-col md:flex-row justify-between md:items-end mb-8 md:mb-12 gap-4">
                     <div>
                         <button onclick="window.switchView('view-home')" class="text-gray-500 hover:text-white mb-4 flex items-center gap-2 hover-glow px-3 py-1 -ml-3 rounded-lg transition-colors"><i class="fas fa-arrow-left"></i> Back to Profile</button>
                         <h2 class="text-3xl md:text-5xl font-bold text-white tracking-tight decode-text">Technical Expertise</h2>
+                        
+                        <div class="mt-4 mb-2 inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-bold uppercase tracking-wide">
+                            <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span> Interactive CV active
+                        </div>
+                        <p class="text-sm text-gray-400 mt-1 max-w-xl">Select any folder to dynamically filter projects and experience by specific skills.</p>
                     </div>
-                    <button onclick="window.openSkillEditModal()" class="admin-element px-4 md:px-6 py-2.5 md:py-3 bg-emerald-600 hover:bg-emerald-500 rounded-xl text-xs md:text-sm font-bold hover-glow shadow-lg flex items-center gap-2 active:scale-95">
+                    <button onclick="window.openSkillEditModal()" class="admin-element px-4 md:px-6 py-2.5 md:py-3 bg-emerald-600 hover:bg-emerald-500 rounded-xl text-xs md:text-sm font-bold hover-glow shadow-lg flex items-center justify-center gap-2 active:scale-95">
                         <i class="fas fa-plus"></i> <span class="hidden md:inline">New Skill Folder</span>
                     </button>
                 </div>
@@ -407,7 +415,11 @@
             <img id="sv-icon" src="" onerror="this.onerror=null; this.style.display='none'; this.nextElementSibling.style.display='flex';" class="w-24 h-24 rounded-[1.5rem] object-cover shadow-2xl mb-6 border-2 border-white/5">
             <div id="sv-icon-fallback" style="display:none;" class="w-24 h-24 rounded-[1.5rem] bg-white/5 border-2 border-white/5 items-center justify-center text-4xl text-emerald-500 mb-6 shadow-2xl"><i class="fas fa-folder-open"></i></div>
             
-            <h3 id="sv-title" class="text-3xl font-black text-white mb-8 tracking-tight decode-text">Skill Portfolio</h3>
+            <h3 id="sv-title" class="text-3xl font-black text-white mb-2 tracking-tight decode-text">Skill Portfolio</h3>
+            
+            <p class="text-emerald-400 text-sm mb-6 bg-emerald-500/10 px-4 py-2 rounded-xl border border-emerald-500/20 shadow-inner flex items-center gap-2">
+                <i class="fas fa-hand-pointer animate-bounce"></i> Tap a tag to filter projects!
+            </p>
             
             <div id="sv-tags" class="flex flex-wrap justify-center gap-3 w-full"></div>
         </div>
@@ -530,16 +542,15 @@
                     </div>
                 </div>
 
-                <!-- Canvas Slideshow -->
                 <div class="px-6 md:px-12 mb-6 relative">
                     <div id="swipe-container" class="aspect-video bg-black rounded-2xl md:rounded-3xl overflow-hidden border border-white/5 shadow-inner relative select-none cursor-ew-resize">
-                        <canvas id="slideshow-canvas" class="w-full h-full absolute inset-0 cursor-pointer" onclick="window.openLightbox()"></canvas>
+                        <canvas id="slideshow-canvas" class="slideshow-canvas w-full h-full absolute inset-0 cursor-pointer" onclick="window.openLightbox()"></canvas>
                         <div class="absolute bottom-4 left-0 right-0 flex justify-center gap-2" id="slideshow-dots"></div>
                         <div class="absolute top-4 right-4 bg-black/50 backdrop-blur rounded px-2 py-1 text-[10px] text-white/50 hidden md:block border border-white/10"><i class="fas fa-search-plus mr-1"></i> Click to Zoom</div>
                     </div>
                 </div>
 
-                <div class="px-6 md:px-12 mb-10">
+                <div class="px-6 md:px-12 mb-10 relative">
                     <div id="det-gallery" class="flex gap-3 md:gap-4 overflow-x-auto hide-scroll pb-4 snap-x snap-mandatory font-mono"></div>
                 </div>
 
@@ -815,10 +826,21 @@
                             <label class="text-xs text-gray-500 uppercase font-bold">Role Description</label>
                         </div>
                         <div class="border border-white/10 rounded-xl overflow-hidden bg-black/50 focus-within:border-emerald-500 transition-colors">
-                            <div class="p-2 border-b border-white/10 flex gap-2 bg-white/5 overflow-x-auto hide-scroll">
-                                <button type="button" onmousedown="event.preventDefault();" onclick="window.execCmd('bold')" class="w-8 h-8 text-gray-400 hover:text-white hover:bg-white/10 rounded transition-colors"><i class="fas fa-bold"></i></button>
-                                <button type="button" onmousedown="event.preventDefault();" onclick="window.execCmd('italic')" class="w-8 h-8 text-gray-400 hover:text-white hover:bg-white/10 rounded transition-colors"><i class="fas fa-italic"></i></button>
-                                <button type="button" onmousedown="event.preventDefault();" onclick="window.execCmd('insertUnorderedList')" class="w-8 h-8 text-gray-400 hover:text-white hover:bg-white/10 rounded transition-colors"><i class="fas fa-list-ul"></i></button>
+                            <div class="p-2 border-b border-white/10 flex flex-wrap gap-2 bg-white/5 overflow-x-auto hide-scroll items-center">
+                                <button type="button" onmousedown="event.preventDefault();" onclick="window.execCmd('bold')" class="w-8 h-8 text-gray-400 hover:text-white hover:bg-white/10 rounded transition-colors" title="Bold"><i class="fas fa-bold"></i></button>
+                                <button type="button" onmousedown="event.preventDefault();" onclick="window.execCmd('italic')" class="w-8 h-8 text-gray-400 hover:text-white hover:bg-white/10 rounded transition-colors" title="Italic"><i class="fas fa-italic"></i></button>
+                                <button type="button" onmousedown="event.preventDefault();" onclick="window.execCmd('insertUnorderedList')" class="w-8 h-8 text-gray-400 hover:text-white hover:bg-white/10 rounded transition-colors" title="Bullet Points"><i class="fas fa-list-ul"></i></button>
+                                <div class="w-px h-6 bg-white/10 mx-1"></div>
+                                <select onchange="window.execCmd('fontSize', this.value); this.selectedIndex=0;" class="bg-black text-gray-300 border border-white/10 rounded px-2 h-8 text-xs outline-none hover:border-emerald-500 transition-colors focus:border-emerald-500 cursor-pointer">
+                                    <option value="" disabled selected>Text Size</option>
+                                    <option value="1">Size 1 (Smallest)</option>
+                                    <option value="2">Size 2 (Small)</option>
+                                    <option value="3">Size 3 (Normal)</option>
+                                    <option value="4">Size 4 (Medium)</option>
+                                    <option value="5">Size 5 (Large)</option>
+                                    <option value="6">Size 6 (X-Large)</option>
+                                    <option value="7">Size 7 (Huge)</option>
+                                </select>
                             </div>
                             <div id="exp-desc" contenteditable="true" oninput="window.saveDraftEditor('exp_draft', 'exp-desc')" class="p-4 text-white rich-editor text-sm leading-relaxed outline-none min-h-[100px]"></div>
                         </div>
@@ -901,10 +923,21 @@
                             </div>
                         </div>
                         <div class="border border-white/10 rounded-xl overflow-hidden bg-black/50 focus-within:border-emerald-500 transition-colors">
-                            <div class="p-2 border-b border-white/10 flex gap-2 bg-white/5 overflow-x-auto hide-scroll">
-                                <button type="button" onmousedown="event.preventDefault();" onclick="window.execCmd('bold')" class="w-8 h-8 text-gray-400 hover:text-white hover:bg-white/10 rounded transition-colors"><i class="fas fa-bold"></i></button>
-                                <button type="button" onmousedown="event.preventDefault();" onclick="window.execCmd('italic')" class="w-8 h-8 text-gray-400 hover:text-white hover:bg-white/10 rounded transition-colors"><i class="fas fa-italic"></i></button>
-                                <button type="button" onmousedown="event.preventDefault();" onclick="window.execCmd('insertUnorderedList')" class="w-8 h-8 text-gray-400 hover:text-white hover:bg-white/10 rounded transition-colors"><i class="fas fa-list-ul"></i></button>
+                            <div class="p-2 border-b border-white/10 flex flex-wrap gap-2 bg-white/5 overflow-x-auto hide-scroll items-center">
+                                <button type="button" onmousedown="event.preventDefault();" onclick="window.execCmd('bold')" class="w-8 h-8 text-gray-400 hover:text-white hover:bg-white/10 rounded transition-colors" title="Bold"><i class="fas fa-bold"></i></button>
+                                <button type="button" onmousedown="event.preventDefault();" onclick="window.execCmd('italic')" class="w-8 h-8 text-gray-400 hover:text-white hover:bg-white/10 rounded transition-colors" title="Italic"><i class="fas fa-italic"></i></button>
+                                <button type="button" onmousedown="event.preventDefault();" onclick="window.execCmd('insertUnorderedList')" class="w-8 h-8 text-gray-400 hover:text-white hover:bg-white/10 rounded transition-colors" title="Bullet Points"><i class="fas fa-list-ul"></i></button>
+                                <div class="w-px h-6 bg-white/10 mx-1"></div>
+                                <select onchange="window.execCmd('fontSize', this.value); this.selectedIndex=0;" class="bg-black text-gray-300 border border-white/10 rounded px-2 h-8 text-xs outline-none hover:border-emerald-500 transition-colors focus:border-emerald-500 cursor-pointer">
+                                    <option value="" disabled selected>Text Size</option>
+                                    <option value="1">Size 1 (Smallest)</option>
+                                    <option value="2">Size 2 (Small)</option>
+                                    <option value="3">Size 3 (Normal)</option>
+                                    <option value="4">Size 4 (Medium)</option>
+                                    <option value="5">Size 5 (Large)</option>
+                                    <option value="6">Size 6 (X-Large)</option>
+                                    <option value="7">Size 7 (Huge)</option>
+                                </select>
                             </div>
                             <div id="proj-editor" contenteditable="true" oninput="window.saveDraftEditor('proj_draft', 'proj-editor')" class="p-4 text-white rich-editor text-sm leading-relaxed outline-none"></div>
                         </div>
@@ -1240,7 +1273,16 @@
                     window.decodeTextEffect(node);
                 });
             };
-            if (document.startViewTransition) { document.startViewTransition(doTransition); } else { doTransition(); }
+            
+            if (document.startViewTransition) { 
+                const t = document.startViewTransition(doTransition);
+                // Silently catch expected AbortErrors when transitions overlap rapidly
+                t.finished.catch(() => {});
+                t.ready.catch(() => {});
+                t.updateCallbackDone.catch(() => {});
+            } else { 
+                doTransition(); 
+            }
         };
 
         window.closeModals = () => {
@@ -1367,15 +1409,13 @@
             }
         });
 
-        // FIXED: Immutable DecodeText Engine
-        // This entirely prevents the "OL93W" bug by clearing intervals safely and storing state properly
         window.decodeTextEffect = (el, newText = null) => {
             if (el.dataset.decodeInterval) {
                 clearInterval(parseInt(el.dataset.decodeInterval));
             }
             if (newText !== null) {
                 el.dataset.originalText = newText;
-                el.textContent = newText; // Prevent sizing layout shifts during scramble
+                el.textContent = newText;
             } else if (!el.dataset.originalText) {
                 el.dataset.originalText = el.innerText || el.textContent;
             }
@@ -1536,12 +1576,12 @@
             }
         };
 
-        window.execCmd = (cmd) => {
+        window.execCmd = (cmd, val = null) => {
             let editor = null;
             if (document.getElementById('modal-proj').classList.contains('active')) editor = document.getElementById('proj-editor');
             else if (document.getElementById('modal-exp').classList.contains('active')) editor = document.getElementById('exp-desc');
             
-            if (editor) { editor.focus(); document.execCommand(cmd, false, null); }
+            if (editor) { editor.focus(); document.execCommand(cmd, false, val); }
         };
 
         window.getByteSize = (str) => new Blob([str]).size;
@@ -1584,7 +1624,7 @@
             window.renderSlideFrame(); window.haptic();
         };
 
-        // --- 5. DATA SYNC ---
+        // --- STREAMING_CHUNK: Filtering & Data Sync Logic ---
         window.fetchRemote = async () => {
             if (STATE.dbActive) {
                 try {
@@ -1876,6 +1916,7 @@
             window.haptic();
         };
 
+        // FIX 3: Case-insensitive filtering mapping for active tags
         window.filterExpByTag = (tag, event) => {
             if(event) event.stopPropagation();
             STATE.activeExpTag = tag;
@@ -1916,9 +1957,15 @@
             let timelineExp = sortedExp;
             if (!STATE.isAdmin) timelineExp = timelineExp.filter(e => !e.isDraft);
             
+            // FIX 3: Implemented Exact Case-Insensitive Matching
             const filterLabel = document.getElementById('active-exp-filter');
             if (STATE.activeExpTag) {
-                timelineExp = timelineExp.filter(e => e.tags && e.tags.toLowerCase().includes(STATE.activeExpTag.toLowerCase()));
+                const searchTag = STATE.activeExpTag.trim().toLowerCase();
+                timelineExp = timelineExp.filter(e => {
+                    if (!e.tags) return false;
+                    return e.tags.toLowerCase().split(',').map(t => t.trim()).includes(searchTag);
+                });
+                
                 if(filterLabel) {
                     filterLabel.classList.remove('hidden');
                     document.getElementById('active-exp-filter-name').textContent = STATE.activeExpTag;
@@ -2093,6 +2140,7 @@
             window.renderProjects();
         };
 
+        // FIX 3: Centralized case-insensitive matching logic starts here
         window.filterByTag = (tag, event) => {
             if(event) event.stopPropagation();
             STATE.activeTag = tag;
@@ -2137,8 +2185,14 @@
             const filterLabel = document.getElementById('active-filter-label');
             const filterName = document.getElementById('active-filter-name');
 
+            // FIX 3: Project Filter Case-Insensitive Array matching
             if(STATE.activeTag) {
-                list = list.filter(p => p.tags && p.tags.toLowerCase().includes(STATE.activeTag.toLowerCase()));
+                const searchTag = STATE.activeTag.trim().toLowerCase();
+                list = list.filter(p => {
+                    if (!p.tags) return false;
+                    return p.tags.toLowerCase().split(',').map(t => t.trim()).includes(searchTag);
+                });
+                
                 if(filterLabel && filterName) {
                     filterLabel.classList.remove('hidden');
                     filterName.textContent = STATE.activeTag;
@@ -2312,8 +2366,20 @@
             const gal = document.getElementById('det-gallery');
             if(gal && gal.children[STATE.slideIdx]) {
                 Array.from(gal.children).forEach((child, i) => {
-                    if(i === STATE.slideIdx) { child.classList.add('ring-2', 'ring-emerald-500', 'opacity-100'); child.classList.remove('opacity-60'); child.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' }); } 
-                    else { child.classList.remove('ring-2', 'ring-emerald-500', 'opacity-100'); child.classList.add('opacity-60'); }
+                    if(i === STATE.slideIdx) { 
+                        child.classList.add('ring-2', 'ring-emerald-500', 'opacity-100'); 
+                        child.classList.remove('opacity-60'); 
+                        
+                        const parent = child.parentNode;
+                        parent.scrollTo({
+                            left: child.offsetLeft - parent.offsetLeft - (parent.clientWidth / 2) + (child.clientWidth / 2),
+                            behavior: 'smooth'
+                        });
+                    } 
+                    else { 
+                        child.classList.remove('ring-2', 'ring-emerald-500', 'opacity-100'); 
+                        child.classList.add('opacity-60'); 
+                    }
                 });
             }
             const dotsContainer = document.getElementById('slideshow-dots');
