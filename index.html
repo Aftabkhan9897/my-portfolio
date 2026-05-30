@@ -181,12 +181,29 @@
         
         .skill-badge { opacity: 0; transform: translateY(10px); animation: badgeUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
         @keyframes badgeUp { to { opacity: 1; transform: translateY(0); } }
+        
+        /* Print Specific Styles */
+        @media print {
+            body { background: white !important; color: black !important; padding: 0; margin: 0; }
+            .accent-glow, header, nav, #fab-top, .modal-overlay, #scroll-progress, .admin-element, button, .profile-brim { display: none !important; }
+            .glass-card { background: white !important; border: 1px solid #ddd !important; box-shadow: none !important; break-inside: avoid; color: black !important; filter: none !important; backdrop-filter: none !important; }
+            .text-white { color: black !important; }
+            .text-gray-400, .text-gray-500 { color: #444 !important; }
+            .text-emerald-500, .text-emerald-400 { color: var(--primary-emerald-dark) !important; }
+            .border-white\/10 { border-color: #ddd !important; }
+            .bg-white\/5, .bg-black\/50, .bg-black { background: transparent !important; }
+            .timeline-container::before { background: #ddd !important; }
+            .timeline-node { background: white !important; border-color: black !important; box-shadow: none !important; }
+            .exp-accordion { grid-template-rows: 1fr !important; } 
+        }
     </style>
 </head>
 <body class="antialiased relative min-h-screen flex flex-col pb-safe">
 
+    <!-- Feature: SEO Injection Hidden Meta -->
     <div id="seo-meta-injection" class="hidden"></div>
 
+    <!-- Offline Shield Banner -->
     <div id="offline-banner" class="hidden w-full bg-red-600 text-white text-xs font-bold text-center py-1.5 z-[9999] relative shadow-md">
         <i class="fas fa-wifi-slash mr-1"></i> You are offline. Changes will be saved locally.
     </div>
@@ -201,6 +218,7 @@
         <div class="text-xs font-bold text-gray-500 tracking-[0.2em] uppercase animate-pulse">Initializing</div>
     </div>
 
+    <!-- Global Scroll Progress SVG Ring FAB -->
     <div id="fab-top" onclick="window.scrollTo({top: 0, behavior: 'smooth'})" class="fixed bottom-6 right-6 w-14 h-14 bg-black/80 backdrop-blur border border-white/10 hover:bg-white/10 rounded-full flex items-center justify-center text-emerald-500 opacity-0 translate-y-10 transition-all duration-300 cursor-pointer z-40 shadow-2xl group">
         <svg class="absolute inset-0 w-full h-full transform -rotate-90 pointer-events-none" viewBox="0 0 100 100">
             <circle cx="50" cy="50" r="46" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="4"></circle>
@@ -209,9 +227,11 @@
         <i class="fas fa-arrow-up group-hover:-translate-y-1 transition-transform"></i>
     </div>
 
+    <!-- Ambient Parallax Orbs -->
     <div id="glow-1" class="accent-glow bg-emerald-500 w-96 h-96 -top-20 -left-20"></div>
     <div id="glow-2" class="accent-glow bg-cyan-600 w-[30rem] h-[30rem] bottom-0 right-0"></div>
 
+    <!-- Toast UI -->
     <div id="toast" class="fixed bottom-6 left-1/2 -translate-x-1/2 px-6 py-3 rounded-full bg-emerald-600 text-white font-medium shadow-2xl z-[9999] opacity-0 pointer-events-none transition-all duration-300 border border-white/10">
         <span id="toast-msg">Success</span>
     </div>
@@ -220,6 +240,7 @@
     <div id="app-wrapper" class="opacity-0 transition-opacity duration-1000 ease-out w-full flex-1 flex flex-col relative z-10">
         <div class="max-w-6xl mx-auto px-6 py-6 md:py-12 w-full flex-1 flex flex-col relative z-10">
             
+            <!-- Header Navigation -->
             <header class="flex justify-between items-center mb-8 md:mb-16 print:hidden">
                 <div class="flex flex-col">
                     <h1 id="nav-logo" class="text-2xl font-black text-white tracking-tighter uppercase decode-text cursor-pointer hover-glow px-2 -ml-2 rounded-lg" onclick="window.switchView('view-home')">PORT<span class="text-emerald-500">FOLIO</span></h1>
@@ -237,6 +258,7 @@
                 </div>
             </header>
 
+            <!-- VIEW: HOME (Profile Landing) -->
             <main id="view-home" class="view-section active">
                 <section class="glass-card rounded-[2.5rem] p-8 md:p-16 flex flex-col md:flex-row items-center gap-10 md:gap-12 relative overflow-hidden group border-none md:border-solid">
                     <button onclick="window.openProfileEditor()" class="admin-element absolute top-6 right-6 w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-emerald-500 transition-all shadow-lg border border-white/10 hover-glow z-20">
@@ -266,6 +288,7 @@
                     </div>
                 </section>
 
+                <!-- Experience Section -->
                 <section id="section-experience" class="mt-16 md:mt-24 mb-10 relative hidden">
                     <div class="flex justify-between items-center mb-8">
                         <h3 class="text-2xl font-bold text-white"><i class="fas fa-briefcase text-emerald-500 mr-3"></i>Current Employment</h3>
@@ -287,6 +310,7 @@
                 </div>
             </main>
 
+            <!-- VIEW: SKILLS ARSENAL -->
             <main id="view-skills" class="view-section">
                 <div class="flex justify-between items-end mb-8 md:mb-12">
                     <div>
@@ -300,6 +324,7 @@
                 <div id="grid-skills" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6"></div>
             </main>
 
+            <!-- VIEW: EXPERIENCE TIMELINE -->
             <main id="view-experience" class="view-section">
                 <div class="flex justify-between items-end mb-8 md:mb-12 print:hidden">
                     <div>
@@ -324,6 +349,7 @@
                 <div id="experience-list" class="timeline-container space-y-8 pb-10"></div>
             </main>
 
+            <!-- VIEW: WORKSPACES -->
             <main id="view-categories" class="view-section">
                 <div class="flex justify-between items-end mb-8 md:mb-12">
                     <div>
@@ -337,10 +363,11 @@
                 <div id="grid-categories" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"></div>
             </main>
 
+            <!-- VIEW: PROJECTS -->
             <main id="view-projects" class="view-section">
                 <div class="flex justify-between items-end mb-8 md:mb-12">
                     <div>
-                        <button id="btn-back-projects" onclick="window.switchView('view-categories')" class="text-gray-500 hover:text-white mb-4 flex items-center gap-2 hover-glow px-3 py-1 -ml-3 rounded-lg transition-colors"><i class="fas fa-arrow-left"></i> Back to Workspaces</button>
+                        <button id="btn-back-projects" onclick="window.switchView('view-categories')" class="text-gray-500 hover:text-white mb-4 flex items-center gap-2 hover-glow px-3 py-1 -ml-3 rounded-lg transition-colors"><i class="fas fa-arrow-left"></i> Back</button>
                         <div class="flex items-center gap-4">
                             <h2 id="active-cat-name" class="text-3xl md:text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-cyan-400 tracking-tight decode-text">Projects</h2>
                             <div class="hidden md:flex bg-white/5 rounded-lg p-1 border border-white/10">
@@ -362,6 +389,7 @@
 
         </div>
 
+        <!-- Admin Skull & Settings (Footer) -->
         <div class="w-full flex justify-center items-center py-10 opacity-20 hover:opacity-100 transition-opacity duration-300 relative z-10 mt-auto h-24 print:hidden">
             <button id="admin-trigger" class="focus:outline-none transform hover:scale-110 transition-all p-4 absolute left-1/2 -translate-x-1/2">
                 <i class="fas fa-skull text-2xl md:text-3xl text-gray-500 drop-shadow-[0_0_10px_rgba(255,255,255,0.1)]"></i>
@@ -372,7 +400,6 @@
         </div>
     </div> <!-- /App Wrapper -->
 
-    
     <!-- MODAL: PUBLIC SKILL SHOWCASE -->
     <div id="modal-skill-view" class="modal-overlay" onclick="if(event.target===this) window.closeModals()">
         <div class="glass-modal w-full max-w-lg p-8 md:p-12 rounded-[2.5rem] relative shadow-2xl flex flex-col items-center text-center border border-white/10 m-4">
@@ -619,7 +646,7 @@
         </div>
     </div>
 
-    <!-- MODAL: SYSTEM CONFIGURATION SETTINGS (WHITE LABEL EXPORTER) -->
+    <!-- MODAL: SYSTEM CONFIGURATION SETTINGS -->
     <div id="modal-sys-config" class="modal-overlay" onclick="if(event.target===this) window.closeModals()">
         <div class="glass-modal w-full max-w-2xl h-[90vh] md:h-auto md:max-h-[85vh] md:rounded-[2rem] overflow-hidden flex flex-col relative shadow-2xl border-0 md:border border-white/10">
             <button onclick="window.closeModals()" class="mobile-close-btn absolute top-4 right-4 z-50 w-10 h-10 rounded-full bg-black/80 text-white flex items-center justify-center hover:bg-red-500 transition-colors"><i class="fas fa-times"></i></button>
@@ -731,7 +758,6 @@
         </div>
     </div>
 
-    
     <!-- MODAL: EXPERIENCE EDITOR -->
     <div id="modal-exp" class="modal-overlay" onclick="if(event.target===this) window.closeModals()">
         <div class="glass-modal w-full max-w-2xl h-[90vh] md:h-auto md:max-h-[85vh] md:rounded-[2rem] overflow-hidden flex flex-col relative shadow-2xl border-0 md:border border-white/10">
@@ -906,6 +932,13 @@
     </div>
 
     <script>
+        // --- Theme Color Accent Mapper (Loaded Early) ---
+        window.applyAccentStyle = (color, rgb, dark) => {
+            document.documentElement.style.setProperty('--primary-emerald', color || '#10b981');
+            document.documentElement.style.setProperty('--primary-emerald-rgb', rgb || '16, 185, 129');
+            document.documentElement.style.setProperty('--primary-emerald-dark', dark || '#059669');
+        };
+
         // --- 1. CORE SOURCE ANCHORS ---
         const SOURCE_URL = localStorage.getItem('cfg_supa_url') || "https://rxkdpaipierhdwxrfdev.supabase.co"; // __URL_ANCHOR__
         const SOURCE_KEY = localStorage.getItem('cfg_supa_key') || "sb_publishable_kvyQaqzFkBni-41PYLZTDg_Jd4D3GLX"; // __KEY_ANCHOR__
@@ -919,7 +952,7 @@
             experience: [],
             skills: [],
             activeCat: null,
-            activeFilterTag: null,
+            activeTag: null,
             activeExpTag: null,
             activeProject: null,
             isAdmin: false,
@@ -934,14 +967,6 @@
             supabaseClient = window.supabase.createClient(SOURCE_URL, SOURCE_KEY);
             STATE.dbActive = true;
         }
-
-        window.addEventListener('DOMContentLoaded', () => {
-            const urlParams = new URLSearchParams(window.location.search);
-            const projectId = urlParams.get('project');
-            if (projectId) {
-                setTimeout(() => window.openProjectDeep(projectId), 600);
-            }
-        });
 
         window.sanitizeRichHTML = (html) => {
             if (!html) return '';
@@ -1212,7 +1237,6 @@
                 if(el) { el.classList.add('active'); window.scrollTo({top: 0, behavior: 'smooth'}); }
                 
                 document.querySelectorAll(`#${id} .decode-text`).forEach(node => {
-                    delete node.dataset.originalText;
                     window.decodeTextEffect(node);
                 });
             };
@@ -1343,9 +1367,18 @@
             }
         });
 
-        window.decodeTextEffect = (el) => {
-            if (el.dataset.decodeInterval) clearInterval(parseInt(el.dataset.decodeInterval));
-            if (!el.dataset.originalText) el.dataset.originalText = el.innerText || el.textContent;
+        // FIXED: Immutable DecodeText Engine
+        // This entirely prevents the "OL93W" bug by clearing intervals safely and storing state properly
+        window.decodeTextEffect = (el, newText = null) => {
+            if (el.dataset.decodeInterval) {
+                clearInterval(parseInt(el.dataset.decodeInterval));
+            }
+            if (newText !== null) {
+                el.dataset.originalText = newText;
+                el.textContent = newText; // Prevent sizing layout shifts during scramble
+            } else if (!el.dataset.originalText) {
+                el.dataset.originalText = el.innerText || el.textContent;
+            }
             
             const originalText = el.dataset.originalText;
             const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%&*"; 
@@ -1356,7 +1389,11 @@
                     if(index < iterations || letter === ' ') return originalText[index];
                     return letters[Math.floor(Math.random() * letters.length)];
                 }).join("");
-                if(iterations >= originalText.length) clearInterval(intervalId);
+                
+                if(iterations >= originalText.length) {
+                    clearInterval(intervalId);
+                    el.innerText = originalText;
+                }
                 iterations += 1/3;
             }, 20);
             
@@ -1768,7 +1805,7 @@
             window.renderExperience();
             window.renderCategories();
             window.renderSkills();
-            if(STATE.activeCat || STATE.activeFilterTag) window.renderProjects();
+            if(STATE.activeCat || STATE.activeTag) window.renderProjects();
         };
 
         window.renderHero = () => {
@@ -2023,7 +2060,7 @@
             window.haptic();
             
             const titleEl = document.getElementById('sv-title');
-            if(titleEl) { titleEl.textContent = s.name; delete titleEl.dataset.originalText; window.decodeTextEffect(titleEl); }
+            if(titleEl) window.decodeTextEffect(titleEl, s.name);
             
             const iconEl = document.getElementById('sv-icon');
             const fallbackEl = document.getElementById('sv-icon-fallback');
@@ -2051,28 +2088,20 @@
 
         window.openWorkspace = (id) => {
             STATE.activeCat = id;
-            STATE.activeFilterTag = null; 
-            const c = STATE.categories.find(x => x.id === id);
-            if(c) {
-                const nameEl = document.getElementById('active-cat-name');
-                if(nameEl) {
-                    nameEl.textContent = c.name;
-                    delete nameEl.dataset.originalText;
-                }
-                window.switchView('view-projects');
-                window.renderProjects();
-            }
+            STATE.activeTag = null; 
+            window.switchView('view-projects');
+            window.renderProjects();
         };
 
         window.filterByTag = (tag, event) => {
             if(event) event.stopPropagation();
-            STATE.activeFilterTag = tag;
+            STATE.activeTag = tag;
             window.renderProjects();
             window.haptic();
         };
 
         window.clearProjectFilter = () => {
-            STATE.activeFilterTag = null;
+            STATE.activeTag = null;
             if(!STATE.activeCat) {
                 window.switchView('view-skills');
             } else {
@@ -2108,11 +2137,11 @@
             const filterLabel = document.getElementById('active-filter-label');
             const filterName = document.getElementById('active-filter-name');
 
-            if(STATE.activeFilterTag) {
-                list = list.filter(p => p.tags && p.tags.toLowerCase().includes(STATE.activeFilterTag.toLowerCase()));
+            if(STATE.activeTag) {
+                list = list.filter(p => p.tags && p.tags.toLowerCase().includes(STATE.activeTag.toLowerCase()));
                 if(filterLabel && filterName) {
                     filterLabel.classList.remove('hidden');
-                    filterName.textContent = STATE.activeFilterTag;
+                    filterName.textContent = STATE.activeTag;
                 }
             } else {
                 if(filterLabel) filterLabel.classList.add('hidden');
@@ -2122,22 +2151,14 @@
             const backBtn = document.getElementById('btn-back-projects');
 
             if (!STATE.activeCat) {
-                if(headerTitle) {
-                    headerTitle.textContent = `Skill Search`;
-                    delete headerTitle.dataset.originalText;
-                    window.decodeTextEffect(headerTitle);
-                }
+                if(headerTitle) window.decodeTextEffect(headerTitle, STATE.activeTag ? `Skill Search: ${STATE.activeTag}` : `All Projects`);
                 if(backBtn) {
                     backBtn.innerHTML = `<i class="fas fa-arrow-left"></i> Back to Expertise`;
                     backBtn.onclick = () => { window.clearProjectFilter(); window.switchView('view-skills'); };
                 }
             } else {
                 const c = STATE.categories.find(x => x.id === STATE.activeCat);
-                if(headerTitle) {
-                    headerTitle.textContent = c ? c.name : 'Projects';
-                    delete headerTitle.dataset.originalText;
-                    window.decodeTextEffect(headerTitle);
-                }
+                if(headerTitle) window.decodeTextEffect(headerTitle, c ? c.name : 'Projects');
                 if(backBtn) {
                     backBtn.innerHTML = `<i class="fas fa-arrow-left"></i> Back to Workspaces`;
                     backBtn.onclick = () => window.switchView('view-categories');
@@ -2192,7 +2213,7 @@
             const p = STATE.projects.find(x => x.id === id); 
             if(!p) return window.showToast("Project not found.", true);
             
-            if(!STATE.activeCat && !STATE.activeFilterTag) STATE.activeCat = p.catId; 
+            if(!STATE.activeCat && !STATE.activeTag) STATE.activeCat = p.catId; 
             
             window.trackEvent('project_view', { proj_id: id });
             
@@ -2200,11 +2221,8 @@
             document.title = `${p.name} | Portfolio`;
 
             const titleEl = document.getElementById('det-title'); 
-            if(titleEl) {
-                titleEl.textContent = p.name;
-                delete titleEl.dataset.originalText;
-                window.decodeTextEffect(titleEl);
-            }
+            if(titleEl) window.decodeTextEffect(titleEl, p.name);
+            
             const iconEl = document.getElementById('det-icon'); if(iconEl) iconEl.src = p.icon;
             const descEl = document.getElementById('det-desc'); if(descEl) descEl.innerHTML = p.desc || 'No description provided.';
             const viewEl = document.getElementById('det-views'); if(viewEl) viewEl.textContent = STATE.analytics?.projectClicks?.[id] || 0;
@@ -2236,7 +2254,7 @@
 
         window.nextProject = () => {
             let list = STATE.activeCat ? STATE.projects.filter(p => p.catId === STATE.activeCat) : [...STATE.projects];
-            if(STATE.activeFilterTag) list = list.filter(p => p.tags && p.tags.toLowerCase().includes(STATE.activeFilterTag.toLowerCase()));
+            if(STATE.activeTag) list = list.filter(p => p.tags && p.tags.toLowerCase().includes(STATE.activeTag.toLowerCase()));
             list.sort((a,b) => (a.order !== undefined && a.order !== null ? Number(a.order) : 99) - (b.order !== undefined && b.order !== null ? Number(b.order) : 99));
             const idx = list.findIndex(p => p.id === STATE.activeProject);
             if(idx > -1 && idx < list.length - 1) { window.haptic(); window.openProjectDeep(list[idx+1].id); }
@@ -2244,7 +2262,7 @@
 
         window.prevProject = () => {
             let list = STATE.activeCat ? STATE.projects.filter(p => p.catId === STATE.activeCat) : [...STATE.projects];
-            if(STATE.activeFilterTag) list = list.filter(p => p.tags && p.tags.toLowerCase().includes(STATE.activeFilterTag.toLowerCase()));
+            if(STATE.activeTag) list = list.filter(p => p.tags && p.tags.toLowerCase().includes(STATE.activeTag.toLowerCase()));
             list.sort((a,b) => (a.order !== undefined && a.order !== null ? Number(a.order) : 99) - (b.order !== undefined && b.order !== null ? Number(b.order) : 99));
             const idx = list.findIndex(p => p.id === STATE.activeProject);
             if(idx > 0) { window.haptic(); window.openProjectDeep(list[idx-1].id); }
@@ -2324,20 +2342,6 @@
                 }
             });
         }, 4000);
-
-        // --- Theme Color Accent Mapper ---
-        window.applyAccentStyle = (color, rgb, dark) => {
-            document.documentElement.style.setProperty('--primary-emerald', color || '#10b981');
-            document.documentElement.style.setProperty('--primary-emerald-rgb', rgb || '16, 185, 129');
-            document.documentElement.style.setProperty('--primary-emerald-dark', dark || '#059669');
-        };
-        
-        window.setThemeAccent = (color, rgb, dark) => {
-            window.haptic(); window.applyAccentStyle(color, rgb, dark);
-            const safeSet = (id, val) => { const el = document.getElementById(id); if(el) el.value = val; };
-            safeSet('edit-accent', color); safeSet('edit-accent-rgb', rgb); safeSet('edit-accent-dark', dark);
-            window.showToast("Accent Theme preview configured!");
-        };
 
         // --- 9. FORM SUBMISSIONS ---
         window.openSkillEditModal = (id = null) => {
@@ -2452,6 +2456,7 @@
         window.editExperience = (id) => {
             const e = STATE.experience.find(x => x.id === id); if(!e) return;
             const safeSet = (id, val) => { const el = document.getElementById(id); if(el) el.value = val; };
+            
             safeSet('exp-id', e.id); safeSet('exp-role', e.role || ''); safeSet('exp-company', e.company || ''); safeSet('exp-type', e.type || 'Full-Time'); safeSet('exp-location', e.location || ''); safeSet('exp-link', e.link || ''); safeSet('exp-duration', e.duration || ''); safeSet('exp-icon-file', ''); safeSet('exp-tags', e.tags || ''); safeSet('exp-order', e.order !== undefined ? e.order : 99);
             if(e.icon && e.icon.startsWith('http')) { safeSet('exp-icon-url', e.icon); } else { safeSet('exp-icon-url', ''); }
             const draftEl = document.getElementById('exp-draft'); if(draftEl) draftEl.checked = e.isDraft || false;
@@ -2506,78 +2511,38 @@
             if(!STATE.isAdmin) return;
             const nameEl = document.getElementById('cat-name');
             if(!nameEl || !nameEl.value.trim()) { if(nameEl) { nameEl.classList.add('error-shake'); setTimeout(() => nameEl.classList.remove('error-shake'), 400); } return window.showToast("Name required", true); }
-
             const getVal = (id) => { const el = document.getElementById(id); return el ? el.value.trim() : ''; };
             const idInput = getVal('cat-id'); const name = nameEl.value.trim(); const orderInput = parseInt(getVal('cat-order')) || 0; const desc = getVal('cat-desc');
-            
             const btn = document.getElementById('save-cat-btn'); if(btn) { btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...'; }
-            
             try {
-                let imgData = getVal('cat-file-url') || null;
-                const imgFileInput = document.getElementById('cat-file');
-                
-                if(imgFileInput && imgFileInput.files[0]) { 
-                    imgData = await window.fileToBase64(imgFileInput.files[0], 400, 0.7, '16/9'); 
-                } else if(!imgData && idInput) { 
-                    const existing = STATE.categories.find(x => x.id === idInput); if(existing) imgData = existing.img; 
-                }
-                
+                let imgData = getVal('cat-file-url') || null; const imgFileInput = document.getElementById('cat-file');
+                if(imgFileInput && imgFileInput.files[0]) { imgData = await window.fileToBase64(imgFileInput.files[0], 400, 0.7, '16/9'); } else if(!imgData && idInput) { const existing = STATE.categories.find(x => x.id === idInput); if(existing) imgData = existing.img; }
                 let tempCats = JSON.parse(JSON.stringify(STATE.categories));
-                if (idInput) { 
-                    const idx = tempCats.findIndex(x => x.id === idInput); 
-                    if(idx > -1) { tempCats[idx].name = name; tempCats[idx].desc = desc; tempCats[idx].order = orderInput; tempCats[idx].img = imgData; } 
-                } else { tempCats.push({ id: 'cat_' + Date.now(), name, desc, img: imgData, order: orderInput }); }
-
-                if (window.getByteSize(JSON.stringify(tempCats)) > 1500000) { window.showToast("Workspaces payload too large.", true); } 
-                else { STATE.categories = tempCats; if(await window.syncRemote('categories_list', STATE.categories)) { window.showToast("Workspace Saved"); window.closeModals(); window.renderCategories(); } }
+                if (idInput) { const idx = tempCats.findIndex(x => x.id === idInput); if(idx > -1) { tempCats[idx].name = name; tempCats[idx].desc = desc; tempCats[idx].order = orderInput; tempCats[idx].img = imgData; } } else { tempCats.push({ id: 'cat_' + Date.now(), name, desc, img: imgData, order: orderInput }); }
+                if (window.getByteSize(JSON.stringify(tempCats)) > 1500000) { window.showToast("Workspaces payload too large.", true); } else { STATE.categories = tempCats; if(await window.syncRemote('categories_list', STATE.categories)) { window.showToast("Workspace Saved"); window.closeModals(); window.renderCategories(); } }
             } catch (err) { window.showToast("Failed to save workspace: " + err.message, true); } 
             finally { if(btn) { btn.disabled = false; btn.innerHTML = 'Save Workspace'; } }
         };
 
         window.openProjectModal = () => { 
+            if(!STATE.activeCat) { window.showToast("Please select a workspace folder first to upload.", true); return; }
             const safeSet = (id, val) => { const el = document.getElementById(id); if(el) el.value = val; };
-            safeSet('proj-id', ''); safeSet('proj-name', ''); safeSet('proj-order', '99'); safeSet('proj-link-in', ''); 
-            safeSet('proj-tags-in', ''); safeSet('proj-icon-file', ''); safeSet('proj-gallery-files', ''); safeSet('proj-clear-gallery', 'false');
-            safeSet('proj-icon-url', ''); safeSet('proj-gallery-urls', '');
-            
+            safeSet('proj-id', ''); safeSet('proj-name', ''); safeSet('proj-order', '99'); safeSet('proj-link-in', ''); safeSet('proj-tags-in', ''); safeSet('proj-icon-file', ''); safeSet('proj-gallery-files', ''); safeSet('proj-clear-gallery', 'false'); safeSet('proj-icon-url', ''); safeSet('proj-gallery-urls', '');
             const draftEl = document.getElementById('proj-draft'); if(draftEl) draftEl.checked = false;
-            const edEl = document.getElementById('proj-editor'); if(edEl) edEl.innerHTML = '';
-            window.restoreDraftEditor('proj-editor', 'proj_draft'); 
-            
-            const catSelect = document.getElementById('proj-category-select');
-            if(catSelect) {
-                catSelect.innerHTML = STATE.categories.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
-                if(STATE.activeCat) {
-                    catSelect.value = STATE.activeCat;
-                } else if (STATE.categories.length > 0) {
-                    // Fallback for Global Search mode where no activeCat is set
-                    catSelect.value = STATE.categories[0].id;
-                }
-            }
+            const edEl = document.getElementById('proj-editor'); if(edEl) edEl.innerHTML = ''; window.restoreDraftEditor('proj-editor', 'proj_draft'); 
+            const catSelect = document.getElementById('proj-category-select'); if(catSelect) { catSelect.innerHTML = STATE.categories.map(c => `<option value="${c.id}">${c.name}</option>`).join(''); if(STATE.activeCat) catSelect.value = STATE.activeCat; }
             window.openModal('modal-proj'); 
         };
 
         window.editProject = (id) => { 
             const p = STATE.projects.find(x => x.id === id); if(!p) return; 
             const safeSet = (id, val) => { const el = document.getElementById(id); if(el) el.value = val; };
-            safeSet('proj-id', p.id); safeSet('proj-name', p.name); safeSet('proj-order', p.order !== undefined ? p.order : 99); 
-            safeSet('proj-link-in', p.link || ''); safeSet('proj-tags-in', p.tags || ''); safeSet('proj-icon-file', ''); 
-            safeSet('proj-gallery-files', ''); safeSet('proj-clear-gallery', 'false');
-            
+            safeSet('proj-id', p.id); safeSet('proj-name', p.name); safeSet('proj-order', p.order !== undefined ? p.order : 99); safeSet('proj-link-in', p.link || ''); safeSet('proj-tags-in', p.tags || ''); safeSet('proj-icon-file', ''); safeSet('proj-gallery-files', ''); safeSet('proj-clear-gallery', 'false');
             if(p.icon && p.icon.startsWith('http')) { safeSet('proj-icon-url', p.icon); } else { safeSet('proj-icon-url', ''); }
-            
-            if(p.gallery && p.gallery.length && p.gallery[0].startsWith('http')) {
-                safeSet('proj-gallery-urls', p.gallery.join(', '));
-            } else { safeSet('proj-gallery-urls', ''); }
-
+            if(p.gallery && p.gallery.length && p.gallery[0].startsWith('http')) { safeSet('proj-gallery-urls', p.gallery.join(', ')); } else { safeSet('proj-gallery-urls', ''); }
             const edEl = document.getElementById('proj-editor'); if(edEl) edEl.innerHTML = p.desc || '';
             const draftEl = document.getElementById('proj-draft'); if(draftEl) draftEl.checked = p.isDraft || false;
-            
-            const catSelect = document.getElementById('proj-category-select');
-            if(catSelect) {
-                catSelect.innerHTML = STATE.categories.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
-                catSelect.value = p.catId;
-            }
+            const catSelect = document.getElementById('proj-category-select'); if(catSelect) { catSelect.innerHTML = STATE.categories.map(c => `<option value="${c.id}">${c.name}</option>`).join(''); catSelect.value = p.catId; }
             window.openModal('modal-proj'); 
         };
         
@@ -2585,61 +2550,26 @@
             if(!STATE.isAdmin) return;
             const nameEl = document.getElementById('proj-name');
             if(!nameEl || !nameEl.value.trim()) { if(nameEl) { nameEl.classList.add('error-shake'); setTimeout(() => nameEl.classList.remove('error-shake'), 400); } return window.showToast("Title required", true); }
-
             const getVal = (id) => { const el = document.getElementById(id); return el ? el.value.trim() : ''; };
-            const idInput = getVal('proj-id'); const name = nameEl.value.trim(); const orderInput = parseInt(getVal('proj-order')) || 0; const tags = getVal('proj-tags-in'); 
-            const isDraft = document.getElementById('proj-draft')?.checked || false;
-            
-            const catSelect = document.getElementById('proj-category-select'); 
-            let targetCatId = catSelect ? catSelect.value : STATE.activeCat;
-            if(!targetCatId && STATE.categories.length > 0) targetCatId = STATE.categories[0].id;
-            
-            if(!targetCatId) return window.showToast("Create a workspace first!", true);
-            
-            const btn = document.getElementById('save-proj-btn'); if(btn) { btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Uploading...'; }
-            
+            const idInput = getVal('proj-id'); const name = nameEl.value.trim(); const orderInput = parseInt(getVal('proj-order')) || 0; const tags = getVal('proj-tags-in'); const isDraft = document.getElementById('proj-draft')?.checked || false;
+            const catSelect = document.getElementById('proj-category-select'); const targetCatId = catSelect ? catSelect.value : STATE.activeCat;
+            if(!targetCatId) return window.showToast("No workspace selected", true);
+            const btn = document.getElementById('save-proj-btn'); if(btn) { btn.disabled = true; btn.innerHTML = '<i class=\"fas fa-spinner fa-spin\"></i> Uploading...'; }
             try {
                 const existing = idInput ? STATE.projects.find(x => x.id === idInput) : null;
-                
                 let icon = getVal('proj-icon-url') || (existing ? existing.icon : 'https://placehold.co/400x400/10b981/ffffff?text=App'); 
-                const iconFileInput = document.getElementById('proj-icon-file');
-                if(iconFileInput && iconFileInput.files[0]) icon = await window.fileToBase64(iconFileInput.files[0], 300, 0.7, '1/1');
-                
-                let gallery = []; 
-                const clearGalEl = document.getElementById('proj-clear-gallery'); const clearGal = clearGalEl ? clearGalEl.value === 'true' : false; 
-                const gallFileInput = document.getElementById('proj-gallery-files');
-                const gallFiles = gallFileInput ? gallFileInput.files : [];
-                
-                const rawGalleryUrls = getVal('proj-gallery-urls');
-                if (rawGalleryUrls) {
-                    gallery = rawGalleryUrls.split(',').map(url => url.trim()).filter(url => url !== '');
-                }
-
-                if(gallFiles.length > 0) { 
-                    const scaleWidth = gallFiles.length > 3 ? 500 : 700; const scaleQuality = gallFiles.length > 3 ? 0.5 : 0.6;
-                    for(let f of gallFiles) { gallery.push(await window.fileToBase64(f, scaleWidth, scaleQuality, '16/9')); }
-                } else if (gallery.length === 0 && !clearGal && existing && existing.gallery) { 
-                    gallery = existing.gallery; 
-                }
+                const iconFileInput = document.getElementById('proj-icon-file'); if(iconFileInput && iconFileInput.files[0]) icon = await window.fileToBase64(iconFileInput.files[0], 300, 0.7, '1/1');
+                let gallery = []; const clearGalEl = document.getElementById('proj-clear-gallery'); const clearGal = clearGalEl ? clearGalEl.value === 'true' : false; const gallFileInput = document.getElementById('proj-gallery-files'); const gallFiles = gallFileInput ? gallFileInput.files : [];
+                const rawGalleryUrls = getVal('proj-gallery-urls'); if (rawGalleryUrls) { gallery = rawGalleryUrls.split(',').map(url => url.trim()).filter(url => url !== ''); }
+                if(gallFiles.length > 0) { const scaleWidth = gallFiles.length > 3 ? 500 : 700; const scaleQuality = gallFiles.length > 3 ? 0.5 : 0.6; for(let f of gallFiles) { gallery.push(await window.fileToBase64(f, scaleWidth, scaleQuality, '16/9')); } } else if (gallery.length === 0 && !clearGal && existing && existing.gallery) { gallery = existing.gallery; }
                 if(!gallery.length) gallery = [icon];
-                
                 let finalLink = getVal('proj-link-in'); if(finalLink && !finalLink.startsWith('http')) finalLink = 'https://' + finalLink;
                 const desc = document.getElementById('proj-editor')?.innerHTML || '';
-                
                 const payload = { id: idInput || ('proj_' + Date.now()), catId: targetCatId, name, tags, isDraft, icon, gallery, order: orderInput, desc: window.sanitizeRichHTML(desc), link: finalLink };
-                
                 let tempProjects = JSON.parse(JSON.stringify(STATE.projects));
-                if(existing) { const idx = tempProjects.findIndex(x => x.id === idInput); tempProjects[idx] = payload; } 
-                else { tempProjects.push(payload); }
-
-                if(window.getByteSize(JSON.stringify(tempProjects)) > 2000000) { window.showToast("Payload limit exceeded.", true); } 
-                else { 
-                    STATE.projects = tempProjects; 
-                    sessionStorage.removeItem('proj_draft'); 
-                    if(await window.syncRemote('projects_list', STATE.projects)) { window.showToast("Project Saved"); window.closeModals(); window.renderProjects(); } 
-                }
-            } catch (err) { window.showToast("Failed to save project: " + err.message, true); } 
-            finally { if(btn) { btn.disabled = false; btn.innerHTML = 'Save Project'; } }
+                if(existing) { const idx = tempProjects.findIndex(x => x.id === idInput); tempProjects[idx] = payload; } else { tempProjects.push(payload); }
+                if(window.getByteSize(JSON.stringify(tempProjects)) > 2000000) { window.showToast("Payload limit exceeded.", true); } else { STATE.projects = tempProjects; sessionStorage.removeItem('proj_draft'); if(await window.syncRemote('projects_list', STATE.projects)) { window.showToast("Project Saved"); window.closeModals(); window.renderProjects(); } }
+            } catch (err) { window.showToast("Failed to save project: " + err.message, true); } finally { if(btn) { btn.disabled = false; btn.innerHTML = 'Save Project'; } }
         };
 
         window.triggerDelete = (id) => { 
