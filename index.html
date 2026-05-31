@@ -2552,7 +2552,7 @@
 
         // --- 9. FORM SUBMISSIONS ---
         window.openSkillEditModal = (id = null) => {
-            const safeSet = (idName, val) => { const el = document.getElementById(idName); if(el) value = val; };
+            const safeSet = (idName, val) => { const el = document.getElementById(idName); if(el) el.value = val; };
             if (id) {
                 const s = STATE.skills.find(x => x.id === id); if(!s) return;
                 safeSet('skill-id', s.id); safeSet('skill-name', s.name || ''); safeSet('skill-order', s.order !== undefined ? s.order : 99);
@@ -2643,6 +2643,15 @@
                 else { STATE.profile = payload; if(await window.syncRemote('profile_main', payload)) { window.showToast("Profile Updated"); window.applyAccentStyle(payload.accentColor, payload.accentColorRgb, payload.accentColorDark); window.closeModals(); window.renderAll(); } }
             } catch (err) { window.showToast("Failed to save profile: " + err.message, true); } 
             finally { if(btn) { btn.disabled = false; btn.innerHTML = 'Save Identity Profile'; } }
+        };
+
+        window.toggleExpCurrent = (el) => {
+            const durEl = document.getElementById('exp-duration');
+            if(durEl) {
+                durEl.disabled = el.checked;
+                if(el.checked) durEl.classList.add('opacity-50');
+                else durEl.classList.remove('opacity-50');
+            }
         };
 
         window.openExpModal = () => { 
