@@ -987,6 +987,15 @@
             document.documentElement.style.setProperty('--primary-emerald-dark', dark || '#059669');
         };
 
+        window.setThemeAccent = (color, rgb, dark) => {
+            const safeSet = (id, val) => { const el = document.getElementById(id); if(el) el.value = val; };
+            safeSet('edit-accent', color);
+            safeSet('edit-accent-rgb', rgb);
+            safeSet('edit-accent-dark', dark);
+            window.applyAccentStyle(color, rgb, dark);
+            window.showToast("Theme accent preview applied.");
+        };
+
         // --- 1. CORE SOURCE ANCHORS ---
         const SOURCE_URL = localStorage.getItem('cfg_supa_url') || "https://rxkdpaipierhdwxrfdev.supabase.co"; // __URL_ANCHOR__
         const SOURCE_KEY = localStorage.getItem('cfg_supa_key') || "sb_publishable_kvyQaqzFkBni-41PYLZTDg_Jd4D3GLX"; // __KEY_ANCHOR__
@@ -2543,7 +2552,7 @@
 
         // --- 9. FORM SUBMISSIONS ---
         window.openSkillEditModal = (id = null) => {
-            const safeSet = (idName, val) => { const el = document.getElementById(idName); if(el) el.value = val; };
+            const safeSet = (idName, val) => { const el = document.getElementById(idName); if(el) value = val; };
             if (id) {
                 const s = STATE.skills.find(x => x.id === id); if(!s) return;
                 safeSet('skill-id', s.id); safeSet('skill-name', s.name || ''); safeSet('skill-order', s.order !== undefined ? s.order : 99);
