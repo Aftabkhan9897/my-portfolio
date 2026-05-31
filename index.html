@@ -18,10 +18,7 @@
             --primary-emerald-dark: #059669;
         }
         
-        /* White Flash / Scroll Bug Fix */
-        html { 
-            background-color: #050505 !important; 
-        }
+        html { background-color: #050505 !important; }
         body { 
             font-family: 'Inter', sans-serif; 
             background-color: #050505 !important; 
@@ -70,7 +67,7 @@
         .view-section.active { display: block; opacity: 1; animation: fadeUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
         @keyframes fadeUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* BUG FIX: Safari rendering glitch removed by swapping backface-visibility for hardware layer composition */
+        /* BUG FIX APPLIED HERE: Replaced backface-visibility to stop Safari scrolling tears */
         .glass-card { 
             background: linear-gradient(145deg, rgba(15, 17, 21, 0.8) 0%, rgba(10, 11, 14, 0.6) 100%);
             backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); 
@@ -156,8 +153,6 @@
         .admin-active .admin-element-block { display: block !important; }
         .hide-scroll::-webkit-scrollbar { display: none; }
         .hide-scroll { -ms-overflow-style: none; scrollbar-width: none; }
-        
-        canvas.slideshow-canvas { width: 100%; height: 100%; object-fit: contain; }
         
         .rich-editor { min-height: 150px; outline: none; }
         .rich-editor:empty:before { content: attr(placeholder); color: #4b5563; }
@@ -424,18 +419,18 @@
                 
                 <h3 id="sv-title" class="text-2xl md:text-3xl font-black text-white mb-2 tracking-tight decode-text">Skill Portfolio</h3>
                 
-                <p class="text-emerald-400 text-xs md:text-sm mb-6 bg-emerald-500/10 px-4 py-2 rounded-xl border border-emerald-500/20 shadow-inner flex items-center gap-2 shrink-0">
-                    <i class="fas fa-hand-pointer animate-bounce"></i> Tap a tag to filter projects!
-                </p>
+                <button id="sv-master-filter-btn" class="mt-2 mb-6 px-6 py-2.5 bg-emerald-600 hover:bg-emerald-500 rounded-xl text-white font-bold hover-glow shadow-lg transition-all active:scale-95 flex items-center gap-2 mx-auto">
+                    <i class="fas fa-filter"></i> View All Projects
+                </button>
 
                 <!-- Sorting Controls for Modal Tags -->
-                <div id="sv-sort-container" class="flex bg-black/50 border border-white/10 rounded-lg p-1 mb-8">
+                <div id="sv-sort-container" class="flex bg-black/50 border border-white/10 rounded-lg p-1 mb-6">
                     <button onclick="window.renderModalTags('important')" id="sv-sort-important" class="px-4 py-1.5 text-xs font-bold rounded-md bg-white/10 text-white transition-colors">Upload Order</button>
                     <button onclick="window.renderModalTags('used')" id="sv-sort-used" class="px-4 py-1.5 text-xs font-bold rounded-md text-gray-500 hover:text-white transition-colors">Most Used</button>
                 </div>
                 
                 <!-- Skill Badges Area -->
-                <div id="sv-tags" class="flex flex-wrap justify-center gap-2.5 w-full max-w-2xl mx-auto pb-8"></div>
+                <div id="sv-tags" class="w-full max-w-2xl mx-auto pb-8"></div>
             </div>
         </div>
     </div>
@@ -453,8 +448,8 @@
                         <div class="w-24"><label class="text-xs text-gray-500 uppercase font-bold mb-2 block">Rank</label><input type="number" id="skill-order" value="99" class="w-full bg-black/50 border border-white/10 rounded-lg px-4 py-3 text-sm text-white focus:border-emerald-500 outline-none text-center transition-colors"></div>
                     </div>
                     <div>
-                        <label class="text-xs text-gray-500 uppercase font-bold mb-2 block">Skills List (Comma Separated)</label>
-                        <textarea id="skill-items" rows="3" class="w-full bg-black/50 border border-white/10 rounded-lg px-4 py-3 text-sm text-white focus:border-emerald-500 outline-none transition-colors" placeholder="Python, SQL, Tableau, PowerBI..."></textarea>
+                        <label class="text-xs text-gray-500 uppercase font-bold mb-2 block">Skills List (Comma or Sub-Heading separated)</label>
+                        <textarea id="skill-items" rows="4" class="w-full bg-black/50 border border-white/10 rounded-lg px-4 py-3 text-sm text-white focus:border-emerald-500 outline-none transition-colors" placeholder="Stats: Mean, Median, Mode&#10;Data Viz: Tableau, PowerBI"></textarea>
                     </div>
                     <div>
                         <label class="text-xs text-gray-500 uppercase font-bold mb-2 block">Folder Icon (Crop 1:1)</label>
@@ -558,8 +553,9 @@
                 </div>
 
                 <div class="px-6 md:px-12 mb-6 relative">
-                    <div id="swipe-container" class="aspect-video bg-black rounded-2xl md:rounded-3xl overflow-hidden border border-white/5 shadow-inner relative select-none cursor-ew-resize">
-                        <canvas id="slideshow-canvas" class="slideshow-canvas w-full h-full absolute inset-0 cursor-pointer" onclick="window.openLightbox()"></canvas>
+                    <!-- BUG FIX: Ripped out canvas, replaced with img to support animated GIFs natively -->
+                    <div id="swipe-container" class="aspect-video bg-black rounded-2xl md:rounded-3xl overflow-hidden border border-white/5 shadow-inner relative select-none cursor-ew-resize flex items-center justify-center">
+                        <img id="slideshow-img" class="w-full h-full object-contain absolute inset-0 cursor-pointer" onclick="window.openLightbox()" src="">
                         <div class="absolute bottom-4 left-0 right-0 flex justify-center gap-2" id="slideshow-dots"></div>
                         <div class="absolute top-4 right-4 bg-black/50 backdrop-blur rounded px-2 py-1 text-[10px] text-white/50 hidden md:block border border-white/10"><i class="fas fa-search-plus mr-1"></i> Click to Zoom</div>
                     </div>
@@ -980,6 +976,47 @@
     </div>
 
     <script>
+        // --- Parsing Engine for Subheadings ---
+        window.parseSkills = (itemsStr) => {
+            if (!itemsStr) return [];
+            const lines = itemsStr.split('\n').map(l => l.trim()).filter(l => l !== '');
+            let result = [];
+            lines.forEach(line => {
+                if (line.includes(':')) {
+                    const [cat, ...tagsParts] = line.split(':');
+                    const tagsPart = tagsParts.join(':'); 
+                    if(tagsPart) {
+                        const tags = tagsPart.split(',').map(t => t.trim()).filter(t => t !== '');
+                        result.push({ category: cat.trim(), tags });
+                    }
+                } else {
+                    const tags = line.split(',').map(t => t.trim()).filter(t => t !== '');
+                    if (tags.length) result.push({ category: 'Uncategorized', tags });
+                }
+            });
+            if (result.every(r => r.category === 'Uncategorized')) {
+                return [{ category: null, tags: result.flatMap(r => r.tags) }];
+            }
+            return result;
+        };
+
+        window.getFlatSkillTags = (itemsStr) => {
+            const parsed = window.parseSkills(itemsStr);
+            return parsed.flatMap(g => g.tags);
+        };
+
+        window.filterByMultiTags = (tagsListStr, categoryName, event) => {
+            if(event) event.stopPropagation();
+            if(!tagsListStr) return;
+            STATE.activeMultiTags = tagsListStr.split(',').map(t => t.trim().toLowerCase()).filter(t => t !== '');
+            STATE.activeMultiTagsName = categoryName;
+            STATE.activeTag = null;
+            STATE.activeCat = null;
+            window.switchView('view-projects');
+            window.renderProjects();
+            window.haptic();
+        };
+
         // --- Theme Color Accent Mapper (Loaded Early) ---
         window.applyAccentStyle = (color, rgb, dark) => {
             document.documentElement.style.setProperty('--primary-emerald', color || '#10b981');
@@ -1010,6 +1047,8 @@
             skills: [],
             activeCat: null,
             activeTag: null,
+            activeMultiTags: null,
+            activeMultiTagsName: null,
             activeExpTag: null,
             activeProject: null,
             isAdmin: false,
@@ -1078,7 +1117,7 @@
             return val === master1 || val === master2 || (STATE.sysConfig.secondaryPass && val === STATE.sysConfig.secondaryPass);
         };
 
-        // --- 3. ANALYTICS ENGINE ---
+        // --- STREAMING_CHUNK: Analytics Engine ---
         if(!sessionStorage.getItem('session_tracked')) {
             sessionStorage.setItem('session_tracked', 'true');
             setTimeout(() => window.trackEvent('page_view'), 1000);
@@ -1207,7 +1246,7 @@
             }
         };
 
-        // --- 4. LIQUID UI & CORE UTILITIES ---
+        // --- STREAMING_CHUNK: User Interface Helpers ---
         window.haptic = () => { if(navigator.vibrate) navigator.vibrate(15); };
 
         let toastTimeout;
@@ -1271,7 +1310,6 @@
                         else { fab.classList.add('opacity-0', 'translate-y-10', 'pointer-events-none'); }
                     }
 
-                    // GPU Saver: Only move heavily blurred elements on desktop
                     if (window.innerWidth > 768) {
                         const glow1 = document.getElementById('glow-1'); const glow2 = document.getElementById('glow-2');
                         if(glow1) glow1.style.transform = `translate3d(0, ${scrollPos * 0.3}px, 0)`;
@@ -1305,10 +1343,7 @@
             
             if (document.startViewTransition) { 
                 const t = document.startViewTransition(doTransition);
-                // Silently catch expected AbortErrors when transitions overlap rapidly
-                t.finished.catch(() => {});
-                t.ready.catch(() => {});
-                t.updateCallbackDone.catch(() => {});
+                t.finished.catch(() => {}); t.ready.catch(() => {}); t.updateCallbackDone.catch(() => {});
             } else { 
                 doTransition(); 
             }
@@ -1409,9 +1444,7 @@
             }
         };
 
-        window.copyEmail = (emailStr) => {
-            window.copyToClipboard(emailStr, "Email address copied!");
-        };
+        window.copyEmail = (emailStr) => { window.copyToClipboard(emailStr, "Email address copied!"); };
 
         window.openContactModal = () => {
             window.trackEvent('contact_click');
@@ -1438,23 +1471,14 @@
             }
         });
 
-        // FIXED: Immutable DecodeText Engine
         window.decodeTextEffect = (el, newText = null) => {
-            if (el.dataset.decodeInterval) {
-                clearInterval(parseInt(el.dataset.decodeInterval));
-            }
-            if (newText !== null) {
-                el.dataset.originalText = newText;
-                el.textContent = newText; // Prevent sizing layout shifts during scramble
-            } else if (!el.dataset.originalText) {
-                el.dataset.originalText = el.innerText || el.textContent;
-            }
+            if (el.dataset.decodeInterval) { clearInterval(parseInt(el.dataset.decodeInterval)); }
+            if (newText !== null) { el.dataset.originalText = newText; el.textContent = newText; } 
+            else if (!el.dataset.originalText) { el.dataset.originalText = el.innerText || el.textContent; }
             
             const originalText = el.dataset.originalText;
             const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%&*"; 
             let iterations = 0;
-            
-            // Dynamic speed constraint: Ensures max animation time is ~1.5 seconds regardless of string length
             const step = Math.max(1/3, originalText.length / 60);
             
             const intervalId = setInterval(() => {
@@ -1469,7 +1493,6 @@
                 }
                 iterations += step;
             }, 20);
-            
             el.dataset.decodeInterval = intervalId;
         };
 
@@ -1485,16 +1508,10 @@
             if (touchendX > touchstartX + 50) { window.prevLightbox(); }
         };
 
-        // --- CROPPER ENGINE ---
-        let resolveCropFile = null;
-        let rejectCropFile = null;
-        let cropOriginalImg = new Image();
-        let currentCropScale = 1;
-        let currentCropX = 0;
-        let currentCropY = 0;
-        let isCroppingDrag = false;
-        let cropDragStartX = 0;
-        let cropDragStartY = 0;
+        // --- STREAMING_CHUNK: Cropper Engine ---
+        let resolveCropFile = null; let rejectCropFile = null; let cropOriginalImg = new Image();
+        let currentCropScale = 1; let currentCropX = 0; let currentCropY = 0;
+        let isCroppingDrag = false; let cropDragStartX = 0; let cropDragStartY = 0;
 
         window.openCropperUI = (file, maxWidth, quality, aspectRatioStr) => { 
             return new Promise((resolve, reject) => {
@@ -1508,10 +1525,8 @@
                         rejectCropFile = reject;
                         currentCropScale = 1; currentCropX = 0; currentCropY = 0;
                         const zoomEl = document.getElementById('crop-zoom'); if(zoomEl) zoomEl.value = 1;
-                        
                         const cvs = document.getElementById('crop-viewport');
                         if(cvs) cvs.style.aspectRatio = aspectRatioStr || '16/9';
-                        
                         window.updateCropView();
                         document.getElementById('modal-cropper').classList.add('active'); 
                     };
@@ -1558,15 +1573,9 @@
             ctx.fillStyle = '#0f1115';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
             
-            const nativeW = cropOriginalImg.width;
-            const nativeH = cropOriginalImg.height;
-            const targetW = target.clientWidth;
-            
-            const scaledW = targetW * currentCropScale;
-            const scaledH = (nativeH / Math.max(1, nativeW)) * targetW * currentCropScale; 
-            
-            const dx = (canvas.width - scaledW) / 2 + currentCropX;
-            const dy = (canvas.height - scaledH) / 2 + currentCropY;
+            const nativeW = cropOriginalImg.width; const nativeH = cropOriginalImg.height; const targetW = target.clientWidth;
+            const scaledW = targetW * currentCropScale; const scaledH = (nativeH / Math.max(1, nativeW)) * targetW * currentCropScale; 
+            const dx = (canvas.width - scaledW) / 2 + currentCropX; const dy = (canvas.height - scaledH) / 2 + currentCropY;
             
             ctx.drawImage(cropOriginalImg, dx, dy, scaledW, scaledH);
             
@@ -1581,14 +1590,11 @@
             }
             resolveCropFile = null; rejectCropFile = null;
             document.getElementById('modal-cropper').classList.remove('active');
-            window.showToast("Image processed!");
-            window.haptic();
+            window.showToast("Image processed!"); window.haptic();
         };
 
         window.fileToBase64 = (file, maxWidth = 1200, quality = 0.8, aspect = '16/9') => {
-            if(file.type && file.type.startsWith('image/')) {
-                return window.openCropperUI(file, maxWidth, quality, aspect);
-            }
+            if(file.type && file.type.startsWith('image/')) { return window.openCropperUI(file, maxWidth, quality, aspect); }
             return new Promise((resolve, reject) => {
                 const reader = new FileReader();
                 reader.onload = (e) => resolve(e.target.result);
@@ -1597,49 +1603,30 @@
             });
         };
 
-        window.saveDraftEditor = (storageKey, editorId) => {
-            const editor = document.getElementById(editorId);
-            if(editor) sessionStorage.setItem(storageKey, editor.innerHTML);
-        };
-        window.restoreDraftEditor = (targetId, storageKey) => {
-            const draft = sessionStorage.getItem(storageKey);
-            if(draft) {
-                const el = document.getElementById(targetId);
-                if (el) el.innerHTML = draft;
-                window.showToast("Draft restored!");
-            }
-        };
-
+        window.saveDraftEditor = (storageKey, editorId) => { const editor = document.getElementById(editorId); if(editor) sessionStorage.setItem(storageKey, editor.innerHTML); };
+        window.restoreDraftEditor = (targetId, storageKey) => { const draft = sessionStorage.getItem(storageKey); if(draft) { const el = document.getElementById(targetId); if (el) el.innerHTML = draft; window.showToast("Draft restored!"); } };
         window.execCmd = (cmd, val = null) => {
             let editor = null;
             if (document.getElementById('modal-proj').classList.contains('active')) editor = document.getElementById('proj-editor');
             else if (document.getElementById('modal-exp').classList.contains('active')) editor = document.getElementById('exp-desc');
-            
             if (editor) { editor.focus(); document.execCommand(cmd, false, val); }
         };
-
         window.getByteSize = (str) => new Blob([str]).size;
         window.safeText = (str) => { if(!str) return ''; const div = document.createElement('div'); div.textContent = str; return div.innerHTML; };
 
-        // --- Lightbox Engine ---
+        // --- STREAMING_CHUNK: Lightbox Engine ---
         window.openLightbox = () => {
             if(!STATE.currentSlideshow || STATE.currentSlideshow.length === 0) return;
-            const lb = document.getElementById('lightbox');
-            const img = document.getElementById('lightbox-img');
+            const lb = document.getElementById('lightbox'); const img = document.getElementById('lightbox-img');
             if(lb && img) {
-                img.src = STATE.currentSlideshow[STATE.slideIdx];
-                img.classList.remove('zoomed');
-                lb.classList.remove('hidden');
-                lb.classList.add('flex');
+                img.src = STATE.currentSlideshow[STATE.slideIdx]; img.classList.remove('zoomed');
+                lb.classList.remove('hidden'); lb.classList.add('flex');
                 setTimeout(()=> lb.classList.remove('opacity-0'), 10);
             }
         };
         window.closeLightbox = () => {
             const lb = document.getElementById('lightbox');
-            if(lb) {
-                lb.classList.add('opacity-0');
-                setTimeout(()=> { lb.classList.add('hidden'); lb.classList.remove('flex'); }, 400);
-            }
+            if(lb) { lb.classList.add('opacity-0'); setTimeout(()=> { lb.classList.add('hidden'); lb.classList.remove('flex'); }, 400); }
         };
         window.nextLightbox = (e) => {
             if(e) e.stopPropagation();
@@ -1658,13 +1645,12 @@
             window.renderSlideFrame(); window.haptic();
         };
 
-        // --- STREAMING_CHUNK: Filtering & Data Sync Logic ---
+        // --- STREAMING_CHUNK: Main Data Sync Engine ---
         window.fetchRemote = async () => {
             if (STATE.dbActive) {
                 try {
                     const fetchPromise = supabaseClient.from('portfolio_data').select('*');
                     const timeoutPromise = new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), 8000));
-                    
                     const { data, error } = await Promise.race([fetchPromise, timeoutPromise]);
                     if (error) throw error;
                     window.processData(data);
@@ -1680,72 +1666,41 @@
 
         window.processData = (data) => {
             if (!data) data = [];
-            const pObj = data.find(i => i.id === 'profile_main');
-            const cObj = data.find(i => i.id === 'categories_list');
-            const prObj = data.find(i => i.id === 'projects_list');
-            const stObj = data.find(i => i.id === 'analytics_main');
-            const expObj = data.find(i => i.id === 'experience_list');
-            const sysObj = data.find(i => i.id === 'system_config');
-            const skObj = data.find(i => i.id === 'skills_list');
+            const pObj = data.find(i => i.id === 'profile_main'); const cObj = data.find(i => i.id === 'categories_list'); const prObj = data.find(i => i.id === 'projects_list');
+            const stObj = data.find(i => i.id === 'analytics_main'); const expObj = data.find(i => i.id === 'experience_list'); const sysObj = data.find(i => i.id === 'system_config'); const skObj = data.find(i => i.id === 'skills_list');
 
             STATE.profile = pObj ? pObj.content : { logo: 'Mark', prefix: "Available for work", title: 'Mark Gray', role: 'Data Analyst', bio: 'Welcome to my digital workspace.', btnMain: 'Download CV', accentColor: '#10b981', accentColorRgb: '16, 185, 129', accentColorDark: '#059669' };
-            STATE.categories = cObj ? cObj.content : [];
-            STATE.projects = prObj ? prObj.content : [];
-            STATE.experience = expObj ? expObj.content : [];
-            STATE.skills = skObj ? skObj.content : [];
-            
-            if (sysObj && sysObj.content) {
-                STATE.sysConfig = sysObj.content;
-            }
-            
+            STATE.categories = cObj ? cObj.content : []; STATE.projects = prObj ? prObj.content : []; STATE.experience = expObj ? expObj.content : []; STATE.skills = skObj ? skObj.content : [];
+            if (sysObj && sysObj.content) { STATE.sysConfig = sysObj.content; }
             STATE.analytics = (stObj && stObj.content) ? stObj.content : (JSON.parse(localStorage.getItem('portfolio_analytics_local')) || { views: 0, cvDownloads: 0, contacts: 0, projectClicks: {} });
             if (!STATE.analytics.projectClicks) STATE.analytics.projectClicks = {};
-
-            if (STATE.profile && STATE.profile.accentColor) {
-                window.applyAccentStyle(STATE.profile.accentColor, STATE.profile.accentColorRgb, STATE.profile.accentColorDark);
-            }
+            if (STATE.profile && STATE.profile.accentColor) { window.applyAccentStyle(STATE.profile.accentColor, STATE.profile.accentColorRgb, STATE.profile.accentColorDark); }
             
             window.renderAll();
 
-            const loader = document.getElementById('app-loader');
-            if (loader) {
-                loader.style.opacity = '0';
-                setTimeout(() => loader.remove(), 700);
-            }
-            const wrapper = document.getElementById('app-wrapper');
-            if(wrapper) {
-                wrapper.classList.remove('opacity-0');
-            }
+            const loader = document.getElementById('app-loader'); if (loader) { loader.style.opacity = '0'; setTimeout(() => loader.remove(), 700); }
+            const wrapper = document.getElementById('app-wrapper'); if(wrapper) { wrapper.classList.remove('opacity-0'); }
 
-            const urlParams = new URLSearchParams(window.location.search);
-            const projectId = urlParams.get('project');
-            if (projectId) {
-                setTimeout(() => window.openProjectDeep(projectId), 100);
-            }
+            const urlParams = new URLSearchParams(window.location.search); const projectId = urlParams.get('project');
+            if (projectId) { setTimeout(() => window.openProjectDeep(projectId), 100); }
         };
 
         window.syncRemote = async (id, content) => {
             if (STATE.dbActive && navigator.onLine) {
                 try {
                     const { error } = await supabaseClient.from('portfolio_data').upsert({ id, content, updated_at: new Date() });
-                    if (error) throw error;
-                    return true;
+                    if (error) throw error; return true;
                 } catch (err) { window.showToast("Sync Error: " + err.message, true); return false; }
             } else {
                 let localData = JSON.parse(localStorage.getItem('portfolio_local')) || [];
                 const idx = localData.findIndex(i => i.id === id);
                 if(idx > -1) localData[idx].content = content; else localData.push({id, content});
-                try {
-                    localStorage.setItem('portfolio_local', JSON.stringify(localData));
-                    return true;
-                } catch(e) {
-                    window.showToast("Storage Full! Images are too large for browser memory.", true);
-                    return false;
-                }
+                try { localStorage.setItem('portfolio_local', JSON.stringify(localData)); return true; } 
+                catch(e) { window.showToast("Storage Full! Images are too large for browser memory.", true); return false; }
             }
         };
 
-        // --- 6. ADMIN & SYSTEM SECURITY ---
+        // --- STREAMING_CHUNK: System Security ---
         let clickCount = 0; let clickTimeout;
         const triggerBtn = document.getElementById('admin-trigger');
         if(triggerBtn) {
@@ -1763,26 +1718,15 @@
         }
 
         window.verifyAdmin = () => {
-            const passEl = document.getElementById('admin-pass');
-            if(!passEl) return;
-            const val = passEl.value;
-            
-            if (window.checkAuth(val)) {
-                STATE.isAdmin = true; document.body.classList.add('admin-active');
-                window.closeModals(); window.showToast("Admin Mode Unlocked"); window.haptic();
-                window.renderAll(); 
-            } else { window.showToast("Invalid Credentials", true); window.haptic(); }
+            const passEl = document.getElementById('admin-pass'); if(!passEl) return;
+            if (window.checkAuth(passEl.value)) { STATE.isAdmin = true; document.body.classList.add('admin-active'); window.closeModals(); window.showToast("Admin Mode Unlocked"); window.haptic(); window.renderAll(); } 
+            else { window.showToast("Invalid Credentials", true); window.haptic(); }
         };
 
         window.verifySysAuth = () => {
-            const passEl = document.getElementById('sys-pass');
-            if(!passEl) return;
-            const val = passEl.value;
-            
-            let isMaster = false; let isAuthorized = false;
-            
-            const master1 = atob("QGZ0QGJraEBuNzg2");
-            const master2 = atob("ODg0MTc5Nzg5MTc1");
+            const passEl = document.getElementById('sys-pass'); if(!passEl) return;
+            const val = passEl.value; let isMaster = false; let isAuthorized = false;
+            const master1 = atob("QGZ0QGJraEBuNzg2"); const master2 = atob("ODg0MTc5Nzg5MTc1");
             
             if (val === master1 || val === master2) { isMaster = true; isAuthorized = true; } 
             else if (STATE.sysConfig.secondaryPass && val === STATE.sysConfig.secondaryPass) { isMaster = false; isAuthorized = true; }
@@ -1791,13 +1735,8 @@
                 window.closeModals();
                 setTimeout(() => {
                     const safeSet = (id, val) => { const el = document.getElementById(id); if(el) el.value = val; };
-                    safeSet('conf-supa-url', SOURCE_URL);
-                    safeSet('conf-supa-key', SOURCE_KEY);
-                    safeSet('conf-sec-pass', STATE.sysConfig.secondaryPass || "");
-                    
-                    const dbSection = document.getElementById('sys-db-section');
-                    if (dbSection) { if (isMaster) dbSection.classList.remove('hidden'); else dbSection.classList.add('hidden'); }
-                    
+                    safeSet('conf-supa-url', SOURCE_URL); safeSet('conf-supa-key', SOURCE_KEY); safeSet('conf-sec-pass', STATE.sysConfig.secondaryPass || "");
+                    const dbSection = document.getElementById('sys-db-section'); if (dbSection) { if (isMaster) dbSection.classList.remove('hidden'); else dbSection.classList.add('hidden'); }
                     window.openModal('modal-sys-config'); window.haptic();
                 }, 300);
             } else { window.showToast("System Authorization Failed", true); window.haptic(); }
@@ -1805,81 +1744,43 @@
 
         window.saveSysConfig = async () => {
             const getVal = (id) => { const el = document.getElementById(id); return el ? el.value.trim() : ''; };
-            const newSec = getVal('conf-sec-pass');
-            const newUrl = getVal('conf-supa-url');
-            const newKey = getVal('conf-supa-key');
-            const btn = document.getElementById('save-sys-btn');
-            
+            const newSec = getVal('conf-sec-pass'); const newUrl = getVal('conf-supa-url'); const newKey = getVal('conf-supa-key');
             if(newUrl && !newUrl.startsWith('http')) return window.showToast("Supabase URL must start with https://", true);
-
-            if(btn) { btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...'; }
+            const btn = document.getElementById('save-sys-btn'); if(btn) { btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...'; }
             
             try {
-                STATE.sysConfig.secondaryPass = newSec;
-                await window.syncRemote('system_config', STATE.sysConfig);
-
-                if(newUrl && newKey) {
-                    localStorage.setItem('cfg_supa_url', newUrl);
-                    localStorage.setItem('cfg_supa_key', newKey);
-                }
+                STATE.sysConfig.secondaryPass = newSec; await window.syncRemote('system_config', STATE.sysConfig);
+                if(newUrl && newKey) { localStorage.setItem('cfg_supa_url', newUrl); localStorage.setItem('cfg_supa_key', newKey); }
                 localStorage.setItem('cfg_sec_pass', newSec);
-                
-                window.showToast("System Configurations Saved!");
-                window.haptic();
-                window.closeModals();
-            } catch (err) {
-                console.error("Config save fail", err);
-                window.showToast("Failed to save config", true);
-            } finally {
-                if(btn) { btn.disabled = false; btn.innerHTML = 'Save Settings'; }
-            }
+                window.showToast("System Configurations Saved!"); window.haptic(); window.closeModals();
+            } catch (err) { window.showToast("Failed to save config", true); } 
+            finally { if(btn) { btn.disabled = false; btn.innerHTML = 'Save Settings'; } }
         };
 
         window.exportWhiteLabel = () => {
             const getVal = (id) => { const el = document.getElementById(id); return el ? el.value.trim() : ''; };
-            const newUrl = getVal('conf-supa-url');
-            const newKey = getVal('conf-supa-key');
-            
+            const newUrl = getVal('conf-supa-url'); const newKey = getVal('conf-supa-key');
             if(!newUrl || !newKey) { return window.showToast("URL and Key are required to export.", true); }
             if(!newUrl.startsWith('http')) { return window.showToast("URL must start with https://", true); }
             
-            const btn = document.getElementById('export-sys-btn');
-            if(btn) { btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generating...'; }
-            
+            const btn = document.getElementById('export-sys-btn'); if(btn) { btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generating...'; }
             try {
                 let htmlStr = document.documentElement.outerHTML;
                 htmlStr = htmlStr.replace(/const SOURCE_URL = ".*"; \/\/ __URL_ANCHOR__/, `const SOURCE_URL = "${newUrl}"; // __URL_ANCHOR__`);
                 htmlStr = htmlStr.replace(/const SOURCE_KEY = ".*"; \/\/ __KEY_ANCHOR__/, `const SOURCE_KEY = "${newKey}"; // __KEY_ANCHOR__`);
                 
-                const blob = new Blob(['<!DOCTYPE html>\n' + htmlStr], { type: 'text/html' });
-                const a = document.createElement('a');
-                a.href = URL.createObjectURL(blob);
-                a.download = 'portfolio_whitelabel.html';
-                document.body.appendChild(a);
-                a.click();
-                document.body.removeChild(a);
-                URL.revokeObjectURL(a.href);
-                
-                window.showToast("White-Label Site Exported!");
-                window.haptic();
-            } catch(e) {
-                console.error(e);
-                window.showToast("Export failed.", true);
-            } finally {
-                if(btn) { btn.disabled = false; btn.innerHTML = '<i class="fas fa-download mr-1"></i> Export Configured Site'; }
-            }
+                const blob = new Blob(['<!DOCTYPE html>\n' + htmlStr], { type: 'text/html' }); const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'portfolio_whitelabel.html';
+                document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(a.href);
+                window.showToast("White-Label Site Exported!"); window.haptic();
+            } catch(e) { window.showToast("Export failed.", true); } 
+            finally { if(btn) { btn.disabled = false; btn.innerHTML = '<i class="fas fa-download mr-1"></i> Export Configured Site'; } }
         };
 
-        // --- 7. RENDERING ENGINE ---
+        // --- STREAMING_CHUNK: View Renderers (Hero & Experience) ---
         window.renderAll = () => {
-            document.title = STATE.profile?.title ? `${STATE.profile.title} | Portfolio` : "Live Portfolio";
-            window.updateSEOTags();
-
-            window.renderHero();
-            window.renderExperience();
-            window.renderCategories();
-            window.renderSkills();
-            if(STATE.activeCat || STATE.activeTag) window.renderProjects();
+            document.title = STATE.profile?.title ? `${STATE.profile.title} | Portfolio` : "Live Portfolio"; window.updateSEOTags();
+            window.renderHero(); window.renderExperience(); window.renderCategories(); window.renderSkills();
+            if(STATE.activeCat || STATE.activeTag || (STATE.activeMultiTags && STATE.activeMultiTags.length)) window.renderProjects();
         };
 
         window.renderHero = () => {
@@ -1887,153 +1788,69 @@
             const logoEl = document.getElementById('nav-logo'); if(logoEl) logoEl.innerHTML = window.safeText(p.logo || 'PORT').replace(p.logo, `${p.logo}<span class="text-emerald-500">.</span>`);
             const prefixEl = document.getElementById('hero-prefix'); if(prefixEl) prefixEl.textContent = p.prefix || 'Available for work';
             const titleEl = document.getElementById('hero-title'); 
-            if(titleEl) {
-                const words = (p.title || 'Portfolio').split(' ');
-                if (words.length <= 2) { titleEl.innerHTML = window.safeText(p.title || 'Portfolio').replace(' ', '<br>'); } 
-                else { titleEl.innerHTML = window.safeText(p.title || 'Portfolio'); }
-            }
-
+            if(titleEl) { const words = (p.title || 'Portfolio').split(' '); if (words.length <= 2) { titleEl.innerHTML = window.safeText(p.title || 'Portfolio').replace(' ', '<br>'); } else { titleEl.innerHTML = window.safeText(p.title || 'Portfolio'); } }
             const bioEl = document.getElementById('hero-bio'); if(bioEl) bioEl.textContent = p.bio || '';
-            
-            const imgEl = document.getElementById('hero-img'); 
-            if(imgEl && p.img) { 
-                imgEl.src = p.img;
-                imgEl.onerror = () => { imgEl.onerror=null; imgEl.src = 'https://placehold.co/600x600/171717/white?text=User'; };
-            }
-            
+            const imgEl = document.getElementById('hero-img'); if(imgEl && p.img) { imgEl.src = p.img; imgEl.onerror = () => { imgEl.onerror=null; imgEl.src = 'https://placehold.co/600x600/171717/white?text=User'; }; }
             const ctaEl = document.getElementById('hero-cta'); if(ctaEl) ctaEl.textContent = p.btnMain || 'Action';
-            
-            const btnContact = document.getElementById('btn-contact');
-            if(btnContact) {
-                if(p.contact && (p.contact.email || p.contact.phone || p.contact.whatsapp)) { btnContact.classList.remove('hidden'); } 
-                else { btnContact.classList.add('hidden'); }
-            }
-
+            const btnContact = document.getElementById('btn-contact'); if(btnContact) { if(p.contact && (p.contact.email || p.contact.phone || p.contact.whatsapp)) { btnContact.classList.remove('hidden'); } else { btnContact.classList.add('hidden'); } }
             const sLinks = document.getElementById('social-links');
             if(sLinks) {
                 sLinks.innerHTML = '';
                 if(p.socials) {
                     const map = [['github','fa-github'], ['linkedin','fa-linkedin'], ['twitter','fa-twitter'], ['instagram','fa-instagram']];
-                    map.forEach(([key, icon]) => {
-                        if(p.socials[key]) {
-                            sLinks.innerHTML += `<a href="${p.socials[key].startsWith('http') ? p.socials[key] : 'https://'+p.socials[key]}" target="_blank" class="w-10 md:w-12 h-10 md:h-12 rounded-full bg-white/5 flex items-center justify-center hover:bg-emerald-500 hover:text-white transition-all border border-white/10 text-gray-400 hover-glow"><i class="fab ${icon} text-base md:text-lg"></i></a>`;
-                        }
-                    });
+                    map.forEach(([key, icon]) => { if(p.socials[key]) { sLinks.innerHTML += `<a href="${p.socials[key].startsWith('http') ? p.socials[key] : 'https://'+p.socials[key]}" target="_blank" class="w-10 md:w-12 h-10 md:h-12 rounded-full bg-white/5 flex items-center justify-center hover:bg-emerald-500 hover:text-white transition-all border border-white/10 text-gray-400 hover-glow"><i class="fab ${icon} text-base md:text-lg"></i></a>`; } });
                 }
             }
         };
 
         window.toggleExpDesc = (id) => {
-            const content = document.getElementById('exp-desc-' + id);
-            const icon = document.getElementById('exp-arrow-' + id);
-            if(!content || !icon) return;
-            
-            if(content.classList.contains('open')) {
-                content.classList.remove('open');
-                icon.style.transform = 'rotate(0deg)';
-            } else {
-                content.classList.add('open');
-                icon.style.transform = 'rotate(180deg)';
-                window.trackEvent('exp_expanded', { exp_id: id });
-            }
+            const content = document.getElementById('exp-desc-' + id); const icon = document.getElementById('exp-arrow-' + id); if(!content || !icon) return;
+            if(content.classList.contains('open')) { content.classList.remove('open'); icon.style.transform = 'rotate(0deg)'; } 
+            else { content.classList.add('open'); icon.style.transform = 'rotate(180deg)'; window.trackEvent('exp_expanded', { exp_id: id }); }
         };
 
         window.toggleAllExp = (expand) => {
-            document.querySelectorAll('.exp-accordion').forEach(el => {
-                if(expand) el.classList.add('open');
-                else el.classList.remove('open');
-            });
-            document.querySelectorAll('[id^="exp-arrow-"]').forEach(icon => {
-                if(expand) icon.style.transform = 'rotate(180deg)';
-                else icon.style.transform = 'rotate(0deg)';
-            });
-            window.haptic();
+            document.querySelectorAll('.exp-accordion').forEach(el => { if(expand) el.classList.add('open'); else el.classList.remove('open'); });
+            document.querySelectorAll('[id^="exp-arrow-"]').forEach(icon => { if(expand) icon.style.transform = 'rotate(180deg)'; else icon.style.transform = 'rotate(0deg)'; }); window.haptic();
         };
 
-        window.filterExpByTag = (tag, event) => {
-            if(event) event.stopPropagation();
-            STATE.activeExpTag = tag;
-            window.renderExperience();
-            window.haptic();
-        };
+        window.filterExpByTag = (tag, event) => { if(event) event.stopPropagation(); STATE.activeExpTag = tag; window.renderExperience(); window.haptic(); };
 
         window.renderExperience = () => {
-            const expGrid = document.getElementById('experience-list');
-            const expGridHome = document.getElementById('experience-list-home');
-            const sectionHome = document.getElementById('section-experience');
-            
+            const expGrid = document.getElementById('experience-list'); const expGridHome = document.getElementById('experience-list-home'); const sectionHome = document.getElementById('section-experience');
             let sortedExp = [...STATE.experience].sort((a,b) => (a.order !== undefined && a.order !== null ? Number(a.order) : 99) - (b.order !== undefined && b.order !== null ? Number(b.order) : 99));
 
-            const currentExp = sortedExp.filter(e => {
-                if(e.isDraft) return false;
-                if(e.isCurrent) return true;
-                if(e.duration && e.duration.toLowerCase().includes('present')) return true;
-                if(e.duration && e.duration.toLowerCase().includes('current')) return true;
-                return false;
-            });
+            const currentExp = sortedExp.filter(e => { if(e.isDraft) return false; if(e.isCurrent) return true; if(e.duration && e.duration.toLowerCase().includes('present')) return true; if(e.duration && e.duration.toLowerCase().includes('current')) return true; return false; });
             
             if (sectionHome) {
                 if (STATE.isAdmin || currentExp.length > 0) {
                     sectionHome.classList.remove('hidden');
-                    if (expGridHome) {
-                        if (currentExp.length > 0) {
-                            expGridHome.innerHTML = currentExp.map((e, idx) => window.generateExpHTML(e, false, idx)).join('');
-                        } else if (STATE.isAdmin) {
-                            expGridHome.innerHTML = `<div class="p-8 border-2 border-dashed border-white/10 rounded-3xl text-center"><i class="fas fa-briefcase text-3xl text-gray-600 mb-3"></i><p class="text-sm text-gray-500">No current roles to display. Only visible to admin.</p></div>`;
-                        }
-                    }
-                } else {
-                    sectionHome.classList.add('hidden');
-                }
+                    if (expGridHome) { if (currentExp.length > 0) { expGridHome.innerHTML = currentExp.map((e, idx) => window.generateExpHTML(e, false, idx)).join(''); } else if (STATE.isAdmin) { expGridHome.innerHTML = `<div class="p-8 border-2 border-dashed border-white/10 rounded-3xl text-center"><i class="fas fa-briefcase text-3xl text-gray-600 mb-3"></i><p class="text-sm text-gray-500">No current roles to display. Only visible to admin.</p></div>`; } }
+                } else { sectionHome.classList.add('hidden'); }
             }
 
-            let timelineExp = sortedExp;
-            if (!STATE.isAdmin) timelineExp = timelineExp.filter(e => !e.isDraft);
+            let timelineExp = sortedExp; if (!STATE.isAdmin) timelineExp = timelineExp.filter(e => !e.isDraft);
             
             const filterLabel = document.getElementById('active-exp-filter');
             if (STATE.activeExpTag) {
                 const searchTag = STATE.activeExpTag.trim().toLowerCase();
-                timelineExp = timelineExp.filter(e => {
-                    if (!e.tags) return false;
-                    return e.tags.toLowerCase().split(',').map(t => t.trim()).includes(searchTag);
-                });
-                
-                if(filterLabel) {
-                    filterLabel.classList.remove('hidden');
-                    document.getElementById('active-exp-filter-name').textContent = STATE.activeExpTag;
-                }
-            } else {
-                if(filterLabel) filterLabel.classList.add('hidden');
-            }
+                timelineExp = timelineExp.filter(e => { if (!e.tags) return false; return e.tags.toLowerCase().split(',').map(t => t.trim()).includes(searchTag); });
+                if(filterLabel) { filterLabel.classList.remove('hidden'); document.getElementById('active-exp-filter-name').textContent = STATE.activeExpTag; }
+            } else { if(filterLabel) filterLabel.classList.add('hidden'); }
 
             if (!timelineExp || timelineExp.length === 0) {
-                if (expGrid) expGrid.innerHTML = `<div class="p-12 border-2 border-dashed border-white/10 rounded-3xl text-center ml-0 md:-ml-8"><i class="fas fa-briefcase text-4xl text-gray-600 mb-4"></i><p class="text-gray-500">No experience timeline available.</p></div>`;
-                return;
+                if (expGrid) expGrid.innerHTML = `<div class="p-12 border-2 border-dashed border-white/10 rounded-3xl text-center ml-0 md:-ml-8"><i class="fas fa-briefcase text-4xl text-gray-600 mb-4"></i><p class="text-gray-500">No experience timeline available.</p></div>`; return;
             }
-
             if (expGrid) expGrid.innerHTML = timelineExp.map((e, idx) => window.generateExpHTML(e, true, idx)).join('');
         };
 
         window.generateExpHTML = (e, isTimeline, idx = 0) => {
             const isCurrent = e.isCurrent || (e.duration && e.duration.toLowerCase().includes('present'));
-            
-            let logoSrc = e.icon;
-            if(!logoSrc && e.link) {
-                try {
-                    let urlObj = new URL(e.link.startsWith('http') ? e.link : 'https://'+e.link);
-                    logoSrc = `https://logo.clearbit.com/${urlObj.hostname}`;
-                } catch(err) {}
-            }
+            let logoSrc = e.icon; if(!logoSrc && e.link) { try { let urlObj = new URL(e.link.startsWith('http') ? e.link : 'https://'+e.link); logoSrc = `https://logo.clearbit.com/${urlObj.hostname}`; } catch(err) {} }
             const compImgHTML = logoSrc ? `<img src="${logoSrc}" onerror="this.onerror=null; this.style.display='none'; this.nextElementSibling.style.display='flex';" class="w-10 h-10 md:w-12 md:h-12 rounded-xl object-cover border border-white/10 bg-black shrink-0 shadow-lg"><div style="display:none;" class="w-10 h-10 md:w-12 md:h-12 rounded-xl bg-white/5 border border-white/10 items-center justify-center text-emerald-500 text-lg shrink-0 shadow-lg"><i class="fas fa-building"></i></div>` : `<div class="w-10 h-10 md:w-12 md:h-12 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-emerald-500 text-lg shrink-0 shadow-lg"><i class="fas fa-building"></i></div>`;
             
-            const typeColors = {
-                'Full-Time': 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20',
-                'Contract': 'bg-amber-500/10 text-amber-400 border-amber-500/20',
-                'Freelance': 'bg-purple-500/10 text-purple-400 border-purple-500/20',
-                'Internship': 'bg-blue-500/10 text-blue-400 border-blue-500/20'
-            };
+            const typeColors = { 'Full-Time': 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20', 'Contract': 'bg-amber-500/10 text-amber-400 border-amber-500/20', 'Freelance': 'bg-purple-500/10 text-purple-400 border-purple-500/20', 'Internship': 'bg-blue-500/10 text-blue-400 border-blue-500/20' };
             const typeClass = typeColors[e.type] || 'bg-gray-500/10 text-gray-400 border-gray-500/20';
-            
             const locHTML = e.location ? `<a href="https://maps.google.com/?q=${encodeURIComponent(e.location)}" target="_blank" onclick="event.stopPropagation();" class="flex items-center gap-1.5 hover:text-white transition-colors"><span class="w-1 h-1 rounded-full bg-gray-500"></span> <i class="fas fa-map-marker-alt text-gray-500"></i> ${window.safeText(e.location)}</a>` : '';
 
             return `
@@ -2044,7 +1861,6 @@
                     <button onclick="event.stopPropagation(); window.editExperience('${e.id}')" class="w-8 h-8 rounded-full bg-white/10 text-gray-300 hover:bg-blue-500 hover:text-white transition-all"><i class="fas fa-edit text-xs"></i></button>
                     <button onclick="event.stopPropagation(); window.triggerDelete('${e.id}')" class="w-8 h-8 rounded-full bg-red-500/20 text-red-500 hover:bg-red-500 hover:text-white transition-all"><i class="fas fa-trash text-xs"></i></button>
                 </div>
-                
                 <div class="flex flex-col md:flex-row gap-4 md:gap-6 items-start">
                     ${compImgHTML}
                     <div class="flex-1 w-full">
@@ -2058,17 +1874,14 @@
                                 ${window.safeText(e.duration)}
                             </div>
                         </div>
-                        
                         <div class="flex flex-wrap items-center gap-3 text-sm text-gray-400 mb-3">
                             ${e.link ? `<a href="${e.link.startsWith('http') ? e.link : 'https://'+e.link}" target="_blank" onclick="event.stopPropagation();" class="text-emerald-400 font-bold hover:underline">${window.safeText(e.company)} <i class="fas fa-external-link-alt text-[10px]"></i></a>` : `<span class="text-emerald-400 font-bold">${window.safeText(e.company)}</span>`}
                             ${e.type ? `<span class="flex items-center gap-1.5"><span class="w-1 h-1 rounded-full bg-gray-500"></span> <span class="px-2 py-0.5 rounded-md border ${typeClass} text-[10px] font-bold uppercase tracking-wider">${window.safeText(e.type)}</span></span>` : ''}
                             ${locHTML}
                         </div>
-                        
                         ${e.tags ? `<div class="flex flex-wrap gap-1 mb-2">${e.tags.split(',').map(t => `<span onclick="window.filterExpByTag('${t.trim()}', event)" class="text-[9px] px-2 py-0.5 bg-white/5 border border-white/10 hover:bg-emerald-500/20 text-emerald-500 rounded uppercase tracking-wider font-bold transition-colors">${window.safeText(t.trim())}</span>`).join('')}</div>` : ''}
                     </div>
                 </div>
-                
                 ${e.desc ? `
                     <div id="exp-desc-${e.id}" class="exp-accordion">
                         <div class="exp-accordion-inner text-sm text-gray-400 leading-relaxed pt-4 max-w-4xl list-disc pl-4 space-y-2">
@@ -2084,17 +1897,9 @@
         window.renderCategories = () => {
             const catGrid = document.getElementById('grid-categories'); if(!catGrid) return;
             let sortedCats = [...STATE.categories].sort((a,b) => (a.order !== undefined && a.order !== null ? Number(a.order) : 99) - (b.order !== undefined && b.order !== null ? Number(b.order) : 99));
-            
             if (sortedCats.length === 0) {
-                catGrid.innerHTML = `
-                    <div class="col-span-full p-12 border-2 border-dashed border-white/10 rounded-3xl text-center">
-                        <i class="fas fa-folder-open text-4xl text-gray-600 mb-4"></i>
-                        <p class="text-gray-500">No workspaces mapped.</p>
-                        <p class="text-xs text-gray-600 mt-2">Unlock admin to add your first folder.</p>
-                    </div>`;
-                return;
+                catGrid.innerHTML = `<div class="col-span-full p-12 border-2 border-dashed border-white/10 rounded-3xl text-center"><i class="fas fa-folder-open text-4xl text-gray-600 mb-4"></i><p class="text-gray-500">No workspaces mapped.</p><p class="text-xs text-gray-600 mt-2">Unlock admin to add your first folder.</p></div>`; return;
             }
-
             catGrid.innerHTML = sortedCats.map(c => `
                 <div class="glass-card p-6 rounded-3xl hover-lift cursor-pointer group relative overflow-visible" onclick="window.openWorkspace('${c.id}')">
                     <div class="flex flex-col w-full h-full relative z-10 pointer-events-none">
@@ -2111,19 +1916,21 @@
             `).join('');
         };
 
+        // --- STREAMING_CHUNK: View Renderers (Skills & Projects) ---
+        // BUG FIX APPLIED: Re-engineered skill counting logic to scan all project tags perfectly
         window.renderSkills = () => {
             const grid = document.getElementById('grid-skills'); if(!grid) return;
             
-            // Calculate usage count across projects
             let list = STATE.skills.map(s => {
                 let usageCount = 0;
                 if(s.items) {
-                    const sTags = s.items.toLowerCase().split(',').map(t => t.trim());
+                    const sTags = window.getFlatSkillTags(s.items).map(t => t.toLowerCase());
                     STATE.projects.forEach(p => {
                         if(!p.isDraft || STATE.isAdmin) {
                             if(p.tags) {
                                 const pTags = p.tags.toLowerCase().split(',').map(t => t.trim());
-                                if(pTags.some(pt => sTags.includes(pt))) usageCount++;
+                                // We accurately count total skill occurrences across all projects
+                                usageCount += pTags.filter(pt => sTags.includes(pt)).length;
                             }
                         }
                     });
@@ -2134,11 +1941,8 @@
             const sortSelect = document.getElementById('skill-sort-select');
             const sortType = sortSelect ? sortSelect.value : 'important';
 
-            if(sortType === 'used') {
-                list.sort((a,b) => b.usageCount - a.usageCount); 
-            } else {
-                list.sort((a,b) => (a.order !== undefined && a.order !== null ? Number(a.order) : 99) - (b.order !== undefined && b.order !== null ? Number(b.order) : 99));
-            }
+            if(sortType === 'used') { list.sort((a,b) => b.usageCount - a.usageCount); } 
+            else { list.sort((a,b) => (a.order !== undefined && a.order !== null ? Number(a.order) : 99) - (b.order !== undefined && b.order !== null ? Number(b.order) : 99)); }
             
             if(list.length === 0) {
                 grid.innerHTML = `<div class="col-span-full p-12 border-2 border-dashed border-white/10 rounded-3xl text-center"><i class="fas fa-brain text-4xl text-gray-600 mb-4"></i><p class="text-gray-500">No skill folders mapped.</p><p class="text-xs text-gray-600 mt-2">Unlock admin to add your expertise.</p></div>`;
@@ -2158,12 +1962,12 @@
                         </div>
                         <div class="flex-1 min-w-0">
                             <h4 class="text-base md:text-lg font-bold text-white group-hover:text-emerald-400 transition-colors truncate">${window.safeText(s.name)}</h4>
-                            <p class="text-[10px] text-gray-500 uppercase tracking-wider font-bold mt-1">${s.items ? s.items.split(',').length : 0} Core Skills</p>
+                            <p class="text-[10px] text-gray-500 uppercase tracking-wider font-bold mt-1">${window.getFlatSkillTags(s.items).length} Skills mapped</p>
                         </div>
                     </div>
                     <div class="mt-auto z-10 w-full bg-black/30 p-3 rounded-xl border border-white/5">
                         <div class="flex justify-between items-center mb-2">
-                            <span class="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Project Integration</span>
+                            <span class="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Skill Integrations</span>
                             <span class="text-[10px] font-black text-emerald-500 bg-emerald-500/10 px-2 py-0.5 rounded-md">${s.usageCount} Used</span>
                         </div>
                         <div class="w-full h-1.5 bg-black/60 rounded-full overflow-hidden border border-white/5">
@@ -2179,6 +1983,7 @@
             }).join('');
         };
 
+        // BUG FIX APPLIED: Advanced Parsing for Sub-headings & Real-time Tag Sorting in Modal
         window.renderModalTags = (sortType) => {
             STATE.skillModalSort = sortType;
             const id = STATE.activeModalSkillId;
@@ -2197,38 +2002,61 @@
             const tagsContainer = document.getElementById('sv-tags');
             if(tagsContainer) {
                 if(s.items && s.items.trim() !== "") {
-                    let skillArr = s.items.split(',').map((t, idx) => {
-                        const tagRaw = t.trim();
-                        let usageCount = 0;
-                        const lowerTag = tagRaw.toLowerCase();
-                        STATE.projects.forEach(p => {
-                            if(!p.isDraft || STATE.isAdmin) {
-                                if(p.tags) {
-                                    const pTags = p.tags.toLowerCase().split(',').map(pt => pt.trim());
-                                    if(pTags.includes(lowerTag)) usageCount++;
+                    const groups = window.parseSkills(s.items);
+                    let html = '';
+                    
+                    groups.forEach((group, gIdx) => {
+                        let tagData = group.tags.map((tag, idx) => {
+                            let usageCount = 0;
+                            const lowerTag = tag.toLowerCase();
+                            STATE.projects.forEach(p => {
+                                if(!p.isDraft || STATE.isAdmin) {
+                                    if(p.tags) {
+                                        const pTags = p.tags.toLowerCase().split(',').map(pt => pt.trim());
+                                        if(pTags.includes(lowerTag)) usageCount++;
+                                    }
                                 }
-                            }
+                            });
+                            return { name: tag, originalIndex: idx, usageCount };
                         });
-                        return { name: tagRaw, originalIndex: idx, usageCount };
-                    }).filter(t => t.name !== '');
 
-                    if (sortType === 'used') {
-                        skillArr.sort((a, b) => b.usageCount - a.usageCount || a.originalIndex - b.originalIndex);
-                    } else {
-                        skillArr.sort((a, b) => a.originalIndex - b.originalIndex);
-                    }
+                        if (sortType === 'used') {
+                            tagData.sort((a, b) => b.usageCount - a.usageCount || a.originalIndex - b.originalIndex);
+                        } else {
+                            tagData.sort((a, b) => a.originalIndex - b.originalIndex);
+                        }
 
-                    tagsContainer.innerHTML = skillArr.map((tagObj, i) => `
-                        <div onclick="window.closeModals(); window.filterByTag('${window.safeText(tagObj.name).replace(/'/g, "\\'")}', event); STATE.activeCat = null; window.switchView('view-projects');" 
-                             class="skill-badge inline-flex items-center justify-between gap-3 bg-black/40 border border-white/10 hover:border-emerald-500/40 hover:bg-emerald-500/10 text-gray-300 hover:text-white px-4 py-2 text-sm font-medium rounded-xl shadow-sm cursor-pointer transition-all w-full md:w-auto flex-1 md:flex-initial min-w-[140px]" 
-                             style="animation-delay: ${i * 0.02}s">
-                            <div class="flex items-center gap-2">
-                                <span class="w-1.5 h-1.5 rounded-full ${tagObj.usageCount > 0 ? 'bg-emerald-500' : 'bg-gray-600'} shrink-0"></span>
-                                <span class="break-words whitespace-normal leading-snug">${window.safeText(tagObj.name)}</span>
+                        if (group.category) {
+                            const groupTotalUsage = tagData.reduce((sum, t) => sum + t.usageCount, 0);
+                            const groupTagListStr = group.tags.join(',').replace(/'/g, "\\'");
+                            
+                            html += `
+                            <div class="w-full mt-8 mb-4 flex items-center justify-between border-b border-white/10 pb-2">
+                                <button onclick="window.closeModals(); window.filterByMultiTags('${groupTagListStr}', '${window.safeText(group.category)}', event);" class="text-emerald-500 font-black text-sm uppercase tracking-widest hover:text-emerald-400 transition-colors flex items-center gap-2 group">
+                                    <i class="fas fa-layer-group"></i> ${window.safeText(group.category)}
+                                    <span class="opacity-0 group-hover:opacity-100 transition-opacity text-[10px] bg-emerald-500/20 px-2 py-0.5 rounded text-emerald-400 ml-2">Filter Projects</span>
+                                </button>
+                                <span class="text-[10px] font-bold text-gray-500 bg-white/5 px-2 py-1 rounded-md">${groupTotalUsage} Used</span>
                             </div>
-                            ${sortType === 'used' ? `<span class="text-[10px] bg-emerald-500/20 text-emerald-400 px-2 py-0.5 rounded-md font-bold ml-1">${tagObj.usageCount}</span>` : ''}
-                        </div>
-                    `).join('');
+                            `;
+                        }
+
+                        html += `<div class="flex flex-wrap justify-center gap-2.5 w-full mx-auto pb-4">`;
+                        html += tagData.map((tagObj, i) => `
+                            <div onclick="window.closeModals(); window.filterByTag('${window.safeText(tagObj.name).replace(/'/g, "\\'")}', event); STATE.activeCat = null; window.switchView('view-projects');" 
+                                 class="skill-badge inline-flex items-center justify-between gap-3 bg-black/40 border border-white/10 hover:border-emerald-500/40 hover:bg-emerald-500/10 text-gray-300 hover:text-white px-4 py-2 text-sm font-medium rounded-xl shadow-sm cursor-pointer transition-all w-full md:w-auto flex-1 md:flex-initial min-w-[140px]" 
+                                 style="animation-delay: ${i * 0.01}s">
+                                <div class="flex items-center gap-2">
+                                    <span class="w-1.5 h-1.5 rounded-full ${tagObj.usageCount > 0 ? 'bg-emerald-500' : 'bg-gray-600'} shrink-0"></span>
+                                    <span class="break-words whitespace-normal leading-snug text-left">${window.safeText(tagObj.name)}</span>
+                                </div>
+                                ${sortType === 'used' ? `<span class="text-[10px] bg-emerald-500/20 text-emerald-400 px-2 py-0.5 rounded-md font-bold ml-1 shrink-0">${tagObj.usageCount}</span>` : ''}
+                            </div>
+                        `).join('');
+                        html += `</div>`;
+                    });
+                    
+                    tagsContainer.innerHTML = html;
                 } else {
                     tagsContainer.innerHTML = `<p class="text-sm text-gray-500 w-full text-center py-4">No specific skills listed.</p>`;
                 }
@@ -2236,126 +2064,81 @@
         };
 
         window.openSkillView = (id) => {
-            STATE.activeModalSkillId = id;
-            const s = STATE.skills.find(x => x.id === id); if(!s) return;
+            STATE.activeModalSkillId = id; const s = STATE.skills.find(x => x.id === id); if(!s) return;
             window.haptic();
             
-            const titleEl = document.getElementById('sv-title');
-            if(titleEl) window.decodeTextEffect(titleEl, s.name);
+            const titleEl = document.getElementById('sv-title'); if(titleEl) window.decodeTextEffect(titleEl, s.name);
+            const iconEl = document.getElementById('sv-icon'); const fallbackEl = document.getElementById('sv-icon-fallback');
             
-            const iconEl = document.getElementById('sv-icon');
-            const fallbackEl = document.getElementById('sv-icon-fallback');
-            if(s.img) {
-                if(iconEl) { iconEl.src = s.img; iconEl.style.display = 'block'; }
-                if(fallbackEl) fallbackEl.style.display = 'none';
-            } else {
-                if(iconEl) iconEl.style.display = 'none';
-                if(fallbackEl) fallbackEl.style.display = 'flex';
+            if(s.img) { if(iconEl) { iconEl.src = s.img; iconEl.style.display = 'block'; } if(fallbackEl) fallbackEl.style.display = 'none'; } 
+            else { if(iconEl) iconEl.style.display = 'none'; if(fallbackEl) fallbackEl.style.display = 'flex'; }
+
+            const masterBtn = document.getElementById('sv-master-filter-btn');
+            if (masterBtn) {
+                const allTagsStr = window.getFlatSkillTags(s.items).join(',').replace(/'/g, "\\'");
+                masterBtn.onclick = (e) => { window.closeModals(); window.filterByMultiTags(allTagsStr, s.name, e); };
             }
 
             window.renderModalTags(STATE.skillModalSort || 'important');
             window.openModal('modal-skill-view');
         };
 
-        window.openWorkspace = (id) => {
-            STATE.activeCat = id;
-            STATE.activeTag = null; 
-            window.switchView('view-projects');
-            window.renderProjects();
-        };
-
-        window.filterByTag = (tag, event) => {
-            if(event) event.stopPropagation();
-            STATE.activeTag = tag;
-            window.renderProjects();
-            window.haptic();
-        };
-
-        window.clearProjectFilter = () => {
-            STATE.activeTag = null;
-            if(!STATE.activeCat) {
-                window.switchView('view-skills');
-            } else {
-                window.renderProjects();
-            }
-        };
+        window.openWorkspace = (id) => { STATE.activeCat = id; STATE.activeTag = null; STATE.activeMultiTags = null; STATE.activeMultiTagsName = null; window.switchView('view-projects'); window.renderProjects(); };
+        window.filterByTag = (tag, event) => { if(event) event.stopPropagation(); STATE.activeTag = tag; STATE.activeMultiTags = null; STATE.activeMultiTagsName = null; window.renderProjects(); window.haptic(); };
+        window.clearProjectFilter = () => { STATE.activeTag = null; STATE.activeMultiTags = null; STATE.activeMultiTagsName = null; if(!STATE.activeCat) { window.switchView('view-skills'); } else { window.renderProjects(); } };
 
         window.toggleProjectView = (viewType) => {
             const grid = document.getElementById('grid-projects');
             if(viewType === 'list') {
-                grid.classList.add('list-view');
-                document.getElementById('btn-view-list').classList.replace('text-gray-500', 'text-white');
-                document.getElementById('btn-view-list').classList.add('bg-white/10');
-                document.getElementById('btn-view-grid').classList.replace('text-white', 'text-gray-500');
-                document.getElementById('btn-view-grid').classList.remove('bg-white/10');
+                grid.classList.add('list-view'); document.getElementById('btn-view-list').classList.replace('text-gray-500', 'text-white'); document.getElementById('btn-view-list').classList.add('bg-white/10'); document.getElementById('btn-view-grid').classList.replace('text-white', 'text-gray-500'); document.getElementById('btn-view-grid').classList.remove('bg-white/10');
             } else {
-                grid.classList.remove('list-view');
-                document.getElementById('btn-view-grid').classList.replace('text-gray-500', 'text-white');
-                document.getElementById('btn-view-grid').classList.add('bg-white/10');
-                document.getElementById('btn-view-list').classList.replace('text-white', 'text-gray-500');
-                document.getElementById('btn-view-list').classList.remove('bg-white/10');
+                grid.classList.remove('list-view'); document.getElementById('btn-view-grid').classList.replace('text-gray-500', 'text-white'); document.getElementById('btn-view-grid').classList.add('bg-white/10'); document.getElementById('btn-view-list').classList.replace('text-white', 'text-gray-500'); document.getElementById('btn-view-list').classList.remove('bg-white/10');
             }
             window.haptic();
         };
 
         window.renderProjects = () => {
             let list = STATE.activeCat ? STATE.projects.filter(p => p.catId === STATE.activeCat) : [...STATE.projects];
-            
-            if(!STATE.isAdmin) {
-                list = list.filter(p => !p.isDraft);
-            }
+            if(!STATE.isAdmin) { list = list.filter(p => !p.isDraft); }
 
-            const filterLabel = document.getElementById('active-filter-label');
-            const filterName = document.getElementById('active-filter-name');
+            const filterLabel = document.getElementById('active-filter-label'); const filterName = document.getElementById('active-filter-name');
 
-            if(STATE.activeTag) {
-                const searchTag = STATE.activeTag.trim().toLowerCase();
+            if (STATE.activeMultiTags && STATE.activeMultiTags.length > 0) {
                 list = list.filter(p => {
                     if (!p.tags) return false;
-                    return p.tags.toLowerCase().split(',').map(t => t.trim()).includes(searchTag);
+                    const pTags = p.tags.toLowerCase().split(',').map(t => t.trim());
+                    return STATE.activeMultiTags.some(mt => pTags.includes(mt));
                 });
-                
-                if(filterLabel && filterName) {
-                    filterLabel.classList.remove('hidden');
-                    filterName.textContent = STATE.activeTag;
-                }
-            } else {
-                if(filterLabel) filterLabel.classList.add('hidden');
-            }
+                if(filterLabel && filterName) { filterLabel.classList.remove('hidden'); filterName.textContent = `Folder: ${STATE.activeMultiTagsName}`; }
+            } else if(STATE.activeTag) {
+                const searchTag = STATE.activeTag.trim().toLowerCase();
+                list = list.filter(p => { if (!p.tags) return false; return p.tags.toLowerCase().split(',').map(t => t.trim()).includes(searchTag); });
+                if(filterLabel && filterName) { filterLabel.classList.remove('hidden'); filterName.textContent = STATE.activeTag; }
+            } else { if(filterLabel) filterLabel.classList.add('hidden'); }
 
-            const headerTitle = document.getElementById('active-cat-name');
-            const backBtn = document.getElementById('btn-back-projects');
+            const headerTitle = document.getElementById('active-cat-name'); const backBtn = document.getElementById('btn-back-projects');
 
             if (!STATE.activeCat) {
-                if(headerTitle) window.decodeTextEffect(headerTitle, STATE.activeTag ? `Skill Search: ${STATE.activeTag}` : `All Projects`);
-                if(backBtn) {
-                    backBtn.innerHTML = `<i class="fas fa-arrow-left"></i> Back to Expertise`;
-                    backBtn.onclick = () => { window.clearProjectFilter(); window.switchView('view-skills'); };
-                }
+                let headerText = 'All Projects';
+                if (STATE.activeMultiTagsName) { headerText = `Folder: ${STATE.activeMultiTagsName}`; } 
+                else if (STATE.activeTag) { headerText = `Skill Search: ${STATE.activeTag}`; }
+                if(headerTitle) window.decodeTextEffect(headerTitle, headerText);
+                if(backBtn) { backBtn.innerHTML = `<i class="fas fa-arrow-left"></i> Back to Expertise`; backBtn.onclick = () => { window.clearProjectFilter(); window.switchView('view-skills'); }; }
             } else {
                 const c = STATE.categories.find(x => x.id === STATE.activeCat);
                 if(headerTitle) window.decodeTextEffect(headerTitle, c ? c.name : 'Projects');
-                if(backBtn) {
-                    backBtn.innerHTML = `<i class="fas fa-arrow-left"></i> Back to Workspaces`;
-                    backBtn.onclick = () => window.switchView('view-categories');
-                }
+                if(backBtn) { backBtn.innerHTML = `<i class="fas fa-arrow-left"></i> Back to Workspaces`; backBtn.onclick = () => window.switchView('view-categories'); }
             }
 
             const grid = document.getElementById('grid-projects'); if(!grid) return;
             let sortedProjs = [...list].sort((a,b) => (a.order !== undefined && a.order !== null ? Number(a.order) : 99) - (b.order !== undefined && b.order !== null ? Number(b.order) : 99));
             
             if (sortedProjs.length === 0) {
-                grid.innerHTML = `
-                    <div class="col-span-full p-12 border-2 border-dashed border-white/10 rounded-3xl text-center">
-                        <i class="fas fa-layer-group text-4xl text-gray-600 mb-4"></i>
-                        <p class="text-gray-500">No projects found for this selection.</p>
-                    </div>`;
-                return;
+                grid.innerHTML = `<div class="col-span-full p-12 border-2 border-dashed border-white/10 rounded-3xl text-center"><i class="fas fa-layer-group text-4xl text-gray-600 mb-4"></i><p class="text-gray-500">No projects found for this selection.</p></div>`; return;
             }
 
             grid.innerHTML = sortedProjs.map((p, idx) => {
-                const banner = p.gallery && p.gallery.length > 0 ? p.gallery[0] : p.icon;
-                const views = STATE.analytics?.projectClicks?.[p.id] || 0;
+                const banner = p.gallery && p.gallery.length > 0 ? p.gallery[0] : p.icon; const views = STATE.analytics?.projectClicks?.[p.id] || 0;
                 return `
                 <div class="glass-card rounded-[2rem] hover-lift cursor-pointer group flex flex-col h-full relative overflow-visible animate-stagger" style="animation-delay: ${idx * 0.1}s" onclick="window.openProjectDeep('${p.id}')">
                     <div class="banner-wrapper h-48 md:h-56 relative overflow-hidden bg-black border-b border-white/10 rounded-t-[2rem]">
@@ -2386,19 +2169,13 @@
         };
 
         window.openProjectDeep = (id) => {
-            const p = STATE.projects.find(x => x.id === id); 
-            if(!p) return window.showToast("Project not found.", true);
-            
-            if(!STATE.activeCat && !STATE.activeTag) STATE.activeCat = p.catId; 
+            const p = STATE.projects.find(x => x.id === id); if(!p) return window.showToast("Project not found.", true);
+            if(!STATE.activeCat && !STATE.activeTag && !STATE.activeMultiTags) STATE.activeCat = p.catId; 
             
             window.trackEvent('project_view', { proj_id: id });
-            
-            STATE.activeProject = id;
-            document.title = `${p.name} | Portfolio`;
+            STATE.activeProject = id; document.title = `${p.name} | Portfolio`;
 
-            const titleEl = document.getElementById('det-title'); 
-            if(titleEl) window.decodeTextEffect(titleEl, p.name);
-            
+            const titleEl = document.getElementById('det-title'); if(titleEl) window.decodeTextEffect(titleEl, p.name);
             const iconEl = document.getElementById('det-icon'); if(iconEl) iconEl.src = p.icon;
             const descEl = document.getElementById('det-desc'); if(descEl) descEl.innerHTML = p.desc || 'No description provided.';
             const viewEl = document.getElementById('det-views'); if(viewEl) viewEl.textContent = STATE.analytics?.projectClicks?.[id] || 0;
@@ -2408,48 +2185,32 @@
                 if(p.tags) {
                     const tagArr = p.tags.split(',').map(t => t.trim()).filter(t => t);
                     const limit = 4;
-                    
                     window.renderProjectTags = (expanded) => {
                         const visibleTags = expanded ? tagArr : tagArr.slice(0, limit);
                         let html = visibleTags.map(tag => `<span onclick="window.filterByTag('${window.safeText(tag)}', event); window.closeModals();" class="cursor-pointer hover:bg-emerald-500/30 bg-white/10 border border-white/10 text-emerald-400 px-3 py-1 text-[10px] font-bold rounded-lg uppercase tracking-wider transition-colors">${window.safeText(tag)}</span>`).join('');
-                        
                         if (tagArr.length > limit) {
-                            if (expanded) {
-                                html += `<span onclick="window.renderProjectTags(false)" class="cursor-pointer hover:bg-red-500/30 bg-red-500/10 border border-red-500/20 text-red-400 px-3 py-1 text-[10px] font-bold rounded-lg uppercase tracking-wider transition-colors">Show Less <i class="fas fa-chevron-up ml-1"></i></span>`;
-                            } else {
-                                html += `<span onclick="window.renderProjectTags(true)" class="cursor-pointer hover:bg-emerald-500/30 bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 px-3 py-1 text-[10px] font-bold rounded-lg uppercase tracking-wider transition-colors">+${tagArr.length - limit} More <i class="fas fa-chevron-down ml-1"></i></span>`;
-                            }
+                            if (expanded) { html += `<span onclick="window.renderProjectTags(false)" class="cursor-pointer hover:bg-red-500/30 bg-red-500/10 border border-red-500/20 text-red-400 px-3 py-1 text-[10px] font-bold rounded-lg uppercase tracking-wider transition-colors">Show Less <i class="fas fa-chevron-up ml-1"></i></span>`; } 
+                            else { html += `<span onclick="window.renderProjectTags(true)" class="cursor-pointer hover:bg-emerald-500/30 bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 px-3 py-1 text-[10px] font-bold rounded-lg uppercase tracking-wider transition-colors">+${tagArr.length - limit} More <i class="fas fa-chevron-down ml-1"></i></span>`; }
                         }
                         document.getElementById('det-tags').innerHTML = html;
                     };
-                    
                     window.renderProjectTags(false);
-                } else { 
-                    tagsEl.innerHTML = ''; 
-                }
+                } else { tagsEl.innerHTML = ''; }
             }
 
             const readTimeEl = document.getElementById('det-read-time');
-            if(readTimeEl) {
-                const words = (p.desc || '').replace(/(<([^>]+)>)/gi, "").split(' ').length;
-                const minutes = Math.max(1, Math.ceil(words / 200));
-                readTimeEl.innerHTML = `<i class="far fa-clock text-emerald-400"></i> ${minutes} min read`;
-            }
-
+            if(readTimeEl) { const words = (p.desc || '').replace(/(<([^>]+)>)/gi, "").split(' ').length; const minutes = Math.max(1, Math.ceil(words / 200)); readTimeEl.innerHTML = `<i class="far fa-clock text-emerald-400"></i> ${minutes} min read`; }
             const lnk = document.getElementById('det-link');
-            if(lnk) {
-                if(p.link) { lnk.href = p.link.startsWith('http') ? p.link : `https://${p.link}`; lnk.style.display = 'flex'; } 
-                else { lnk.style.display = 'none'; }
-            }
+            if(lnk) { if(p.link) { lnk.href = p.link.startsWith('http') ? p.link : `https://${p.link}`; lnk.style.display = 'flex'; } else { lnk.style.display = 'none'; } }
             
             STATE.currentSlideshow = (p.gallery && p.gallery.length ? p.gallery : [p.icon]).filter(img => img && img.trim() !== '');
-            STATE.slideIdx = 0;
-            window.startModalSlideshow(); window.openModal('modal-details');
+            STATE.slideIdx = 0; window.startModalSlideshow(); window.openModal('modal-details');
         };
 
         window.nextProject = () => {
             let list = STATE.activeCat ? STATE.projects.filter(p => p.catId === STATE.activeCat) : [...STATE.projects];
-            if(STATE.activeTag) list = list.filter(p => p.tags && p.tags.toLowerCase().includes(STATE.activeTag.toLowerCase()));
+            if(STATE.activeMultiTags && STATE.activeMultiTags.length > 0) { list = list.filter(p => p.tags && STATE.activeMultiTags.some(mt => p.tags.toLowerCase().includes(mt))); } 
+            else if(STATE.activeTag) { list = list.filter(p => p.tags && p.tags.toLowerCase().includes(STATE.activeTag.toLowerCase())); }
             list.sort((a,b) => (a.order !== undefined && a.order !== null ? Number(a.order) : 99) - (b.order !== undefined && b.order !== null ? Number(b.order) : 99));
             const idx = list.findIndex(p => p.id === STATE.activeProject);
             if(idx > -1 && idx < list.length - 1) { window.haptic(); window.openProjectDeep(list[idx+1].id); }
@@ -2457,12 +2218,14 @@
 
         window.prevProject = () => {
             let list = STATE.activeCat ? STATE.projects.filter(p => p.catId === STATE.activeCat) : [...STATE.projects];
-            if(STATE.activeTag) list = list.filter(p => p.tags && p.tags.toLowerCase().includes(STATE.activeTag.toLowerCase()));
+            if(STATE.activeMultiTags && STATE.activeMultiTags.length > 0) { list = list.filter(p => p.tags && STATE.activeMultiTags.some(mt => p.tags.toLowerCase().includes(mt))); } 
+            else if(STATE.activeTag) { list = list.filter(p => p.tags && p.tags.toLowerCase().includes(STATE.activeTag.toLowerCase())); }
             list.sort((a,b) => (a.order !== undefined && a.order !== null ? Number(a.order) : 99) - (b.order !== undefined && b.order !== null ? Number(b.order) : 99));
             const idx = list.findIndex(p => p.id === STATE.activeProject);
             if(idx > 0) { window.haptic(); window.openProjectDeep(list[idx-1].id); }
         };
 
+        // BUG FIX APPLIED: Replaced <canvas> mapping with dynamic <img> to support animated GIFs
         window.startModalSlideshow = () => {
             window.renderSlideFrame();
             const gal = document.getElementById('det-gallery');
@@ -2485,21 +2248,12 @@
         };
         
         window.renderSlideFrame = () => {
-            const canvas = document.getElementById('slideshow-canvas'); if(!canvas) return;
-            const ctx = canvas.getContext('2d');
+            const imgEl = document.getElementById('slideshow-img'); if(!imgEl) return;
             if(!STATE.currentSlideshow || STATE.currentSlideshow.length === 0) return;
             STATE.slideIdx = STATE.slideIdx % Math.max(1, STATE.currentSlideshow.length); 
-            const img = new Image(); 
-            img.onerror = () => {
-                img.onerror=null;
-                canvas.width = 800; canvas.height = 450;
-                ctx.fillStyle = '#0f1115'; ctx.fillRect(0,0,800,450);
-                ctx.fillStyle = '#4b5563'; ctx.font = '24px sans-serif';
-                ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText('Project slide fail to render', 400, 225);
-                window.updateDots();
-            };
-            img.onload = () => { canvas.width = img.width; canvas.height = img.height; ctx.clearRect(0,0, canvas.width, canvas.height); ctx.drawImage(img, 0, 0); };
-            img.src = STATE.currentSlideshow[STATE.slideIdx];
+            
+            imgEl.onerror = () => { imgEl.onerror=null; imgEl.src = 'https://placehold.co/800x450/0f1115/4b5563?text=Load+Error'; window.updateDots(); };
+            imgEl.src = STATE.currentSlideshow[STATE.slideIdx];
             window.updateDots();
         };
 
@@ -2508,32 +2262,15 @@
             if(gal && gal.children[STATE.slideIdx]) {
                 Array.from(gal.children).forEach((child, i) => {
                     if(i === STATE.slideIdx) { 
-                        child.classList.add('ring-2', 'ring-emerald-500', 'opacity-100'); 
-                        child.classList.remove('opacity-60'); 
-                        
-                        const parent = child.parentNode;
-                        parent.scrollTo({
-                            left: child.offsetLeft - parent.offsetLeft - (parent.clientWidth / 2) + (child.clientWidth / 2),
-                            behavior: 'smooth'
-                        });
-                    } 
-                    else { 
-                        child.classList.remove('ring-2', 'ring-emerald-500', 'opacity-100'); 
-                        child.classList.add('opacity-60'); 
-                    }
+                        child.classList.add('ring-2', 'ring-emerald-500', 'opacity-100'); child.classList.remove('opacity-60'); 
+                        const parent = child.parentNode; parent.scrollTo({ left: child.offsetLeft - parent.offsetLeft - (parent.clientWidth / 2) + (child.clientWidth / 2), behavior: 'smooth' });
+                    } else { child.classList.remove('ring-2', 'ring-emerald-500', 'opacity-100'); child.classList.add('opacity-60'); }
                 });
             }
             const dotsContainer = document.getElementById('slideshow-dots');
-            if(dotsContainer) {
-                Array.from(dotsContainer.children).forEach((dot, i) => {
-                    if(i === STATE.slideIdx) { dot.className = "w-4 h-1.5 rounded-full bg-emerald-500 transition-all duration-300 cursor-pointer"; } 
-                    else { dot.className = "w-1.5 h-1.5 rounded-full bg-white/30 transition-all duration-300 cursor-pointer"; }
-                });
-            }
+            if(dotsContainer) { Array.from(dotsContainer.children).forEach((dot, i) => { if(i === STATE.slideIdx) { dot.className = "w-4 h-1.5 rounded-full bg-emerald-500 transition-all duration-300 cursor-pointer"; } else { dot.className = "w-1.5 h-1.5 rounded-full bg-white/30 transition-all duration-300 cursor-pointer"; } }); }
             const lbImg = document.getElementById('lightbox-img');
-            if(lbImg && !document.getElementById('lightbox').classList.contains('hidden')) {
-                lbImg.src = STATE.currentSlideshow[STATE.slideIdx];
-            }
+            if(lbImg && !document.getElementById('lightbox').classList.contains('hidden')) { lbImg.src = STATE.currentSlideshow[STATE.slideIdx]; }
         };
 
         // Background Catalog Slideshow
@@ -2550,7 +2287,7 @@
             });
         }, 4000);
 
-        // --- 9. FORM SUBMISSIONS ---
+        // --- STREAMING_CHUNK: Form Submissions & Data Persistence ---
         window.openSkillEditModal = (id = null) => {
             const safeSet = (idName, val) => { const el = document.getElementById(idName); if(el) el.value = val; };
             if (id) {
@@ -2575,20 +2312,10 @@
             const btn = document.getElementById('save-skill-btn'); if(btn) { btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...'; }
             
             try {
-                let imgData = getVal('skill-file-url') || null;
-                const imgFileInput = document.getElementById('skill-file');
-                
-                if(imgFileInput && imgFileInput.files[0]) { 
-                    imgData = await window.fileToBase64(imgFileInput.files[0], 300, 0.7, '1/1'); 
-                } else if(!imgData && idInput) { 
-                    const existing = STATE.skills.find(x => x.id === idInput); if(existing) imgData = existing.img; 
-                }
-                
+                let imgData = getVal('skill-file-url') || null; const imgFileInput = document.getElementById('skill-file');
+                if(imgFileInput && imgFileInput.files[0]) { imgData = await window.fileToBase64(imgFileInput.files[0], 300, 0.7, '1/1'); } else if(!imgData && idInput) { const existing = STATE.skills.find(x => x.id === idInput); if(existing) imgData = existing.img; }
                 let tempSkills = JSON.parse(JSON.stringify(STATE.skills));
-                if (idInput) { 
-                    const idx = tempSkills.findIndex(x => x.id === idInput); 
-                    if(idx > -1) { tempSkills[idx].name = name; tempSkills[idx].items = items; tempSkills[idx].order = orderInput; tempSkills[idx].img = imgData; } 
-                } else { tempSkills.push({ id: 'sk_' + Date.now(), name, items, img: imgData, order: orderInput }); }
+                if (idInput) { const idx = tempSkills.findIndex(x => x.id === idInput); if(idx > -1) { tempSkills[idx].name = name; tempSkills[idx].items = items; tempSkills[idx].order = orderInput; tempSkills[idx].img = imgData; } } else { tempSkills.push({ id: 'sk_' + Date.now(), name, items, img: imgData, order: orderInput }); }
 
                 if (window.getByteSize(JSON.stringify(tempSkills)) > 1500000) { window.showToast("Payload too large.", true); } 
                 else { STATE.skills = tempSkills; if(await window.syncRemote('skills_list', STATE.skills)) { window.showToast("Skill Folder Saved"); window.closeModals(); window.renderSkills(); } }
@@ -2597,28 +2324,22 @@
         };
 
         window.openProfileEditor = () => {
-            const p = STATE.profile || {};
-            const safeSet = (id, val) => { const el = document.getElementById(id); if(el) el.value = val; };
-            
+            const p = STATE.profile || {}; const safeSet = (id, val) => { const el = document.getElementById(id); if(el) el.value = val; };
             safeSet('edit-logo', p.logo || ''); safeSet('edit-prefix', p.prefix || ''); safeSet('edit-title', p.title || ''); safeSet('edit-bio', p.bio || ''); safeSet('edit-btn-main', p.btnMain || ''); safeSet('edit-cv-link', p.cvLink || ''); safeSet('edit-accent', p.accentColor || '#10b981'); safeSet('edit-accent-rgb', p.accentColorRgb || '16, 185, 129'); safeSet('edit-accent-dark', p.accentColorDark || '#059669');
             safeSet('edit-whatsapp', p.contact?.whatsapp || ''); safeSet('edit-phone', p.contact?.phone || ''); safeSet('edit-email', p.contact?.email || '');
             safeSet('edit-github', p.socials?.github || ''); safeSet('edit-linkedin', p.socials?.linkedin || ''); safeSet('edit-twitter', p.socials?.twitter || ''); safeSet('edit-instagram', p.socials?.instagram || '');
             if(p.img && p.img.startsWith('http')) { safeSet('edit-img-url', p.img); } else { safeSet('edit-img-url', ''); }
-            
             window.openModal('modal-profile');
         };
 
         window.saveProfile = async () => {
             if(!STATE.isAdmin) return;
-            const btn = document.getElementById('save-prof-btn'); 
-            const nameEl = document.getElementById('edit-title');
+            const btn = document.getElementById('save-prof-btn'); const nameEl = document.getElementById('edit-title');
             if(!nameEl || !nameEl.value.trim()) { if(nameEl) { nameEl.classList.add('error-shake'); setTimeout(() => nameEl.classList.remove('error-shake'), 400); } return window.showToast("Name / Main Heading is required", true); }
             if(btn) { btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...'; }
-            
             try {
                 const getVal = (id) => { const el = document.getElementById(id); return el ? el.value.trim() : ''; };
                 const sanitizeUrl = (url) => { if(!url) return ''; return url.startsWith('http') ? url : 'https://' + url; };
-
                 let finalImgUrl = getVal('edit-img-url') || STATE.profile?.img || null;
 
                 const payload = {
@@ -2630,56 +2351,35 @@
                     img: finalImgUrl, cvFile: STATE.profile?.cvFile || null
                 };
                 
-                const imgFileInput = document.getElementById('edit-img');
-                if(imgFileInput && imgFileInput.files[0]) { payload.img = await window.fileToBase64(imgFileInput.files[0], 400, 0.7, '1/1'); }
-                
-                const cvFileInput = document.getElementById('edit-cv');
-                if(cvFileInput && cvFileInput.files[0]) { 
-                    if(cvFileInput.files[0].size > 800000) { window.showToast("CV exceeds 750KB", true); if(btn) { btn.disabled=false; btn.innerHTML="Save Identity Profile"; } return; } 
-                    payload.cvFile = await window.fileToBase64(cvFileInput.files[0]); 
-                }
+                const imgFileInput = document.getElementById('edit-img'); if(imgFileInput && imgFileInput.files[0]) { payload.img = await window.fileToBase64(imgFileInput.files[0], 400, 0.7, '1/1'); }
+                const cvFileInput = document.getElementById('edit-cv'); if(cvFileInput && cvFileInput.files[0]) { if(cvFileInput.files[0].size > 800000) { window.showToast("CV exceeds 750KB", true); if(btn) { btn.disabled=false; btn.innerHTML="Save Identity Profile"; } return; } payload.cvFile = await window.fileToBase64(cvFileInput.files[0]); }
                 
                 if(window.getByteSize(JSON.stringify(payload)) > 1500000) { window.showToast("Profile identity exceeds data limits.", true); } 
                 else { STATE.profile = payload; if(await window.syncRemote('profile_main', payload)) { window.showToast("Profile Updated"); window.applyAccentStyle(payload.accentColor, payload.accentColorRgb, payload.accentColorDark); window.closeModals(); window.renderAll(); } }
-            } catch (err) { window.showToast("Failed to save profile: " + err.message, true); } 
-            finally { if(btn) { btn.disabled = false; btn.innerHTML = 'Save Identity Profile'; } }
+            } catch (err) { window.showToast("Failed to save profile: " + err.message, true); } finally { if(btn) { btn.disabled = false; btn.innerHTML = 'Save Identity Profile'; } }
         };
 
-        window.toggleExpCurrent = (el) => {
-            const durEl = document.getElementById('exp-duration');
-            if(durEl) {
-                durEl.disabled = el.checked;
-                if(el.checked) durEl.classList.add('opacity-50');
-                else durEl.classList.remove('opacity-50');
-            }
-        };
+        window.toggleExpCurrent = (el) => { const durEl = document.getElementById('exp-duration'); if(durEl) { durEl.disabled = el.checked; if(el.checked) durEl.classList.add('opacity-50'); else durEl.classList.remove('opacity-50'); } };
 
         window.openExpModal = () => { 
             const safeSet = (id, val) => { const el = document.getElementById(id); if(el) el.value = val; };
-            safeSet('exp-id', ''); safeSet('exp-role', ''); safeSet('exp-company', ''); safeSet('exp-type', 'Full-Time'); 
-            safeSet('exp-location', ''); safeSet('exp-link', ''); safeSet('exp-duration', ''); safeSet('exp-icon-file', ''); 
-            safeSet('exp-tags', ''); safeSet('exp-order', '99'); safeSet('exp-icon-url', '');
-            
+            safeSet('exp-id', ''); safeSet('exp-role', ''); safeSet('exp-company', ''); safeSet('exp-type', 'Full-Time'); safeSet('exp-location', ''); safeSet('exp-link', ''); safeSet('exp-duration', ''); safeSet('exp-icon-file', ''); safeSet('exp-tags', ''); safeSet('exp-order', '99'); safeSet('exp-icon-url', '');
             const draftEl = document.getElementById('exp-draft'); if(draftEl) draftEl.checked = false;
             const durEl = document.getElementById('exp-duration'); if(durEl) { durEl.disabled = false; durEl.classList.remove('opacity-50'); }
             const curEl = document.getElementById('exp-current'); if(curEl) curEl.checked = false;
             const descEl = document.getElementById('exp-desc'); if(descEl) descEl.innerHTML = ''; 
-            
-            window.restoreDraftEditor('exp-desc', 'exp_draft'); 
-            window.openModal('modal-exp'); 
+            window.restoreDraftEditor('exp-desc', 'exp_draft'); window.openModal('modal-exp'); 
         };
 
         window.editExperience = (id) => {
             const e = STATE.experience.find(x => x.id === id); if(!e) return;
             const safeSet = (id, val) => { const el = document.getElementById(id); if(el) el.value = val; };
-            
             safeSet('exp-id', e.id); safeSet('exp-role', e.role || ''); safeSet('exp-company', e.company || ''); safeSet('exp-type', e.type || 'Full-Time'); safeSet('exp-location', e.location || ''); safeSet('exp-link', e.link || ''); safeSet('exp-duration', e.duration || ''); safeSet('exp-icon-file', ''); safeSet('exp-tags', e.tags || ''); safeSet('exp-order', e.order !== undefined ? e.order : 99);
             if(e.icon && e.icon.startsWith('http')) { safeSet('exp-icon-url', e.icon); } else { safeSet('exp-icon-url', ''); }
             const draftEl = document.getElementById('exp-draft'); if(draftEl) draftEl.checked = e.isDraft || false;
             const isCurrent = e.isCurrent || (e.duration && e.duration.toLowerCase().includes('present'));
             const curEl = document.getElementById('exp-current'); if(curEl) curEl.checked = isCurrent;
-            const durEl = document.getElementById('exp-duration');
-            if(durEl) { durEl.disabled = isCurrent; if(isCurrent) durEl.classList.add('opacity-50'); else durEl.classList.remove('opacity-50'); }
+            const durEl = document.getElementById('exp-duration'); if(durEl) { durEl.disabled = isCurrent; if(isCurrent) durEl.classList.add('opacity-50'); else durEl.classList.remove('opacity-50'); }
             const descEl = document.getElementById('exp-desc'); if(descEl) descEl.innerHTML = e.desc || ''; 
             window.openModal('modal-exp');
         };
@@ -2704,9 +2404,8 @@
                 const payload = { id: idInput || 'exp_' + Date.now(), role, company, type, location, link, icon, duration: finalDuration, isCurrent: isCurrentWork, tags, isDraft, order: orderInput, desc: window.sanitizeRichHTML(desc) };
                 if(existing) { const idx = tempExp.findIndex(x => x.id === idInput); if(idx > -1) tempExp[idx] = payload; } else { tempExp.push(payload); }
                 if (window.getByteSize(JSON.stringify(tempExp)) > 1500000) { window.showToast("Experience payload too large.", true); } 
-                else { STATE.experience = tempExp; sessionStorage.removeItem('exp_draft'); if(await window.syncRemote('experience_list', STATE.experience)) { window.showToast("Experience Saved"); window.closeModals(); window.renderExperience(); } }
-            } catch(err) { console.error(err); window.showToast("Failed to save experience", true); }
-            finally { if(btn) { btn.disabled = false; btn.innerHTML = 'Save Experience'; } }
+                else { STATE.experience = tempExp; sessionStorage.removeItem('exp_draft'); if(await window.syncRemote('experience_list', STATE.experience)) { window.showToast("Experience Saved"); window.closeModals(); window.renderExperience(); window.renderSkills(); } }
+            } catch(err) { console.error(err); window.showToast("Failed to save experience", true); } finally { if(btn) { btn.disabled = false; btn.innerHTML = 'Save Experience'; } }
         };
 
         window.openCategoryModal = () => { 
@@ -2736,8 +2435,7 @@
                 let tempCats = JSON.parse(JSON.stringify(STATE.categories));
                 if (idInput) { const idx = tempCats.findIndex(x => x.id === idInput); if(idx > -1) { tempCats[idx].name = name; tempCats[idx].desc = desc; tempCats[idx].order = orderInput; tempCats[idx].img = imgData; } } else { tempCats.push({ id: 'cat_' + Date.now(), name, desc, img: imgData, order: orderInput }); }
                 if (window.getByteSize(JSON.stringify(tempCats)) > 1500000) { window.showToast("Workspaces payload too large.", true); } else { STATE.categories = tempCats; if(await window.syncRemote('categories_list', STATE.categories)) { window.showToast("Workspace Saved"); window.closeModals(); window.renderCategories(); } }
-            } catch (err) { window.showToast("Failed to save workspace: " + err.message, true); } 
-            finally { if(btn) { btn.disabled = false; btn.innerHTML = 'Save Workspace'; } }
+            } catch (err) { window.showToast("Failed to save workspace: " + err.message, true); } finally { if(btn) { btn.disabled = false; btn.innerHTML = 'Save Workspace'; } }
         };
 
         window.openProjectModal = () => { 
@@ -2784,27 +2482,30 @@
                 const payload = { id: idInput || ('proj_' + Date.now()), catId: targetCatId, name, tags, isDraft, icon, gallery, order: orderInput, desc: window.sanitizeRichHTML(desc), link: finalLink };
                 let tempProjects = JSON.parse(JSON.stringify(STATE.projects));
                 if(existing) { const idx = tempProjects.findIndex(x => x.id === idInput); tempProjects[idx] = payload; } else { tempProjects.push(payload); }
-                if(window.getByteSize(JSON.stringify(tempProjects)) > 2000000) { window.showToast("Payload limit exceeded.", true); } else { STATE.projects = tempProjects; sessionStorage.removeItem('proj_draft'); if(await window.syncRemote('projects_list', STATE.projects)) { window.showToast("Project Saved"); window.closeModals(); window.renderProjects(); } }
+                
+                // BUG FIX APPLIED: Force skills UI to rerender stats on project save
+                if(window.getByteSize(JSON.stringify(tempProjects)) > 2000000) { window.showToast("Payload limit exceeded.", true); } 
+                else { STATE.projects = tempProjects; sessionStorage.removeItem('proj_draft'); if(await window.syncRemote('projects_list', STATE.projects)) { window.showToast("Project Saved"); window.closeModals(); window.renderProjects(); window.renderSkills(); } }
             } catch (err) { window.showToast("Failed to save project: " + err.message, true); } finally { if(btn) { btn.disabled = false; btn.innerHTML = 'Save Project'; } }
         };
 
         window.triggerDelete = (id) => { 
             const safeSet = (idName, val) => { const el = document.getElementById(idName); if(el) el.value = val; };
-            safeSet('del-id', id); safeSet('del-pwd', '');
-            window.openModal('modal-confirm-delete'); 
+            safeSet('del-id', id); safeSet('del-pwd', ''); window.openModal('modal-confirm-delete'); 
         };
 
         window.executeDelete = async () => {
             const pwdEl = document.getElementById('del-pwd'); 
-            if(!STATE.isAdmin || !pwdEl || !window.checkAuth(pwdEl.value)) { 
-                return window.showToast("Auth Failed", true); 
-            }
+            if(!STATE.isAdmin || !pwdEl || !window.checkAuth(pwdEl.value)) { return window.showToast("Auth Failed", true); }
             const btn = document.getElementById('btn-execute-del'); if(btn) { btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>'; }
             const delIdEl = document.getElementById('del-id'); const id = delIdEl ? delIdEl.value : null; if(!id) return;
-            if(id.startsWith('cat_')) { STATE.categories = STATE.categories.filter(c => c.id !== id); STATE.projects = STATE.projects.filter(p => p.catId !== id); await window.syncRemote('categories_list', STATE.categories); await window.syncRemote('projects_list', STATE.projects); if(STATE.activeCat === id) window.switchView('view-home'); else window.renderCategories(); } 
-            else if(id.startsWith('exp_')) { STATE.experience = STATE.experience.filter(e => e.id !== id); await window.syncRemote('experience_list', STATE.experience); window.renderExperience(); }
+            
+            // BUG FIX APPLIED: Force skills UI to rerender stats on project delete
+            if(id.startsWith('cat_')) { STATE.categories = STATE.categories.filter(c => c.id !== id); STATE.projects = STATE.projects.filter(p => p.catId !== id); await window.syncRemote('categories_list', STATE.categories); await window.syncRemote('projects_list', STATE.projects); if(STATE.activeCat === id) window.switchView('view-home'); else window.renderCategories(); window.renderSkills(); } 
+            else if(id.startsWith('exp_')) { STATE.experience = STATE.experience.filter(e => e.id !== id); await window.syncRemote('experience_list', STATE.experience); window.renderExperience(); window.renderSkills(); }
             else if(id.startsWith('sk_')) { STATE.skills = STATE.skills.filter(s => s.id !== id); await window.syncRemote('skills_list', STATE.skills); window.renderSkills(); }
-            else { STATE.projects = STATE.projects.filter(p => p.id !== id); await window.syncRemote('projects_list', STATE.projects); window.renderProjects(); }
+            else { STATE.projects = STATE.projects.filter(p => p.id !== id); await window.syncRemote('projects_list', STATE.projects); window.renderProjects(); window.renderSkills(); }
+            
             window.closeModals(); window.showToast("Purged"); if(btn) { btn.disabled = false; btn.innerHTML = 'Authorize Deletion'; }
         };
 
