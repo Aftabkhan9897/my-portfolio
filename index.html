@@ -28,11 +28,10 @@
             color: #e5e7eb; 
             overflow-x: hidden; 
             margin: 0; 
-            overscroll-behavior-y: none; /* Stops white bounce on mobile */
+            overscroll-behavior-y: none;
             -webkit-font-smoothing: antialiased;
         }
 
-        /* Dedicated hardware-accelerated background */
         #bg-layer {
             position: fixed; inset: 0; z-index: -2;
             background-color: #050505;
@@ -40,7 +39,6 @@
             background-size: 24px 24px;
         }
 
-        /* Dynamic Brand Accent Overrides */
         .text-emerald-500, .hover\:text-emerald-500:hover { color: var(--primary-emerald) !important; }
         .text-emerald-400, .hover\:text-emerald-400:hover { color: var(--primary-emerald) !important; }
         .bg-emerald-500, .hover\:bg-emerald-500:hover { background-color: var(--primary-emerald) !important; }
@@ -61,7 +59,6 @@
         .file\:text-emerald-400::file-selector-button { color: var(--primary-emerald) !important; }
         .file\:bg-emerald-500\/10::file-selector-button { background-color: rgba(var(--primary-emerald-rgb), 0.1) !important; }
 
-        /* Premium Hover Glow Animation */
         .hover-glow { transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1), box-shadow 0.3s ease, border-color 0.3s ease, background-color 0.3s ease; }
         .hover-glow:hover {
             box-shadow: 0 0 20px rgba(var(--primary-emerald-rgb), 0.5) !important;
@@ -73,7 +70,7 @@
         .view-section.active { display: block; opacity: 1; animation: fadeUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
         @keyframes fadeUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* Premium Glassmorphism */
+        /* BUG FIX: Safari rendering glitch removed by swapping backface-visibility for hardware layer composition */
         .glass-card { 
             background: linear-gradient(145deg, rgba(15, 17, 21, 0.8) 0%, rgba(10, 11, 14, 0.6) 100%);
             backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); 
@@ -82,9 +79,8 @@
             border-right: 1px solid rgba(255, 255, 255, 0.02);
             border-bottom: 1px solid rgba(255, 255, 255, 0.01);
             position: relative; z-index: 1;
-            transform: translateZ(0);
-            -webkit-backface-visibility: hidden;
-            backface-visibility: hidden;
+            will-change: transform, opacity;
+            transform: translate3d(0,0,0);
         }
         
         .hover-lift { transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1), box-shadow 0.3s ease, border-color 0.3s ease; }
@@ -94,7 +90,6 @@
             border-color: rgba(var(--primary-emerald-rgb), 0.4) !important; 
         }
 
-        /* Exclusive Profile Photo Brim Animation */
         @keyframes slow-spin { 100% { transform: rotate(360deg); } }
         .profile-brim {
             position: absolute; inset: -4px; border-radius: 50%;
@@ -102,7 +97,6 @@
             animation: slow-spin 4s linear infinite; z-index: 0; opacity: 0.7;
         }
 
-        /* Experience Timeline Elements */
         .timeline-container { position: relative; padding-left: 2rem; }
         .timeline-container::before {
             content: ''; position: absolute; left: 0; top: 20px; bottom: 0; width: 2px;
@@ -121,7 +115,6 @@
         
         .animate-stagger { opacity: 0; animation: fadeUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
         
-        /* Modals & Premium Background Blur */
         body.modal-open #app-wrapper { filter: blur(4px); opacity: 0.6; transition: filter 0.4s ease, opacity 0.4s ease; pointer-events: none; }
         #app-wrapper { transition: filter 0.4s ease, opacity 0.4s ease; }
 
@@ -146,7 +139,6 @@
             }
         }
 
-        /* List View Toggle Logic */
         #grid-projects.list-view { display: flex; flex-direction: column; gap: 1rem; }
         #grid-projects.list-view .glass-card { flex-direction: row; align-items: center; }
         #grid-projects.list-view .glass-card .banner-wrapper { height: 120px; width: 220px; flex-shrink: 0; border-radius: 1.5rem; border-bottom: none; border-right: 1px solid rgba(255,255,255,0.1); margin: 1rem; }
@@ -199,7 +191,6 @@
         .skill-badge { opacity: 0; transform: translateY(10px); animation: badgeUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
         @keyframes badgeUp { to { opacity: 1; transform: translateY(0); } }
         
-        /* Print Specific Styles */
         @media print {
             body { background: white !important; color: black !important; padding: 0; margin: 0; }
             .accent-glow, header, nav, #fab-top, .modal-overlay, #scroll-progress, .admin-element, button, .profile-brim { display: none !important; }
@@ -217,13 +208,8 @@
 </head>
 <body class="antialiased relative min-h-screen flex flex-col pb-safe">
 
-    <!-- Hardware Accelerated Background -->
     <div id="bg-layer"></div>
-
-    <!-- Feature: SEO Injection Hidden Meta -->
     <div id="seo-meta-injection" class="hidden"></div>
-
-    <!-- Offline Shield Banner -->
     <div id="offline-banner" class="hidden w-full bg-red-600 text-white text-xs font-bold text-center py-1.5 z-[9999] relative shadow-md">
         <i class="fas fa-wifi-slash mr-1"></i> You are offline. Changes will be saved locally.
     </div>
@@ -260,7 +246,6 @@
     <div id="app-wrapper" class="opacity-0 transition-opacity duration-1000 ease-out w-full flex-1 flex flex-col relative z-10">
         <div class="max-w-6xl mx-auto px-6 py-6 md:py-12 w-full flex-1 flex flex-col relative z-10">
             
-            <!-- Header Navigation -->
             <header class="flex justify-between items-center mb-8 md:mb-16 print:hidden">
                 <div class="flex flex-col">
                     <h1 id="nav-logo" class="text-2xl font-black text-white tracking-tighter uppercase decode-text cursor-pointer hover-glow px-2 -ml-2 rounded-lg" onclick="window.switchView('view-home')">PORT<span class="text-emerald-500">FOLIO</span></h1>
@@ -278,7 +263,7 @@
                 </div>
             </header>
 
-            <!-- VIEW: HOME (Profile Landing) -->
+            <!-- VIEW: HOME -->
             <main id="view-home" class="view-section active">
                 <section class="glass-card rounded-[2.5rem] p-8 md:p-16 flex flex-col md:flex-row items-center gap-10 md:gap-12 relative overflow-hidden group border-none md:border-solid">
                     <button onclick="window.openProfileEditor()" class="admin-element absolute top-6 right-6 w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-emerald-500 transition-all shadow-lg border border-white/10 hover-glow z-20">
@@ -308,7 +293,6 @@
                     </div>
                 </section>
 
-                <!-- Experience Section -->
                 <section id="section-experience" class="mt-16 md:mt-24 mb-10 relative hidden">
                     <div class="flex justify-between items-center mb-8">
                         <h3 class="text-2xl font-bold text-white"><i class="fas fa-briefcase text-emerald-500 mr-3"></i>Current Employment</h3>
@@ -330,7 +314,7 @@
                 </div>
             </main>
 
-            <!-- VIEW: SKILLS ARSENAL -->
+            <!-- VIEW: SKILLS -->
             <main id="view-skills" class="view-section">
                 <div class="flex flex-col md:flex-row justify-between md:items-end mb-8 md:mb-12 gap-4">
                     <div>
@@ -342,14 +326,20 @@
                         </div>
                         <p class="text-sm text-gray-400 mt-1 max-w-xl">Select any folder to dynamically filter projects and experience by specific skills.</p>
                     </div>
-                    <button onclick="window.openSkillEditModal()" class="admin-element px-4 md:px-6 py-2.5 md:py-3 bg-emerald-600 hover:bg-emerald-500 rounded-xl text-xs md:text-sm font-bold hover-glow shadow-lg flex items-center justify-center gap-2 active:scale-95">
-                        <i class="fas fa-plus"></i> <span class="hidden md:inline">New Skill Folder</span>
-                    </button>
+                    <div class="flex items-center gap-3">
+                        <select id="skill-sort-select" onchange="window.renderSkills()" class="bg-black/50 border border-white/10 text-gray-300 text-xs font-bold rounded-xl px-4 py-2.5 outline-none focus:border-emerald-500 transition-colors cursor-pointer hidden md:block">
+                            <option value="important">Sort: Rank (Important)</option>
+                            <option value="used">Sort: Most Used</option>
+                        </select>
+                        <button onclick="window.openSkillEditModal()" class="admin-element px-4 md:px-6 py-2.5 md:py-3 bg-emerald-600 hover:bg-emerald-500 rounded-xl text-xs md:text-sm font-bold hover-glow shadow-lg flex items-center justify-center gap-2 active:scale-95">
+                            <i class="fas fa-plus"></i> <span class="hidden md:inline">New Skill Folder</span>
+                        </button>
+                    </div>
                 </div>
                 <div id="grid-skills" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6"></div>
             </main>
 
-            <!-- VIEW: EXPERIENCE TIMELINE -->
+            <!-- VIEW: EXPERIENCE -->
             <main id="view-experience" class="view-section">
                 <div class="flex justify-between items-end mb-8 md:mb-12 print:hidden">
                     <div>
@@ -414,7 +404,6 @@
 
         </div>
 
-        <!-- Admin Skull & Settings (Footer) -->
         <div class="w-full flex justify-center items-center py-10 opacity-20 hover:opacity-100 transition-opacity duration-300 relative z-10 mt-auto h-24 print:hidden">
             <button id="admin-trigger" class="focus:outline-none transform hover:scale-110 transition-all p-4 absolute left-1/2 -translate-x-1/2">
                 <i class="fas fa-skull text-2xl md:text-3xl text-gray-500 drop-shadow-[0_0_10px_rgba(255,255,255,0.1)]"></i>
@@ -423,7 +412,7 @@
                 <i class="fas fa-cog text-xl md:text-2xl drop-shadow-[0_0_10px_rgba(255,255,255,0.1)]"></i>
             </button>
         </div>
-    </div> <!-- /App Wrapper -->
+    </div>
 
     <!-- MODAL: PUBLIC SKILL SHOWCASE -->
     <div id="modal-skill-view" class="modal-overlay" onclick="if(event.target===this) window.closeModals()">
@@ -435,9 +424,15 @@
                 
                 <h3 id="sv-title" class="text-2xl md:text-3xl font-black text-white mb-2 tracking-tight decode-text">Skill Portfolio</h3>
                 
-                <p class="text-emerald-400 text-xs md:text-sm mb-8 bg-emerald-500/10 px-4 py-2 rounded-xl border border-emerald-500/20 shadow-inner flex items-center gap-2 shrink-0">
+                <p class="text-emerald-400 text-xs md:text-sm mb-6 bg-emerald-500/10 px-4 py-2 rounded-xl border border-emerald-500/20 shadow-inner flex items-center gap-2 shrink-0">
                     <i class="fas fa-hand-pointer animate-bounce"></i> Tap a tag to filter projects!
                 </p>
+
+                <!-- Sorting Controls for Modal Tags -->
+                <div id="sv-sort-container" class="flex bg-black/50 border border-white/10 rounded-lg p-1 mb-8">
+                    <button onclick="window.renderModalTags('important')" id="sv-sort-important" class="px-4 py-1.5 text-xs font-bold rounded-md bg-white/10 text-white transition-colors">Upload Order</button>
+                    <button onclick="window.renderModalTags('used')" id="sv-sort-used" class="px-4 py-1.5 text-xs font-bold rounded-md text-gray-500 hover:text-white transition-colors">Most Used</button>
+                </div>
                 
                 <!-- Skill Badges Area -->
                 <div id="sv-tags" class="flex flex-wrap justify-center gap-2.5 w-full max-w-2xl mx-auto pb-8"></div>
@@ -1012,6 +1007,8 @@
             currentSlideshow: [],
             slideIdx: 0,
             dbActive: false,
+            skillModalSort: 'important',
+            activeModalSkillId: null,
             sysConfig: { secondaryPass: "" },
             analytics: { views: 0, cvDownloads: 0, contacts: 0, projectClicks: {} }
         };
@@ -1944,7 +1941,6 @@
             window.haptic();
         };
 
-        // FIX 3: Case-insensitive filtering mapping for active tags
         window.filterExpByTag = (tag, event) => {
             if(event) event.stopPropagation();
             STATE.activeExpTag = tag;
@@ -1985,7 +1981,6 @@
             let timelineExp = sortedExp;
             if (!STATE.isAdmin) timelineExp = timelineExp.filter(e => !e.isDraft);
             
-            // FIX 3: Implemented Exact Case-Insensitive Matching
             const filterLabel = document.getElementById('active-exp-filter');
             if (STATE.activeExpTag) {
                 const searchTag = STATE.activeExpTag.trim().toLowerCase();
@@ -2109,39 +2104,130 @@
 
         window.renderSkills = () => {
             const grid = document.getElementById('grid-skills'); if(!grid) return;
-            let list = [...STATE.skills].sort((a,b) => (a.order !== undefined && a.order !== null ? Number(a.order) : 99) - (b.order !== undefined && b.order !== null ? Number(b.order) : 99));
+            
+            // Calculate usage count across projects
+            let list = STATE.skills.map(s => {
+                let usageCount = 0;
+                if(s.items) {
+                    const sTags = s.items.toLowerCase().split(',').map(t => t.trim());
+                    STATE.projects.forEach(p => {
+                        if(!p.isDraft || STATE.isAdmin) {
+                            if(p.tags) {
+                                const pTags = p.tags.toLowerCase().split(',').map(t => t.trim());
+                                if(pTags.some(pt => sTags.includes(pt))) usageCount++;
+                            }
+                        }
+                    });
+                }
+                return { ...s, usageCount };
+            });
+
+            const sortSelect = document.getElementById('skill-sort-select');
+            const sortType = sortSelect ? sortSelect.value : 'important';
+
+            if(sortType === 'used') {
+                list.sort((a,b) => b.usageCount - a.usageCount); 
+            } else {
+                list.sort((a,b) => (a.order !== undefined && a.order !== null ? Number(a.order) : 99) - (b.order !== undefined && b.order !== null ? Number(b.order) : 99));
+            }
             
             if(list.length === 0) {
                 grid.innerHTML = `<div class="col-span-full p-12 border-2 border-dashed border-white/10 rounded-3xl text-center"><i class="fas fa-brain text-4xl text-gray-600 mb-4"></i><p class="text-gray-500">No skill folders mapped.</p><p class="text-xs text-gray-600 mt-2">Unlock admin to add your expertise.</p></div>`;
                 return;
             }
 
-            grid.innerHTML = list.map((s, idx) => `
-                <div class="glass-card p-6 md:p-8 rounded-3xl hover-lift cursor-pointer group relative overflow-hidden text-center flex flex-col items-center animate-stagger border border-transparent hover:border-emerald-500/30 transition-all duration-500" style="animation-delay: ${idx * 0.1}s" onclick="window.openSkillView('${s.id}')">
-                    <!-- Background glow effect on hover -->
-                    <div class="absolute inset-0 bg-gradient-to-b from-emerald-500/0 to-emerald-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
-                    
-                    <div class="relative w-16 h-16 md:w-20 md:h-20 mb-5 group-hover:scale-110 transition-transform duration-500">
-                        <div class="absolute inset-0 bg-emerald-500/20 rounded-2xl blur-xl group-hover:bg-emerald-500/40 transition-colors duration-500"></div>
-                        ${s.img ? `<img src="${s.img}" class="relative w-full h-full rounded-2xl object-cover shadow-lg border border-white/10 z-10">` : `<div class="relative w-full h-full rounded-2xl bg-gradient-to-br from-gray-800 to-black border border-white/10 flex items-center justify-center text-2xl md:text-3xl text-emerald-500 shadow-lg z-10"><i class="fas fa-folder"></i></div>`}
+            grid.innerHTML = list.map((s, idx) => {
+                const maxUsage = Math.max(...list.map(x => x.usageCount), 1);
+                const usagePercent = Math.min(100, (s.usageCount / maxUsage) * 100);
+                
+                return `
+                <div class="glass-card p-5 md:p-6 rounded-3xl hover-lift cursor-pointer group relative overflow-hidden flex flex-col animate-stagger border border-white/5 hover:border-emerald-500/30 transition-all duration-500" style="animation-delay: ${idx * 0.1}s" onclick="window.openSkillView('${s.id}')">
+                    <div class="absolute -right-10 -top-10 w-32 h-32 bg-emerald-500/10 rounded-full blur-2xl group-hover:bg-emerald-500/20 transition-all duration-500 pointer-events-none"></div>
+                    <div class="flex items-center gap-4 mb-5 z-10">
+                        <div class="relative w-12 h-12 md:w-14 md:h-14 shrink-0 group-hover:scale-105 transition-transform duration-300">
+                            ${s.img ? `<img src="${s.img}" class="w-full h-full rounded-xl object-cover shadow-lg border border-white/10 bg-black">` : `<div class="w-full h-full rounded-xl bg-gradient-to-br from-gray-900 to-black border border-white/10 flex items-center justify-center text-xl text-emerald-500 shadow-lg"><i class="fas fa-folder"></i></div>`}
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <h4 class="text-base md:text-lg font-bold text-white group-hover:text-emerald-400 transition-colors truncate">${window.safeText(s.name)}</h4>
+                            <p class="text-[10px] text-gray-500 uppercase tracking-wider font-bold mt-1">${s.items ? s.items.split(',').length : 0} Core Skills</p>
+                        </div>
                     </div>
-                    
-                    <h4 class="text-base md:text-lg font-bold text-white group-hover:text-emerald-400 transition-colors break-words w-full z-10">${window.safeText(s.name)}</h4>
-                    
-                    <div class="mt-4 px-4 py-1.5 bg-white/5 group-hover:bg-emerald-500/20 rounded-full border border-white/10 group-hover:border-emerald-500/30 transition-colors flex items-center gap-2 z-10">
-                        <span class="w-1.5 h-1.5 rounded-full bg-gray-500 group-hover:bg-emerald-500 group-hover:animate-pulse transition-colors"></span>
-                        <span class="text-[10px] md:text-xs text-gray-400 group-hover:text-emerald-400 font-bold uppercase tracking-wider transition-colors">${s.items ? s.items.split(',').length : 0} Skills mapped</span>
+                    <div class="mt-auto z-10 w-full bg-black/30 p-3 rounded-xl border border-white/5">
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Project Integration</span>
+                            <span class="text-[10px] font-black text-emerald-500 bg-emerald-500/10 px-2 py-0.5 rounded-md">${s.usageCount} Used</span>
+                        </div>
+                        <div class="w-full h-1.5 bg-black/60 rounded-full overflow-hidden border border-white/5">
+                            <div class="h-full bg-gradient-to-r from-emerald-600 to-emerald-400 rounded-full group-hover:animate-pulse shadow-[0_0_10px_rgba(16,185,129,0.5)]" style="width: ${usagePercent}%"></div>
+                        </div>
                     </div>
-                    
                     <div class="admin-element absolute top-3 right-3 z-30 flex flex-col gap-2 pointer-events-auto">
-                        <button onclick="event.stopPropagation(); window.openSkillEditModal('${s.id}')" class="w-8 h-8 rounded-full bg-black/50 text-gray-300 hover:bg-blue-500 hover:text-white transition-all backdrop-blur shadow-md"><i class="fas fa-edit text-xs"></i></button>
-                        <button onclick="event.stopPropagation(); window.triggerDelete('${s.id}')" class="w-8 h-8 rounded-full bg-red-500/20 text-red-500 hover:bg-red-500 hover:text-white transition-all backdrop-blur shadow-md"><i class="fas fa-trash text-xs"></i></button>
+                        <button onclick="event.stopPropagation(); window.openSkillEditModal('${s.id}')" class="w-7 h-7 rounded-full bg-black/60 text-gray-300 hover:bg-blue-500 hover:text-white transition-all backdrop-blur shadow-md flex items-center justify-center"><i class="fas fa-edit text-[10px]"></i></button>
+                        <button onclick="event.stopPropagation(); window.triggerDelete('${s.id}')" class="w-7 h-7 rounded-full bg-red-500/20 text-red-500 hover:bg-red-500 hover:text-white transition-all backdrop-blur shadow-md flex items-center justify-center"><i class="fas fa-trash text-[10px]"></i></button>
                     </div>
                 </div>
-            `).join('');
+                `;
+            }).join('');
+        };
+
+        window.renderModalTags = (sortType) => {
+            STATE.skillModalSort = sortType;
+            const id = STATE.activeModalSkillId;
+            const s = STATE.skills.find(x => x.id === id); if(!s) return;
+
+            const btnImp = document.getElementById('sv-sort-important');
+            const btnUsed = document.getElementById('sv-sort-used');
+            if(sortType === 'used') {
+                if(btnUsed) { btnUsed.classList.replace('text-gray-500', 'text-white'); btnUsed.classList.add('bg-white/10'); }
+                if(btnImp) { btnImp.classList.replace('text-white', 'text-gray-500'); btnImp.classList.remove('bg-white/10'); }
+            } else {
+                if(btnImp) { btnImp.classList.replace('text-gray-500', 'text-white'); btnImp.classList.add('bg-white/10'); }
+                if(btnUsed) { btnUsed.classList.replace('text-white', 'text-gray-500'); btnUsed.classList.remove('bg-white/10'); }
+            }
+
+            const tagsContainer = document.getElementById('sv-tags');
+            if(tagsContainer) {
+                if(s.items && s.items.trim() !== "") {
+                    let skillArr = s.items.split(',').map((t, idx) => {
+                        const tagRaw = t.trim();
+                        let usageCount = 0;
+                        const lowerTag = tagRaw.toLowerCase();
+                        STATE.projects.forEach(p => {
+                            if(!p.isDraft || STATE.isAdmin) {
+                                if(p.tags) {
+                                    const pTags = p.tags.toLowerCase().split(',').map(pt => pt.trim());
+                                    if(pTags.includes(lowerTag)) usageCount++;
+                                }
+                            }
+                        });
+                        return { name: tagRaw, originalIndex: idx, usageCount };
+                    }).filter(t => t.name !== '');
+
+                    if (sortType === 'used') {
+                        skillArr.sort((a, b) => b.usageCount - a.usageCount || a.originalIndex - b.originalIndex);
+                    } else {
+                        skillArr.sort((a, b) => a.originalIndex - b.originalIndex);
+                    }
+
+                    tagsContainer.innerHTML = skillArr.map((tagObj, i) => `
+                        <div onclick="window.closeModals(); window.filterByTag('${window.safeText(tagObj.name).replace(/'/g, "\\'")}', event); STATE.activeCat = null; window.switchView('view-projects');" 
+                             class="skill-badge inline-flex items-center justify-between gap-3 bg-black/40 border border-white/10 hover:border-emerald-500/40 hover:bg-emerald-500/10 text-gray-300 hover:text-white px-4 py-2 text-sm font-medium rounded-xl shadow-sm cursor-pointer transition-all w-full md:w-auto flex-1 md:flex-initial min-w-[140px]" 
+                             style="animation-delay: ${i * 0.02}s">
+                            <div class="flex items-center gap-2">
+                                <span class="w-1.5 h-1.5 rounded-full ${tagObj.usageCount > 0 ? 'bg-emerald-500' : 'bg-gray-600'} shrink-0"></span>
+                                <span class="break-words whitespace-normal leading-snug">${window.safeText(tagObj.name)}</span>
+                            </div>
+                            ${sortType === 'used' ? `<span class="text-[10px] bg-emerald-500/20 text-emerald-400 px-2 py-0.5 rounded-md font-bold ml-1">${tagObj.usageCount}</span>` : ''}
+                        </div>
+                    `).join('');
+                } else {
+                    tagsContainer.innerHTML = `<p class="text-sm text-gray-500 w-full text-center py-4">No specific skills listed.</p>`;
+                }
+            }
         };
 
         window.openSkillView = (id) => {
+            STATE.activeModalSkillId = id;
             const s = STATE.skills.find(x => x.id === id); if(!s) return;
             window.haptic();
             
@@ -2158,22 +2244,7 @@
                 if(fallbackEl) fallbackEl.style.display = 'flex';
             }
 
-            const tagsContainer = document.getElementById('sv-tags');
-            if(tagsContainer) {
-                if(s.items && s.items.trim() !== "") {
-                    const skillArr = s.items.split(',').map(t => t.trim()).filter(t => t !== '');
-                    tagsContainer.innerHTML = skillArr.map((tag, i) => `
-                        <div onclick="window.closeModals(); window.filterByTag('${window.safeText(tag).replace(/'/g, "\\'")}', event); STATE.activeCat = null; window.switchView('view-projects');" 
-                             class="skill-badge inline-flex items-center text-left gap-2.5 bg-black/40 border border-white/10 hover:border-emerald-500/40 hover:bg-emerald-500/10 text-gray-300 hover:text-white px-4 py-2.5 text-xs md:text-sm font-medium rounded-xl shadow-sm cursor-pointer transition-all max-w-full" 
-                             style="animation-delay: ${i * 0.03}s">
-                            <span class="w-1.5 h-1.5 rounded-full bg-emerald-500/60 shrink-0"></span>
-                            <span class="break-words whitespace-normal leading-snug">${window.safeText(tag)}</span>
-                        </div>
-                    `).join('');
-                } else {
-                    tagsContainer.innerHTML = `<p class="text-sm text-gray-500 w-full text-center py-4">No specific skills listed.</p>`;
-                }
-            }
+            window.renderModalTags(STATE.skillModalSort || 'important');
             window.openModal('modal-skill-view');
         };
 
@@ -2184,7 +2255,6 @@
             window.renderProjects();
         };
 
-        // FIX 3: Centralized case-insensitive matching logic starts here
         window.filterByTag = (tag, event) => {
             if(event) event.stopPropagation();
             STATE.activeTag = tag;
@@ -2229,7 +2299,6 @@
             const filterLabel = document.getElementById('active-filter-label');
             const filterName = document.getElementById('active-filter-name');
 
-            // FIX 3: Project Filter Case-Insensitive Array matching
             if(STATE.activeTag) {
                 const searchTag = STATE.activeTag.trim().toLowerCase();
                 list = list.filter(p => {
@@ -2328,8 +2397,27 @@
             const tagsEl = document.getElementById('det-tags');
             if(tagsEl) {
                 if(p.tags) {
-                    tagsEl.innerHTML = p.tags.split(',').map(tag => `<span onclick="window.filterByTag('${tag.trim()}', event); window.closeModals();" class="cursor-pointer hover:bg-emerald-500/30 bg-white/10 border border-white/10 text-emerald-400 px-3 py-1 text-[10px] font-bold rounded-lg uppercase tracking-wider transition-colors">${window.safeText(tag.trim())}</span>`).join('');
-                } else { tagsEl.innerHTML = ''; }
+                    const tagArr = p.tags.split(',').map(t => t.trim()).filter(t => t);
+                    const limit = 4;
+                    
+                    window.renderProjectTags = (expanded) => {
+                        const visibleTags = expanded ? tagArr : tagArr.slice(0, limit);
+                        let html = visibleTags.map(tag => `<span onclick="window.filterByTag('${window.safeText(tag)}', event); window.closeModals();" class="cursor-pointer hover:bg-emerald-500/30 bg-white/10 border border-white/10 text-emerald-400 px-3 py-1 text-[10px] font-bold rounded-lg uppercase tracking-wider transition-colors">${window.safeText(tag)}</span>`).join('');
+                        
+                        if (tagArr.length > limit) {
+                            if (expanded) {
+                                html += `<span onclick="window.renderProjectTags(false)" class="cursor-pointer hover:bg-red-500/30 bg-red-500/10 border border-red-500/20 text-red-400 px-3 py-1 text-[10px] font-bold rounded-lg uppercase tracking-wider transition-colors">Show Less <i class="fas fa-chevron-up ml-1"></i></span>`;
+                            } else {
+                                html += `<span onclick="window.renderProjectTags(true)" class="cursor-pointer hover:bg-emerald-500/30 bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 px-3 py-1 text-[10px] font-bold rounded-lg uppercase tracking-wider transition-colors">+${tagArr.length - limit} More <i class="fas fa-chevron-down ml-1"></i></span>`;
+                            }
+                        }
+                        document.getElementById('det-tags').innerHTML = html;
+                    };
+                    
+                    window.renderProjectTags(false);
+                } else { 
+                    tagsEl.innerHTML = ''; 
+                }
             }
 
             const readTimeEl = document.getElementById('det-read-time');
