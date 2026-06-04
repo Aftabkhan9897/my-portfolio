@@ -5,6 +5,20 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Live Portfolio</title>
     
+    <meta name="title" content="Aftab Khan | Live Portfolio">
+    <meta name="description" content="Data Analyst & Marketing Workspace. View my interactive digital portfolio, live projects, and professional timeline.">
+    
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://your-hosted-domain.com/">
+    <meta property="og:title" content="Aftab Khan | Live Portfolio">
+    <meta property="og:description" content="Data Analyst & Marketing Workspace. View my interactive digital portfolio, live projects, and professional timeline.">
+    <meta property="og:image" content="https://placehold.co/1200x630/10b981/050505?text=Aftab+Khan+Portfolio">
+
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Aftab Khan | Live Portfolio">
+    <meta name="twitter:description" content="Data Analyst & Marketing Workspace. View my interactive digital portfolio, live projects, and professional timeline.">
+    <meta name="twitter:image" content="https://placehold.co/1200x630/10b981/050505?text=Aftab+Khan+Portfolio">
+    
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
@@ -18,7 +32,7 @@
             --primary-emerald-dark: #059669;
         }
         
-        html { background-color: #050505 !important; }
+        html { background-color: #050505 !important; scroll-behavior: smooth; }
         body { 
             font-family: 'Inter', sans-serif; 
             background-color: #050505 !important; 
@@ -28,6 +42,11 @@
             overscroll-behavior-y: none;
             -webkit-font-smoothing: antialiased;
         }
+
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: #050505; border-left: 1px solid rgba(255,255,255,0.05); }
+        ::-webkit-scrollbar-thumb { background: rgba(var(--primary-emerald-rgb), 0.3); border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--primary-emerald); }
 
         #bg-layer {
             position: fixed; inset: 0; z-index: -2;
@@ -67,7 +86,6 @@
         .view-section.active { display: block; opacity: 1; animation: fadeUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
         @keyframes fadeUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* BUG FIX APPLIED HERE: Replaced backface-visibility to stop Safari scrolling tears */
         .glass-card { 
             background: linear-gradient(145deg, rgba(15, 17, 21, 0.8) 0%, rgba(10, 11, 14, 0.6) 100%);
             backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); 
@@ -94,6 +112,25 @@
             animation: slow-spin 4s linear infinite; z-index: 0; opacity: 0.7;
         }
 
+        .blob-profile {
+            border-radius: 40% 60% 70% 30% / 40% 50% 60% 50%;
+            animation: morphBlob 8s ease-in-out infinite alternate;
+            transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+            will-change: border-radius, transform;
+            transform: translateZ(0);
+            box-shadow: inset 0 0 20px rgba(var(--primary-emerald-rgb), 0.5), 0 0 30px rgba(var(--primary-emerald-rgb), 0.2);
+        }
+        .blob-profile:hover {
+            transform: scale(1.05) translateZ(0);
+            box-shadow: inset 0 0 30px rgba(var(--primary-emerald-rgb), 0.8), 0 0 50px rgba(var(--primary-emerald-rgb), 0.4);
+        }
+        @keyframes morphBlob {
+            0%   { border-radius: 40% 60% 70% 30% / 40% 50% 60% 50%; }
+            34%  { border-radius: 70% 30% 50% 50% / 30% 30% 70% 70%; }
+            67%  { border-radius: 100% 60% 60% 100% / 100% 100% 60% 60%; }
+            100% { border-radius: 40% 60% 70% 30% / 40% 50% 60% 50%; }
+        }
+
         .timeline-container { position: relative; padding-left: 2rem; }
         .timeline-container::before {
             content: ''; position: absolute; left: 0; top: 20px; bottom: 0; width: 2px;
@@ -112,7 +149,7 @@
         
         .animate-stagger { opacity: 0; animation: fadeUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
         
-        body.modal-open #app-wrapper { filter: blur(4px); opacity: 0.6; transition: filter 0.4s ease, opacity 0.4s ease; pointer-events: none; }
+        body.modal-open #app-wrapper, body.modal-open #floating-nav { filter: blur(4px); opacity: 0.6; transition: filter 0.4s ease, opacity 0.4s ease; pointer-events: none; }
         #app-wrapper { transition: filter 0.4s ease, opacity 0.4s ease; }
 
         .modal-overlay { 
@@ -147,7 +184,9 @@
             #grid-projects.list-view .card-icon { display: block; }
         }
 
-        .accent-glow { position: fixed; border-radius: 50%; filter: blur(120px); z-index: -1; opacity: 0.12; pointer-events: none; will-change: transform; transform: translateZ(0); transition: transform 0.1s linear; }
+        .nav-btn.active { color: white; background: rgba(255, 255, 255, 0.1); box-shadow: inset 0 0 15px rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.15); transform: translateY(-2px); }
+
+        .accent-glow { position: fixed; border-radius: 50%; filter: blur(120px); z-index: -1; opacity: 0.12; pointer-events: none; will-change: transform; transform: translateZ(0); }
         .admin-element { display: none !important; }
         .admin-active .admin-element { display: inline-flex !important; }
         .admin-active .admin-element-block { display: block !important; }
@@ -187,9 +226,9 @@
         @keyframes badgeUp { to { opacity: 1; transform: translateY(0); } }
         
         @media print {
-            body { background: white !important; color: black !important; padding: 0; margin: 0; }
+            body { background: white !important; color: black !important; padding: 0; margin: 0; cursor: auto; }
             .accent-glow, header, nav, #fab-top, .modal-overlay, #scroll-progress, .admin-element, button, .profile-brim { display: none !important; }
-            .glass-card { background: white !important; border: 1px solid #ddd !important; box-shadow: none !important; break-inside: avoid; color: black !important; filter: none !important; backdrop-filter: none !important; }
+            .glass-card { background: white !important; border: 1px solid #ddd !important; box-shadow: none !important; break-inside: avoid; color: black !important; filter: none !important; backdrop-filter: none !important; transform: none !important; }
             .text-white { color: black !important; }
             .text-gray-400, .text-gray-500 { color: #444 !important; }
             .text-emerald-500, .text-emerald-400 { color: var(--primary-emerald-dark) !important; }
@@ -209,7 +248,6 @@
         <i class="fas fa-wifi-slash mr-1"></i> You are offline. Changes will be saved locally.
     </div>
 
-    <!-- INITIAL APP LOADER -->
     <div id="app-loader" class="fixed inset-0 z-[99999] bg-[#050505] flex flex-col items-center justify-center transition-opacity duration-700 ease-in-out">
         <div class="relative w-16 h-16 flex items-center justify-center mb-4">
             <div class="absolute inset-0 rounded-full border-t-2 border-emerald-500 animate-spin"></div>
@@ -219,8 +257,26 @@
         <div class="text-xs font-bold text-gray-500 tracking-[0.2em] uppercase animate-pulse">Initializing</div>
     </div>
 
-    <!-- Global Scroll Progress SVG Ring FAB -->
-    <div id="fab-top" onclick="window.scrollTo({top: 0, behavior: 'smooth'})" class="fixed bottom-6 right-6 w-14 h-14 bg-black/80 backdrop-blur border border-white/10 hover:bg-white/10 rounded-full flex items-center justify-center text-emerald-500 opacity-0 translate-y-10 transition-all duration-300 cursor-pointer z-40 shadow-2xl group">
+    <nav id="floating-nav" class="fixed bottom-6 left-1/2 -translate-x-1/2 z-40 bg-black/80 backdrop-blur-xl border border-white/10 rounded-full px-2 py-1.5 flex items-center gap-2 shadow-[0_10px_40px_rgba(0,0,0,0.9)] print:hidden transition-all duration-500 transform translate-y-24 opacity-0 cursor-pointer">
+        <button onclick="window.switchView('view-home')" data-target="view-home" class="nav-btn active p-3 w-12 h-12 flex items-center justify-center rounded-full text-gray-500 hover:text-white hover:bg-white/10 transition-all group relative cursor-pointer">
+            <i class="fas fa-home text-lg pointer-events-none"></i>
+            <span class="absolute -top-10 left-1/2 -translate-x-1/2 bg-black border border-white/10 text-white text-[10px] px-2 py-1 rounded-md opacity-0 group-hover:opacity-100 transition-opacity font-bold tracking-wider">Home</span>
+        </button>
+        <button onclick="window.switchView('view-categories')" data-target="view-categories" class="nav-btn p-3 w-12 h-12 flex items-center justify-center rounded-full text-gray-500 hover:text-white hover:bg-white/10 transition-all group relative cursor-pointer">
+            <i class="fas fa-layer-group text-lg pointer-events-none"></i>
+            <span class="absolute -top-10 left-1/2 -translate-x-1/2 bg-black border border-white/10 text-white text-[10px] px-2 py-1 rounded-md opacity-0 group-hover:opacity-100 transition-opacity font-bold tracking-wider">Projects</span>
+        </button>
+        <button onclick="window.switchView('view-skills')" data-target="view-skills" class="nav-btn p-3 w-12 h-12 flex items-center justify-center rounded-full text-gray-500 hover:text-white hover:bg-white/10 transition-all group relative cursor-pointer">
+            <i class="fas fa-brain text-lg pointer-events-none"></i>
+            <span class="absolute -top-10 left-1/2 -translate-x-1/2 bg-black border border-white/10 text-white text-[10px] px-2 py-1 rounded-md opacity-0 group-hover:opacity-100 transition-opacity font-bold tracking-wider">Skills</span>
+        </button>
+        <button onclick="window.switchView('view-experience')" data-target="view-experience" class="nav-btn p-3 w-12 h-12 flex items-center justify-center rounded-full text-gray-500 hover:text-white hover:bg-white/10 transition-all group relative cursor-pointer">
+            <i class="fas fa-history text-lg pointer-events-none"></i>
+            <span class="absolute -top-10 left-1/2 -translate-x-1/2 bg-black border border-white/10 text-white text-[10px] px-2 py-1 rounded-md opacity-0 group-hover:opacity-100 transition-opacity font-bold tracking-wider">Timeline</span>
+        </button>
+    </nav>
+
+    <div id="fab-top" onclick="window.scrollTo({top: 0, behavior: 'smooth'})" class="fixed bottom-6 right-6 w-14 h-14 bg-black/80 backdrop-blur border border-white/10 hover:bg-white/10 rounded-full hidden md:flex items-center justify-center text-emerald-500 opacity-0 translate-y-10 transition-all duration-300 cursor-pointer z-40 shadow-2xl group">
         <svg class="absolute inset-0 w-full h-full transform -rotate-90 pointer-events-none" viewBox="0 0 100 100">
             <circle cx="50" cy="50" r="46" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="4"></circle>
             <circle id="scroll-ring" cx="50" cy="50" r="46" fill="none" stroke="var(--primary-emerald)" stroke-width="4" stroke-dasharray="289" stroke-dashoffset="289" class="transition-all duration-150"></circle>
@@ -228,18 +284,15 @@
         <i class="fas fa-arrow-up group-hover:-translate-y-1 transition-transform"></i>
     </div>
 
-    <!-- Ambient Parallax Orbs -->
     <div id="glow-1" class="accent-glow bg-emerald-500 w-96 h-96 -top-20 -left-20"></div>
     <div id="glow-2" class="accent-glow bg-cyan-600 w-[30rem] h-[30rem] bottom-0 right-0"></div>
 
-    <!-- Toast UI -->
     <div id="toast" class="fixed bottom-6 left-1/2 -translate-x-1/2 px-6 py-3 rounded-full bg-emerald-600 text-white font-medium shadow-2xl z-[9999] opacity-0 pointer-events-none transition-all duration-300 border border-white/10">
         <span id="toast-msg">Success</span>
     </div>
 
-    <!-- MAIN APP WRAPPER -->
     <div id="app-wrapper" class="opacity-0 transition-opacity duration-1000 ease-out w-full flex-1 flex flex-col relative z-10">
-        <div class="max-w-6xl mx-auto px-6 py-6 md:py-12 w-full flex-1 flex flex-col relative z-10">
+        <div class="max-w-6xl mx-auto px-6 py-6 md:py-12 w-full flex-1 flex flex-col relative z-10 pb-32 md:pb-12">
             
             <header class="flex justify-between items-center mb-8 md:mb-16 print:hidden">
                 <div class="flex flex-col">
@@ -258,7 +311,6 @@
                 </div>
             </header>
 
-            <!-- VIEW: HOME -->
             <main id="view-home" class="view-section active">
                 <section class="glass-card rounded-[2.5rem] p-8 md:p-16 flex flex-col md:flex-row items-center gap-10 md:gap-12 relative overflow-hidden group border-none md:border-solid">
                     <button onclick="window.openProfileEditor()" class="admin-element absolute top-6 right-6 w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-emerald-500 transition-all shadow-lg border border-white/10 hover-glow z-20">
@@ -281,10 +333,9 @@
                         </div>
                     </div>
 
-                    <div class="w-48 h-48 md:w-80 md:h-80 relative shrink-0 mt-6 md:mt-0 group">
-                        <div class="profile-brim"></div>
-                        <div class="absolute inset-0.5 rounded-full bg-[#050505] z-10"></div>
-                        <img id="hero-img" loading="lazy" src="https://placehold.co/600x600/171717/white?text=User" onerror="this.onerror=null; this.src='https://placehold.co/600x600/171717/white?text=User'" class="absolute inset-2 w-[calc(100%-16px)] h-[calc(100%-16px)] object-cover rounded-full border-[3px] border-[#121212] z-20 shadow-2xl transition-transform duration-700 group-hover:scale-105">
+                    <div class="w-48 h-48 md:w-80 md:h-80 relative shrink-0 mt-6 md:mt-0 flex items-center justify-center group cursor-pointer">
+                        <div class="absolute inset-0 bg-gradient-to-tr from-emerald-500/20 to-cyan-500/20 blob-profile z-0 pointer-events-none"></div>
+                        <img id="hero-img" loading="lazy" src="https://placehold.co/600x600/171717/white?text=User" onerror="this.onerror=null; this.src='https://placehold.co/600x600/171717/white?text=User'" class="w-[calc(100%-20px)] h-[calc(100%-20px)] object-cover blob-profile border-2 border-emerald-500/30 z-20 relative shadow-2xl">
                     </div>
                 </section>
 
@@ -309,7 +360,6 @@
                 </div>
             </main>
 
-            <!-- VIEW: SKILLS -->
             <main id="view-skills" class="view-section">
                 <div class="flex flex-col md:flex-row justify-between md:items-end mb-8 md:mb-12 gap-4">
                     <div>
@@ -334,7 +384,6 @@
                 <div id="grid-skills" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6"></div>
             </main>
 
-            <!-- VIEW: EXPERIENCE -->
             <main id="view-experience" class="view-section">
                 <div class="flex justify-between items-end mb-8 md:mb-12 print:hidden">
                     <div>
@@ -359,7 +408,6 @@
                 <div id="experience-list" class="timeline-container space-y-8 pb-10"></div>
             </main>
 
-            <!-- VIEW: WORKSPACES -->
             <main id="view-categories" class="view-section">
                 <div class="flex justify-between items-end mb-8 md:mb-12">
                     <div>
@@ -373,7 +421,6 @@
                 <div id="grid-categories" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"></div>
             </main>
 
-            <!-- VIEW: PROJECTS -->
             <main id="view-projects" class="view-section">
                 <div class="flex justify-between items-end mb-8 md:mb-12">
                     <div>
@@ -401,15 +448,14 @@
 
         <div class="w-full flex justify-center items-center py-10 opacity-20 hover:opacity-100 transition-opacity duration-300 relative z-10 mt-auto h-24 print:hidden">
             <button id="admin-trigger" class="focus:outline-none transform hover:scale-110 transition-all p-4 absolute left-1/2 -translate-x-1/2">
-                <i class="fas fa-skull text-2xl md:text-3xl text-gray-500 drop-shadow-[0_0_10px_rgba(255,255,255,0.1)]"></i>
+                <i class="fas fa-skull text-2xl md:text-3xl text-gray-500 drop-shadow-[0_0_10px_rgba(255,255,255,0.1)] pointer-events-none"></i>
             </button>
             <button onclick="window.openModal('modal-sys-auth')" class="admin-element absolute left-1/2 ml-14 md:ml-16 focus:outline-none transform hover:scale-110 transition-all p-3 text-gray-500 hover:text-emerald-500 z-20">
-                <i class="fas fa-cog text-xl md:text-2xl drop-shadow-[0_0_10px_rgba(255,255,255,0.1)]"></i>
+                <i class="fas fa-cog text-xl md:text-2xl drop-shadow-[0_0_10px_rgba(255,255,255,0.1)] pointer-events-none"></i>
             </button>
         </div>
     </div>
 
-    <!-- MODAL: PUBLIC SKILL SHOWCASE -->
     <div id="modal-skill-view" class="modal-overlay" onclick="if(event.target===this) window.closeModals()">
         <div class="glass-modal w-full max-w-2xl h-[90vh] md:h-auto md:max-h-[85vh] md:rounded-[2rem] relative shadow-2xl flex flex-col border-0 md:border border-white/10 m-4 overflow-hidden">
             <button onclick="window.closeModals()" class="mobile-close-btn absolute top-4 md:top-6 right-4 md:right-6 z-50 w-10 h-10 rounded-full bg-black/80 text-white flex items-center justify-center hover:bg-red-500 transition-colors shadow-lg"><i class="fas fa-times"></i></button>
@@ -423,19 +469,16 @@
                     <i class="fas fa-filter"></i> View All Projects
                 </button>
 
-                <!-- Sorting Controls for Modal Tags -->
                 <div id="sv-sort-container" class="flex bg-black/50 border border-white/10 rounded-lg p-1 mb-6">
                     <button onclick="window.renderModalTags('important')" id="sv-sort-important" class="px-4 py-1.5 text-xs font-bold rounded-md bg-white/10 text-white transition-colors">Upload Order</button>
                     <button onclick="window.renderModalTags('used')" id="sv-sort-used" class="px-4 py-1.5 text-xs font-bold rounded-md text-gray-500 hover:text-white transition-colors">Most Used</button>
                 </div>
                 
-                <!-- Skill Badges Area -->
                 <div id="sv-tags" class="w-full max-w-2xl mx-auto pb-8"></div>
             </div>
         </div>
     </div>
 
-    <!-- MODAL: SKILL FOLDER EDITOR -->
     <div id="modal-skill-edit" class="modal-overlay" onclick="if(event.target===this) window.closeModals()">
         <div class="glass-modal w-full max-w-md h-[90vh] md:h-auto md:max-h-[85vh] md:rounded-[2rem] overflow-hidden flex flex-col relative shadow-2xl border-0 md:border border-white/10">
             <button onclick="window.closeModals()" class="mobile-close-btn absolute top-4 right-4 z-50 w-10 h-10 rounded-full bg-black/80 text-white flex items-center justify-center hover:bg-red-500 transition-colors"><i class="fas fa-times"></i></button>
@@ -449,7 +492,8 @@
                     </div>
                     <div>
                         <label class="text-xs text-gray-500 uppercase font-bold mb-2 block">Skills List (Comma or Sub-Heading separated)</label>
-                        <textarea id="skill-items" rows="4" class="w-full bg-black/50 border border-white/10 rounded-lg px-4 py-3 text-sm text-white focus:border-emerald-500 outline-none transition-colors" placeholder="Stats: Mean, Median, Mode&#10;Data Viz: Tableau, PowerBI"></textarea>
+                        <textarea id="skill-items" rows="4" class="w-full bg-black/50 border border-white/10 rounded-lg px-4 py-3 text-sm text-white focus:border-emerald-500 outline-none transition-colors" placeholder="Stats: Mean, Median, Mode
+Data Viz: Tableau, PowerBI"></textarea>
                     </div>
                     <div>
                         <label class="text-xs text-gray-500 uppercase font-bold mb-2 block">Folder Icon (Crop 1:1)</label>
@@ -462,7 +506,6 @@
         </div>
     </div>
 
-    <!-- MODAL: RESUME PREVIEWER -->
     <div id="modal-resume" class="modal-overlay" onclick="if(event.target===this) window.closeModals()">
         <div class="glass-modal w-full max-w-4xl h-[90vh] md:rounded-[2rem] overflow-hidden flex flex-col relative shadow-2xl border-0 md:border border-white/10">
             <button onclick="window.closeModals()" class="mobile-close-btn absolute top-4 right-4 z-50 w-10 h-10 rounded-full bg-black/80 text-white flex items-center justify-center hover:bg-red-500 transition-colors">
@@ -476,15 +519,13 @@
         </div>
     </div>
 
-    <!-- MODAL: IMAGE LIGHTBOX -->
     <div id="lightbox" class="fixed inset-0 z-[200] hidden items-center justify-center opacity-0" onclick="if(event.target===this) window.closeLightbox()">
         <button onclick="window.closeLightbox()" class="absolute top-6 right-6 w-12 h-12 bg-white/10 rounded-full flex items-center justify-center text-white hover:bg-red-500 transition-colors z-50"><i class="fas fa-times"></i></button>
         <div class="absolute left-4 top-1/2 -translate-y-1/2 flex items-center justify-center w-12 h-12 bg-white/10 rounded-full text-white cursor-pointer hover:bg-emerald-500 transition-colors z-50" onclick="window.prevLightbox(event)"><i class="fas fa-chevron-left"></i></div>
         <div class="absolute right-4 top-1/2 -translate-y-1/2 flex items-center justify-center w-12 h-12 bg-white/10 rounded-full text-white cursor-pointer hover:bg-emerald-500 transition-colors z-50" onclick="window.nextLightbox(event)"><i class="fas fa-chevron-right"></i></div>
-        <img id="lightbox-img" loading="lazy" src="" class="zoom-img max-w-[90vw] max-h-[90vh] object-contain rounded-xl shadow-2xl" onclick="this.classList.toggle('zoomed')">
+        <div id="lightbox-media-container" class="w-full h-full flex items-center justify-center pointer-events-auto"></div>
     </div>
 
-    <!-- MODAL: IMAGE CROPPER STUDIO -->
     <div id="modal-cropper" class="modal-overlay z-[150]" onclick="if(event.target===this) window.closeCropper()">
         <div class="glass-modal p-6 md:p-8 rounded-[2rem] w-full max-w-lg mx-4 border border-white/10 relative shadow-2xl flex flex-col">
             <button onclick="window.closeCropper()" class="mobile-close-btn absolute top-4 right-4 w-8 h-8 rounded-full bg-white/5 text-gray-400 flex items-center justify-center hover:text-white hover:bg-red-500 transition-all z-50"><i class="fas fa-times"></i></button>
@@ -499,16 +540,15 @@
             </div>
             
             <div class="mt-6 flex items-center gap-4 px-2">
-                <i class="fas fa-search-minus text-gray-500"></i>
-                <input type="range" id="crop-zoom" min="0.1" max="3" step="0.01" value="1" class="flex-1 accent-emerald-500">
-                <i class="fas fa-search-plus text-gray-500"></i>
+                <i class="fas fa-search-minus text-gray-500 cursor-pointer" onclick="const el = document.getElementById('crop-zoom'); if(el) { el.stepDown(); el.dispatchEvent(new Event('input')); }"></i>
+                <input type="range" id="crop-zoom" min="0.1" max="3" step="0.01" value="1" class="flex-1 accent-emerald-500 cursor-pointer">
+                <i class="fas fa-search-plus text-gray-500 cursor-pointer" onclick="const el = document.getElementById('crop-zoom'); if(el) { el.stepUp(); el.dispatchEvent(new Event('input')); }"></i>
             </div>
             
             <button onclick="window.executeCrop()" id="btn-execute-crop" class="w-full mt-6 py-4 bg-emerald-600 hover:bg-emerald-500 rounded-xl font-bold text-white hover-glow shadow-lg transition-all active:scale-95">Save Crop</button>
         </div>
     </div>
 
-    <!-- MODAL: CONTACT SHEET -->
     <div id="modal-contact" class="modal-overlay" onclick="if(event.target===this) window.closeModals()">
         <div class="glass-modal w-full max-w-sm h-[90vh] md:h-auto md:rounded-[2rem] overflow-hidden flex flex-col relative shadow-2xl border-0 md:border border-white/10">
             <button onclick="window.closeModals()" class="mobile-close-btn absolute top-4 right-4 z-50 w-10 h-10 rounded-full bg-black/80 text-white flex items-center justify-center hover:bg-red-500 transition-colors"><i class="fas fa-times"></i></button>
@@ -523,17 +563,16 @@
         </div>
     </div>
 
-    <!-- MODAL: PROJECT DETAILS -->
     <div id="modal-details" class="modal-overlay" onclick="if(event.target===this) window.closeModals()">
         <div class="glass-modal w-full max-w-4xl h-[90vh] md:rounded-[2rem] overflow-hidden flex flex-col relative shadow-2xl border-0 md:border border-white/10">
             <div id="read-progress" class="absolute top-0 left-0 h-1 bg-emerald-500 w-0 z-50 transition-none"></div>
             
-            <button onclick="window.closeModals()" class="mobile-close-btn absolute top-4 md:top-6 right-4 md:right-6 z-50 w-10 h-10 rounded-full bg-black/80 backdrop-blur text-white flex items-center justify-center hover:bg-red-500 transition-colors shadow-lg">
+            <button onclick="window.closeModals()" class="mobile-close-btn absolute top-4 md:top-6 right-4 md:right-6 z-[120] w-10 h-10 rounded-full bg-black/80 backdrop-blur text-white flex items-center justify-center hover:bg-red-500 transition-colors shadow-lg">
                 <i class="fas fa-times"></i>
             </button>
             
             <div class="overflow-y-auto hide-scroll flex-1 pb-10" onscroll="window.updateReadProgress(this)">
-                <div class="p-6 md:p-12 flex flex-col md:flex-row gap-6 md:gap-8 items-start">
+                <div class="p-6 md:p-12 flex flex-col md:flex-row gap-6 md:gap-8 items-start relative z-10">
                     <img id="det-icon" loading="lazy" src="" onerror="this.onerror=null; this.src='https://placehold.co/400x400/171717/white?text=Icon'" class="w-20 h-20 md:w-32 md:h-32 rounded-2xl md:rounded-3xl object-cover shadow-2xl border border-white/5 shrink-0 bg-black">
                     <div class="flex-1 w-full">
                         <h2 id="det-title" class="text-3xl md:text-5xl font-black text-white mb-2 tracking-tight decode-text pr-12 md:pr-0">Project Title</h2>
@@ -548,16 +587,18 @@
                             <a id="det-link" target="_blank" onclick="window.trackEvent('external_link', {type: 'project'})" class="flex-1 md:flex-none justify-center px-6 md:px-8 py-3 bg-emerald-600 text-white rounded-xl font-bold hover-glow shadow-lg flex items-center gap-2 transition-all active:scale-95">
                                 Launch Project <i class="fas fa-external-link-alt text-sm"></i>
                             </a>
+                            <button id="det-share-btn" onclick="window.copyToClipboard(window.location.href, 'Direct link copied!')" class="cursor-pointer w-12 h-12 bg-white/5 text-gray-300 border border-white/10 rounded-xl hover:bg-white/10 hover:text-white flex items-center justify-center transition-all hover:-translate-y-1" title="Copy Link"><i class="fas fa-link pointer-events-none text-sm"></i></button>
                         </div>
                     </div>
                 </div>
 
                 <div class="px-6 md:px-12 mb-6 relative">
-                    <!-- BUG FIX: Ripped out canvas, replaced with img to support animated GIFs natively -->
-                    <div id="swipe-container" class="aspect-video bg-black rounded-2xl md:rounded-3xl overflow-hidden border border-white/5 shadow-inner relative select-none cursor-ew-resize flex items-center justify-center">
-                        <img id="slideshow-img" class="w-full h-full object-contain absolute inset-0 cursor-pointer" onclick="window.openLightbox()" src="">
-                        <div class="absolute bottom-4 left-0 right-0 flex justify-center gap-2" id="slideshow-dots"></div>
-                        <div class="absolute top-4 right-4 bg-black/50 backdrop-blur rounded px-2 py-1 text-[10px] text-white/50 hidden md:block border border-white/10"><i class="fas fa-search-plus mr-1"></i> Click to Zoom</div>
+                    <div class="w-full relative aspect-video bg-black rounded-2xl md:rounded-3xl overflow-hidden shadow-inner border border-white/10 flex items-center justify-center group">
+                        <div id="swipe-container" class="absolute inset-0 bg-white/5 animate-pulse overflow-hidden select-none cursor-ew-resize flex items-center justify-center">
+                            <div id="slideshow-media-container" class="absolute inset-0 w-full h-full cursor-pointer hover:scale-[1.02] transition-transform duration-700 flex items-center justify-center bg-black" style="opacity: 0; transition: opacity 0.5s ease-in-out;"></div>
+                            <div class="absolute top-4 right-4 bg-black/70 backdrop-blur rounded px-2 py-1 text-[10px] text-white/50 hidden md:block border border-white/10 z-10 pointer-events-none"><i class="fas fa-search-plus mr-1"></i> Zoom</div>
+                        </div>
+                        <div class="absolute bottom-4 left-0 right-0 flex justify-center gap-2 z-10" id="slideshow-dots"></div>
                     </div>
                 </div>
 
@@ -578,7 +619,6 @@
         </div>
     </div>
 
-    <!-- MODAL: ANALYTICS DASHBOARD -->
     <div id="modal-analytics" class="modal-overlay" onclick="if(event.target===this) window.closeModals()">
         <div class="glass-modal w-full max-w-3xl h-[90vh] md:h-auto md:max-h-[85vh] md:rounded-[2rem] overflow-hidden flex flex-col relative shadow-2xl border-0 md:border border-white/10">
             <button onclick="window.closeModals()" class="mobile-close-btn absolute top-4 md:top-6 right-4 md:right-6 z-50 w-10 h-10 rounded-full bg-black/80 text-white flex items-center justify-center hover:bg-red-500 transition-colors shadow-lg">
@@ -621,7 +661,6 @@
         </div>
     </div>
 
-    <!-- MODAL: RESET ANALYTICS PROMPT -->
     <div id="modal-reset-analytics" class="modal-overlay" onclick="if(event.target===this) window.closeModals()">
         <div class="glass-modal p-8 rounded-3xl w-full max-w-sm mx-4 text-center border border-red-900/50 shadow-2xl relative">
             <button onclick="window.closeModals()" class="mobile-close-btn absolute top-4 right-4 z-50 w-8 h-8 rounded-full bg-white/5 text-gray-400 hover:text-white hover:bg-white/10 transition-all"><i class="fas fa-times"></i></button>
@@ -636,7 +675,6 @@
         </div>
     </div>
 
-    <!-- MODAL: ADMIN LOGIN -->
     <div id="modal-login" class="modal-overlay" onclick="if(event.target===this) window.closeModals()">
         <div class="glass-modal w-full max-w-sm h-[90vh] md:h-auto md:max-h-[85vh] md:rounded-[2rem] overflow-hidden flex flex-col relative shadow-2xl border-0 md:border border-white/10">
             <button onclick="window.closeModals()" class="mobile-close-btn absolute top-4 right-4 z-50 w-10 h-10 rounded-full bg-black/80 text-white flex items-center justify-center hover:bg-red-500 transition-colors"><i class="fas fa-times"></i></button>
@@ -652,7 +690,6 @@
         </div>
     </div>
 
-    <!-- MODAL: SYSTEM SETTINGS AUTHENTICATION -->
     <div id="modal-sys-auth" class="modal-overlay" onclick="if(event.target===this) window.closeModals()">
         <div class="glass-modal w-full max-w-sm h-[90vh] md:h-auto md:max-h-[85vh] md:rounded-[2rem] overflow-hidden flex flex-col relative shadow-2xl border-0 md:border border-white/10">
             <button onclick="window.closeModals()" class="mobile-close-btn absolute top-4 right-4 z-50 w-10 h-10 rounded-full bg-black/80 text-white flex items-center justify-center hover:bg-red-500 transition-colors"><i class="fas fa-times"></i></button>
@@ -668,7 +705,6 @@
         </div>
     </div>
 
-    <!-- MODAL: SYSTEM CONFIGURATION SETTINGS -->
     <div id="modal-sys-config" class="modal-overlay" onclick="if(event.target===this) window.closeModals()">
         <div class="glass-modal w-full max-w-2xl h-[90vh] md:h-auto md:max-h-[85vh] md:rounded-[2rem] overflow-hidden flex flex-col relative shadow-2xl border-0 md:border border-white/10">
             <button onclick="window.closeModals()" class="mobile-close-btn absolute top-4 right-4 z-50 w-10 h-10 rounded-full bg-black/80 text-white flex items-center justify-center hover:bg-red-500 transition-colors"><i class="fas fa-times"></i></button>
@@ -687,6 +723,16 @@
                         <p class="text-xs text-gray-400 mb-4">Set a global guest password. This safely allows another person to unlock the admin panel to edit content without giving them your root code.</p>
                         <div><input type="text" id="conf-sec-pass" class="w-full bg-black/50 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:border-emerald-500 outline-none transition-colors" placeholder="Enter guest password (or leave blank to disable)"></div>
                     </div>
+                    
+                    <!-- NEW FAILSAFE SECTION -->
+                    <div class="p-4 md:p-5 bg-black/30 rounded-2xl border border-red-500/20">
+                        <h4 class="text-xs font-bold text-red-400 mb-4 uppercase"><i class="fas fa-life-ring mr-1.5"></i> Emergency Failsafe Links</h4>
+                        <p class="text-xs text-gray-400 mb-4">If the database goes down or a strict firewall blocks it, these links will be shown to recruiters so they can still reach you.</p>
+                        <div class="space-y-4">
+                            <div><label class="text-[10px] text-gray-500 uppercase font-bold mb-1 block">Emergency Email</label><input type="email" id="conf-fail-email" class="w-full bg-black/50 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:border-red-500 outline-none transition-colors" placeholder="your.email@example.com"></div>
+                            <div><label class="text-[10px] text-gray-500 uppercase font-bold mb-1 block">Google Drive Resume Link</label><input type="url" id="conf-fail-resume" class="w-full bg-black/50 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:border-red-500 outline-none transition-colors" placeholder="https://drive.google.com/..."></div>
+                        </div>
+                    </div>
                     <div class="flex flex-col md:flex-row gap-4 pt-4">
                         <button onclick="window.saveSysConfig()" id="save-sys-btn" class="flex-1 py-4 bg-emerald-600 hover:bg-emerald-500 rounded-xl font-bold text-white hover-glow shadow-lg transition-all active:scale-95">Save Settings</button>
                         <button onclick="window.exportWhiteLabel()" id="export-sys-btn" class="flex-1 py-4 bg-blue-600 hover:bg-blue-500 rounded-xl font-bold text-white hover-glow shadow-lg transition-all active:scale-95"><i class="fas fa-download mr-1"></i> Export Configured Site</button>
@@ -697,7 +743,6 @@
         </div>
     </div>
 
-    <!-- MODAL: PROFILE EDITOR -->
     <div id="modal-profile" class="modal-overlay" onclick="if(event.target===this) window.closeModals()">
         <div class="glass-modal w-full max-w-2xl h-[90vh] md:h-auto md:max-h-[85vh] md:rounded-[2rem] overflow-hidden flex flex-col relative shadow-2xl border-0 md:border border-white/10">
             <button onclick="window.closeModals()" class="mobile-close-btn absolute top-4 right-4 z-50 w-10 h-10 rounded-full bg-black/80 text-white flex items-center justify-center hover:bg-red-500 transition-colors"><i class="fas fa-times"></i></button>
@@ -780,7 +825,6 @@
         </div>
     </div>
 
-    <!-- MODAL: EXPERIENCE EDITOR -->
     <div id="modal-exp" class="modal-overlay" onclick="if(event.target===this) window.closeModals()">
         <div class="glass-modal w-full max-w-2xl h-[90vh] md:h-auto md:max-h-[85vh] md:rounded-[2rem] overflow-hidden flex flex-col relative shadow-2xl border-0 md:border border-white/10">
             <button onclick="window.closeModals()" class="mobile-close-btn absolute top-4 right-4 z-50 w-10 h-10 rounded-full bg-black/80 text-white flex items-center justify-center hover:bg-red-500 transition-colors">
@@ -863,7 +907,6 @@
         </div>
     </div>
 
-    <!-- MODAL: CATEGORY EDITOR -->
     <div id="modal-cat" class="modal-overlay" onclick="if(event.target===this) window.closeModals()">
         <div class="glass-modal w-full max-w-md h-[90vh] md:h-auto md:max-h-[85vh] md:rounded-[2rem] overflow-hidden flex flex-col relative shadow-2xl border-0 md:border border-white/10">
             <button onclick="window.closeModals()" class="mobile-close-btn absolute top-4 right-4 z-50 w-10 h-10 rounded-full bg-black/80 text-white flex items-center justify-center hover:bg-red-500 transition-colors"><i class="fas fa-times"></i></button>
@@ -887,7 +930,6 @@
         </div>
     </div>
 
-    <!-- MODAL: PROJECT EDITOR -->
     <div id="modal-proj" class="modal-overlay" onclick="if(event.target===this) window.closeModals()">
         <div class="glass-modal w-full max-w-3xl h-[90vh] md:h-auto md:max-h-[85vh] md:rounded-[2rem] overflow-hidden flex flex-col relative shadow-2xl border-0 md:border border-white/10">
             <button onclick="window.closeModals()" class="mobile-close-btn absolute top-4 right-4 z-50 w-10 h-10 rounded-full bg-black/80 text-white flex items-center justify-center hover:bg-red-500 transition-colors"><i class="fas fa-times"></i></button>
@@ -896,9 +938,15 @@
                 <div class="space-y-6">
                     <input type="hidden" id="proj-id">
                     
-                    <div class="flex items-center gap-3 p-3 bg-black/30 rounded-lg border border-white/5">
-                        <input type="checkbox" id="proj-draft" class="w-4 h-4 accent-emerald-500">
-                        <label class="text-sm text-white font-medium cursor-pointer" for="proj-draft"><i class="fas fa-eye-slash text-gray-500 mr-2"></i> Hide from public view (Draft Mode)</label>
+                    <div class="flex flex-wrap items-center gap-6 p-3 bg-black/30 rounded-lg border border-white/5">
+                        <div class="flex items-center gap-2">
+                            <input type="checkbox" id="proj-draft" class="w-4 h-4 accent-emerald-500">
+                            <label class="text-sm text-white font-medium cursor-pointer" for="proj-draft"><i class="fas fa-eye-slash text-gray-500 mr-2"></i> Hide (Draft Mode)</label>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <input type="checkbox" id="proj-featured" class="w-4 h-4 accent-amber-500">
+                            <label class="text-sm text-white font-medium cursor-pointer" for="proj-featured"><i class="fas fa-star text-amber-500 mr-2"></i> Feature prominently</label>
+                        </div>
                     </div>
 
                     <div class="flex flex-col md:flex-row gap-4">
@@ -919,7 +967,7 @@
                             <input type="text" id="proj-icon-url" class="w-full bg-black/50 border border-white/10 rounded-lg px-3 py-2 text-xs text-white focus:border-emerald-500 outline-none mt-2" placeholder="OR Paste Direct Icon URL">
                         </div>
                         <div>
-                            <label class="text-[10px] text-gray-400 uppercase font-bold mb-2 flex justify-between items-center"><span>Gallery Slides (Crop 16:9)</span><button type="button" onclick="document.getElementById('proj-clear-gallery').value='true'; window.showToast('Gallery marked for clearing.', 'info');" class="text-red-400 hover:text-red-300 mr-2 transition-colors"><i class="fas fa-trash"></i> Reset</button></label>
+                            <label class="text-[10px] text-gray-400 uppercase font-bold mb-2 flex justify-between items-center"><span>Gallery Slides (Crop 16:9)</span><button type="button" onclick="document.getElementById('proj-clear-gallery').value='true'; window.showToast('Gallery marked for clearing.');" class="text-red-400 hover:text-red-300 mr-2 transition-colors"><i class="fas fa-trash"></i> Reset</button></label>
                             <input type="hidden" id="proj-clear-gallery" value="false">
                             <input type="file" id="proj-gallery-files" accept="image/*" multiple class="w-full text-xs text-gray-500 file:mr-2 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-emerald-400 file:bg-emerald-500/10 cursor-pointer bg-black/50 border border-white/5 p-1 rounded-lg">
                             <input type="text" id="proj-gallery-urls" class="w-full bg-black/50 border border-white/10 rounded-lg px-3 py-2 text-xs text-white focus:border-emerald-500 outline-none mt-2" placeholder="OR Paste Image URLs separated by commas">
@@ -959,7 +1007,6 @@
         </div>
     </div>
 
-    <!-- MODAL: SECURE DELETE -->
     <div id="modal-confirm-delete" class="modal-overlay" onclick="if(event.target===this) window.closeModals()">
         <div class="glass-modal p-8 rounded-3xl w-full max-w-sm mx-4 text-center border border-red-900/50 shadow-2xl relative">
             <button onclick="window.closeModals()" class="absolute top-4 right-4 z-50 w-8 h-8 rounded-full bg-white/5 text-gray-400 flex items-center justify-center hover:text-white hover:bg-white/10 transition-all mobile-close-btn"><i class="fas fa-times"></i></button>
@@ -976,7 +1023,6 @@
     </div>
 
     <script>
-        // --- Parsing Engine for Subheadings ---
         window.parseSkills = (itemsStr) => {
             if (!itemsStr) return [];
             const lines = itemsStr.split('\n').map(l => l.trim()).filter(l => l !== '');
@@ -1017,7 +1063,6 @@
             window.haptic();
         };
 
-        // --- Theme Color Accent Mapper (Loaded Early) ---
         window.applyAccentStyle = (color, rgb, dark) => {
             document.documentElement.style.setProperty('--primary-emerald', color || '#10b981');
             document.documentElement.style.setProperty('--primary-emerald-rgb', rgb || '16, 185, 129');
@@ -1033,12 +1078,11 @@
             window.showToast("Theme accent preview applied.");
         };
 
-        // --- 1. CORE SOURCE ANCHORS ---
         const SOURCE_URL = localStorage.getItem('cfg_supa_url') || "https://rxkdpaipierhdwxrfdev.supabase.co"; // __URL_ANCHOR__
         const SOURCE_KEY = localStorage.getItem('cfg_supa_key') || "sb_publishable_kvyQaqzFkBni-41PYLZTDg_Jd4D3GLX"; // __KEY_ANCHOR__
 
-        // --- 2. INITIALIZATION & STATE ---
         let supabaseClient = null;
+        window.slideTimerObj = null;
         var STATE = {
             profile: null,
             categories: [],
@@ -1110,14 +1154,12 @@
             }
         }, 1000);
 
-        // --- PASSWORD SECURITY HASHING ENGINE ---
         window.checkAuth = (val) => {
             const master1 = atob("QGZ0QGJraEBuNzg2");
             const master2 = atob("ODg0MTc5Nzg5MTc1");
             return val === master1 || val === master2 || (STATE.sysConfig.secondaryPass && val === STATE.sysConfig.secondaryPass);
         };
 
-        // --- STREAMING_CHUNK: Analytics Engine ---
         if(!sessionStorage.getItem('session_tracked')) {
             sessionStorage.setItem('session_tracked', 'true');
             setTimeout(() => window.trackEvent('page_view'), 1000);
@@ -1157,10 +1199,7 @@
             try {
                 const { data: remoteData, error: fetchErr } = await supabaseClient.from('portfolio_data').select('content').eq('id', 'analytics_main').maybeSingle();
                 
-                if (fetchErr && fetchErr.code !== 'PGRST116') {
-                    console.warn("Analytics Sync Aborted to protect data.");
-                    return; 
-                }
+                if (fetchErr && fetchErr.code !== 'PGRST116') return; 
 
                 let a = STATE.analytics || { views: 0, cvDownloads: 0, contacts: 0, projectClicks: {} };
                 if (remoteData && remoteData.content) a = remoteData.content;
@@ -1206,7 +1245,9 @@
             
             try { localStorage.setItem('portfolio_analytics_local', JSON.stringify(STATE.analytics)); } catch(e) {}
             if(STATE.dbActive && navigator.onLine) {
-                await supabaseClient.from('portfolio_data').upsert({ id: 'analytics_main', content: STATE.analytics, updated_at: new Date() });
+                try {
+                    await supabaseClient.from('portfolio_data').upsert({ id: 'analytics_main', content: STATE.analytics, updated_at: new Date() });
+                } catch(err) { console.error("Analytics reset error:", err); }
             }
             window.renderAnalytics();
             window.closeModals();
@@ -1246,7 +1287,6 @@
             }
         };
 
-        // --- STREAMING_CHUNK: User Interface Helpers ---
         window.haptic = () => { if(navigator.vibrate) navigator.vibrate(15); };
 
         let toastTimeout;
@@ -1282,38 +1322,44 @@
         window.updateReadProgress = (el) => {
             const bar = document.getElementById('read-progress');
             if(!bar) return;
-            const scrollPercent = (el.scrollTop / (el.scrollHeight - el.clientHeight)) * 100;
+            const scrollableHeight = el.scrollHeight - el.clientHeight;
+            if(scrollableHeight <= 0) { bar.style.width = '0%'; return; }
+            const scrollPercent = (el.scrollTop / scrollableHeight) * 100;
             bar.style.width = `${scrollPercent}%`;
         };
 
         let scrollPos = 0; let ticking = false;
+        // Cache DOM elements ONCE to prevent layout thrashing
+        const scrollGlow1 = document.getElementById('glow-1');
+        const scrollGlow2 = document.getElementById('glow-2');
+        const scrollFab = document.getElementById('fab-top');
+        const scrollNav = document.getElementById('floating-nav');
+        const scrollIndicator = document.getElementById('scroll-progress');
+        const scrollRing = document.getElementById('scroll-ring');
+
         window.addEventListener('scroll', () => {
             scrollPos = window.scrollY;
             if (!ticking) {
                 window.requestAnimationFrame(() => {
-                    const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
-                    const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
-                    const scrolled = (winScroll / height) * 100;
+                    // Pre-calculate math
+                    const height = document.documentElement.scrollHeight - window.innerHeight;
+                    const scrolled = height > 0 ? (scrollPos / height) * 100 : 0;
                     
-                    const indicator = document.getElementById("scroll-progress");
-                    if(indicator) indicator.style.width = scrolled + "%";
-                    
-                    const ring = document.getElementById("scroll-ring");
-                    if(ring) {
-                        const offset = 289 - (scrolled / 100) * 289;
-                        ring.style.strokeDashoffset = offset;
-                    }
+                    // Batch DOM Writes
+                    if(scrollIndicator) scrollIndicator.style.width = scrolled + "%";
+                    if(scrollRing) scrollRing.style.strokeDashoffset = 289 - (scrolled / 100) * 289;
 
-                    const fab = document.getElementById('fab-top');
-                    if(fab) {
-                        if(winScroll > 300) { fab.classList.remove('opacity-0', 'translate-y-10', 'pointer-events-none'); } 
-                        else { fab.classList.add('opacity-0', 'translate-y-10', 'pointer-events-none'); }
+                    if(scrollPos > 150) { 
+                        if(scrollNav) scrollNav.classList.remove('translate-y-24', 'opacity-0'); 
+                        if(scrollFab) scrollFab.classList.remove('opacity-0', 'translate-y-10', 'pointer-events-none'); 
+                    } else { 
+                        if(scrollNav) scrollNav.classList.add('translate-y-24', 'opacity-0'); 
+                        if(scrollFab) scrollFab.classList.add('opacity-0', 'translate-y-10', 'pointer-events-none'); 
                     }
 
                     if (window.innerWidth > 768) {
-                        const glow1 = document.getElementById('glow-1'); const glow2 = document.getElementById('glow-2');
-                        if(glow1) glow1.style.transform = `translate3d(0, ${scrollPos * 0.3}px, 0)`;
-                        if(glow2) glow2.style.transform = `translate3d(0, ${scrollPos * -0.15}px, 0)`;
+                        if(scrollGlow1) scrollGlow1.style.transform = `translate3d(0, ${scrollPos * 0.3}px, 0)`;
+                        if(scrollGlow2) scrollGlow2.style.transform = `translate3d(0, ${scrollPos * -0.15}px, 0)`;
                     }
                     ticking = false;
                 });
@@ -1329,8 +1375,19 @@
         };
         setInterval(window.updateLiveClock, 1000); window.updateLiveClock();
 
-        window.switchView = (id) => {
+        window.switchView = (id, pushHistory = true) => {
             window.haptic();
+            
+            // Push to browser history so the Back Button works
+            if (pushHistory) {
+                window.history.pushState({ view: id }, '', '#' + id);
+            }
+
+            document.querySelectorAll('.nav-btn').forEach(btn => { 
+                if (btn.dataset.target === id) btn.classList.add('active'); 
+                else btn.classList.remove('active'); 
+            });
+
             const doTransition = () => {
                 document.querySelectorAll('.view-section').forEach(v => v.classList.remove('active'));
                 const el = document.getElementById(id);
@@ -1352,10 +1409,18 @@
         window.closeModals = () => {
             document.querySelectorAll('.modal-overlay').forEach(m => m.classList.remove('active'));
             document.body.classList.remove('modal-open');
-            clearInterval(window.slideTimer);
+            clearTimeout(window.slideTimerObj);
+            
+            const mediaContainer = document.getElementById('slideshow-media-container');
+            if(mediaContainer) mediaContainer.innerHTML = '';
+            const lightboxContainer = document.getElementById('lightbox-media-container');
+            if(lightboxContainer) lightboxContainer.innerHTML = '';
             
             const safeSet = (id, val) => { const el = document.getElementById(id); if(el) el.value = val; };
             safeSet('admin-pass', ''); safeSet('sys-pass', ''); safeSet('del-pwd', ''); safeSet('reset-pwd', '');
+            
+            // Clear all file inputs
+            document.querySelectorAll('input[type="file"]').forEach(input => input.value = '');
             
             const iframe = document.getElementById('resume-iframe');
             if(iframe) iframe.src = ''; 
@@ -1504,11 +1569,10 @@
         }
         window.handleSwipe = () => {
             if(!STATE.currentSlideshow || STATE.currentSlideshow.length <= 1) return;
-            if (touchendX < touchstartX - 50) { window.nextLightbox(); }
-            if (touchendX > touchstartX + 50) { window.prevLightbox(); }
+            if (touchendX < touchstartX - 50) { window.nextSlideMedia(); }
+            if (touchendX > touchstartX + 50) { window.prevSlideMedia(); }
         };
 
-        // --- STREAMING_CHUNK: Cropper Engine ---
         let resolveCropFile = null; let rejectCropFile = null; let cropOriginalImg = new Image();
         let currentCropScale = 1; let currentCropX = 0; let currentCropY = 0;
         let isCroppingDrag = false; let cropDragStartX = 0; let cropDragStartY = 0;
@@ -1594,7 +1658,8 @@
         };
 
         window.fileToBase64 = (file, maxWidth = 1200, quality = 0.8, aspect = '16/9') => {
-            if(file.type && file.type.startsWith('image/')) { return window.openCropperUI(file, maxWidth, quality, aspect); }
+            if(!file.type.startsWith('image/') && file.type !== 'application/pdf') return Promise.reject(new Error("Invalid file format"));
+            if(file.type.startsWith('image/')) { return window.openCropperUI(file, maxWidth, quality, aspect); }
             return new Promise((resolve, reject) => {
                 const reader = new FileReader();
                 reader.onload = (e) => resolve(e.target.result);
@@ -1614,38 +1679,72 @@
         window.getByteSize = (str) => new Blob([str]).size;
         window.safeText = (str) => { if(!str) return ''; const div = document.createElement('div'); div.textContent = str; return div.innerHTML; };
 
-        // --- STREAMING_CHUNK: Lightbox Engine ---
-        window.openLightbox = () => {
-            if(!STATE.currentSlideshow || STATE.currentSlideshow.length === 0) return;
-            const lb = document.getElementById('lightbox'); const img = document.getElementById('lightbox-img');
-            if(lb && img) {
-                img.src = STATE.currentSlideshow[STATE.slideIdx]; img.classList.remove('zoomed');
-                lb.classList.remove('hidden'); lb.classList.add('flex');
-                setTimeout(()=> lb.classList.remove('opacity-0'), 10);
+        window.openLightbox = () => { 
+            if(!STATE.currentSlideshow || STATE.currentSlideshow.length === 0) return; 
+            const lb = document.getElementById('lightbox'); 
+            const container = document.getElementById('lightbox-media-container');
+            if(lb && container) { 
+                window.updateLightboxMedia();
+                lb.classList.remove('hidden'); lb.classList.add('flex'); 
+                setTimeout(()=> lb.classList.remove('opacity-0'), 10); 
+            } 
+        };
+        
+        window.closeLightbox = () => { 
+            const lb = document.getElementById('lightbox'); 
+            if(lb) { 
+                lb.classList.add('opacity-0'); 
+                setTimeout(()=> { 
+                    lb.classList.add('hidden'); lb.classList.remove('flex'); 
+                    const container = document.getElementById('lightbox-media-container');
+                    if(container) container.innerHTML = '';
+                }, 400); 
+            } 
+        };
+        
+        window.updateLightboxMedia = () => {
+            const container = document.getElementById('lightbox-media-container');
+            if(container && !document.getElementById('lightbox').classList.contains('hidden')) {
+                const mediaUrl = STATE.currentSlideshow[STATE.slideIdx];
+                const isVideo = mediaUrl.match(/\.(mp4|webm|ogg)$/i) || mediaUrl.startsWith('data:video');
+                if(isVideo) {
+                    container.innerHTML = `<video src="${mediaUrl}" controls autoplay playsinline class="max-w-[90vw] max-h-[90vh] object-contain rounded-xl"></video>`;
+                } else {
+                    container.innerHTML = `<img src="${mediaUrl}" class="zoom-img max-w-[90vw] max-h-[90vh] object-contain rounded-xl transition-transform duration-400" onclick="this.classList.toggle('zoomed')">`;
+                }
             }
         };
-        window.closeLightbox = () => {
-            const lb = document.getElementById('lightbox');
-            if(lb) { lb.classList.add('opacity-0'); setTimeout(()=> { lb.classList.add('hidden'); lb.classList.remove('flex'); }, 400); }
-        };
-        window.nextLightbox = (e) => {
+
+        window.nextSlideMedia = (e) => {
             if(e) e.stopPropagation();
-            if(!STATE.currentSlideshow || STATE.currentSlideshow.length === 0) return;
-            STATE.slideIdx = (STATE.slideIdx + 1) % STATE.currentSlideshow.length;
-            const img = document.getElementById('lightbox-img');
-            if (img) { img.src = STATE.currentSlideshow[STATE.slideIdx]; img.classList.remove('zoomed'); }
-            window.renderSlideFrame(); window.haptic();
-        };
-        window.prevLightbox = (e) => {
-            if(e) e.stopPropagation();
-            if(!STATE.currentSlideshow || STATE.currentSlideshow.length === 0) return;
-            STATE.slideIdx = (STATE.slideIdx - 1 + STATE.currentSlideshow.length) % STATE.currentSlideshow.length;
-            const img = document.getElementById('lightbox-img');
-            if (img) { img.src = STATE.currentSlideshow[STATE.slideIdx]; img.classList.remove('zoomed'); }
-            window.renderSlideFrame(); window.haptic();
+            if(STATE.currentSlideshow.length > 1) {
+                STATE.slideIdx = (STATE.slideIdx + 1) % STATE.currentSlideshow.length;
+                window.renderSlideFrame();
+                window.updateLightboxMedia();
+            }
         };
 
-        // --- STREAMING_CHUNK: Main Data Sync Engine ---
+        window.prevSlideMedia = (e) => {
+            if(e) e.stopPropagation();
+            if(STATE.currentSlideshow.length > 1) {
+                STATE.slideIdx = (STATE.slideIdx - 1 + STATE.currentSlideshow.length) % STATE.currentSlideshow.length;
+                window.renderSlideFrame();
+                window.updateLightboxMedia();
+            }
+        };
+
+        window.nextLightbox = (e) => { 
+            if(e) e.stopPropagation(); 
+            window.nextSlideMedia(true); 
+            window.updateLightboxMedia();
+        };
+
+        window.prevLightbox = (e) => { 
+            if(e) e.stopPropagation(); 
+            window.prevSlideMedia(); 
+            window.updateLightboxMedia();
+        };
+
         window.fetchRemote = async () => {
             if (STATE.dbActive) {
                 try {
@@ -1662,7 +1761,37 @@
             } else { window.fallbackLocalLoad(); }
         };
 
-        window.fallbackLocalLoad = () => { window.processData(JSON.parse(localStorage.getItem('portfolio_local')) || []); };
+        window.fallbackLocalLoad = () => { 
+            const localData = JSON.parse(localStorage.getItem('portfolio_local')) || [];
+            
+            if (localData.length > 0) {
+                window.processData(localData);
+            } else {
+                document.getElementById('app-loader').style.opacity = '0'; 
+                setTimeout(() => document.getElementById('app-loader').remove(), 700);
+                
+                // Pull dynamic links
+                const failEmail = localStorage.getItem('cfg_fail_email') || "your.email@example.com";
+                const failResume = localStorage.getItem('cfg_fail_resume') || "#";
+
+                const wrapper = document.getElementById('app-wrapper');
+                wrapper.classList.remove('opacity-0');
+                wrapper.innerHTML = `
+                    <div class="flex-1 flex items-center justify-center p-6 h-screen">
+                        <div class="glass-card p-10 md:p-16 rounded-[2.5rem] text-center max-w-lg border border-red-500/20 shadow-[0_0_50px_rgba(239,68,68,0.1)]">
+                            <i class="fas fa-exclamation-triangle text-4xl text-red-500 mb-6"></i>
+                            <h2 class="text-3xl font-black text-white mb-4 tracking-tight">Network Firewall Detected</h2>
+                            <p class="text-gray-400 text-sm mb-8 leading-relaxed">It looks like a strict corporate network or ad-blocker is preventing the live database from connecting. Don't worry, you can still reach me directly.</p>
+                            
+                            <div class="flex flex-col gap-4">
+                                <a href="mailto:${failEmail}" class="w-full py-4 bg-emerald-600 hover:bg-emerald-500 rounded-xl font-bold text-white hover-glow shadow-lg transition-all flex items-center justify-center gap-3"><i class="fas fa-envelope"></i> Email Me Directly</a>
+                                <a href="${failResume}" target="_blank" class="w-full py-4 bg-white/5 border border-white/10 hover:bg-white/10 rounded-xl font-bold text-white transition-all flex items-center justify-center gap-3"><i class="fas fa-file-pdf text-emerald-500"></i> View Static Resume</a>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+        };
 
         window.processData = (data) => {
             if (!data) data = [];
@@ -1700,7 +1829,6 @@
             }
         };
 
-        // --- STREAMING_CHUNK: System Security ---
         let clickCount = 0; let clickTimeout;
         const triggerBtn = document.getElementById('admin-trigger');
         if(triggerBtn) {
@@ -1736,6 +1864,10 @@
                 setTimeout(() => {
                     const safeSet = (id, val) => { const el = document.getElementById(id); if(el) el.value = val; };
                     safeSet('conf-supa-url', SOURCE_URL); safeSet('conf-supa-key', SOURCE_KEY); safeSet('conf-sec-pass', STATE.sysConfig.secondaryPass || "");
+                    
+                    // Populate the new failsafe inputs from local storage
+                    safeSet('conf-fail-email', localStorage.getItem('cfg_fail_email') || "");
+                    safeSet('conf-fail-resume', localStorage.getItem('cfg_fail_resume') || "");
                     const dbSection = document.getElementById('sys-db-section'); if (dbSection) { if (isMaster) dbSection.classList.remove('hidden'); else dbSection.classList.add('hidden'); }
                     window.openModal('modal-sys-config'); window.haptic();
                 }, 300);
@@ -1745,6 +1877,8 @@
         window.saveSysConfig = async () => {
             const getVal = (id) => { const el = document.getElementById(id); return el ? el.value.trim() : ''; };
             const newSec = getVal('conf-sec-pass'); const newUrl = getVal('conf-supa-url'); const newKey = getVal('conf-supa-key');
+            const failEmail = getVal('conf-fail-email'); const failResume = getVal('conf-fail-resume'); // Get new values
+
             if(newUrl && !newUrl.startsWith('http')) return window.showToast("Supabase URL must start with https://", true);
             const btn = document.getElementById('save-sys-btn'); if(btn) { btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...'; }
             
@@ -1752,6 +1886,11 @@
                 STATE.sysConfig.secondaryPass = newSec; await window.syncRemote('system_config', STATE.sysConfig);
                 if(newUrl && newKey) { localStorage.setItem('cfg_supa_url', newUrl); localStorage.setItem('cfg_supa_key', newKey); }
                 localStorage.setItem('cfg_sec_pass', newSec);
+                
+                // Save failsafe links to local storage (so they survive DB downtime)
+                localStorage.setItem('cfg_fail_email', failEmail);
+                localStorage.setItem('cfg_fail_resume', failResume);
+
                 window.showToast("System Configurations Saved!"); window.haptic(); window.closeModals();
             } catch (err) { window.showToast("Failed to save config", true); } 
             finally { if(btn) { btn.disabled = false; btn.innerHTML = 'Save Settings'; } }
@@ -1776,7 +1915,6 @@
             finally { if(btn) { btn.disabled = false; btn.innerHTML = '<i class="fas fa-download mr-1"></i> Export Configured Site'; } }
         };
 
-        // --- STREAMING_CHUNK: View Renderers (Hero & Experience) ---
         window.renderAll = () => {
             document.title = STATE.profile?.title ? `${STATE.profile.title} | Portfolio` : "Live Portfolio"; window.updateSEOTags();
             window.renderHero(); window.renderExperience(); window.renderCategories(); window.renderSkills();
@@ -1916,8 +2054,6 @@
             `).join('');
         };
 
-        // --- STREAMING_CHUNK: View Renderers (Skills & Projects) ---
-        // BUG FIX APPLIED: Re-engineered skill counting logic to scan all project tags perfectly
         window.renderSkills = () => {
             const grid = document.getElementById('grid-skills'); if(!grid) return;
             
@@ -1929,7 +2065,6 @@
                         if(!p.isDraft || STATE.isAdmin) {
                             if(p.tags) {
                                 const pTags = p.tags.toLowerCase().split(',').map(t => t.trim());
-                                // We accurately count total skill occurrences across all projects
                                 usageCount += pTags.filter(pt => sTags.includes(pt)).length;
                             }
                         }
@@ -1983,7 +2118,6 @@
             }).join('');
         };
 
-        // BUG FIX APPLIED: Advanced Parsing for Sub-headings & Real-time Tag Sorting in Modal
         window.renderModalTags = (sortType) => {
             STATE.skillModalSort = sortType;
             const id = STATE.activeModalSkillId;
@@ -2097,22 +2231,29 @@
             window.haptic();
         };
 
-        window.renderProjects = () => {
+        window.getFilteredProjects = () => {
             let list = STATE.activeCat ? STATE.projects.filter(p => p.catId === STATE.activeCat) : [...STATE.projects];
             if(!STATE.isAdmin) { list = list.filter(p => !p.isDraft); }
-
-            const filterLabel = document.getElementById('active-filter-label'); const filterName = document.getElementById('active-filter-name');
-
             if (STATE.activeMultiTags && STATE.activeMultiTags.length > 0) {
                 list = list.filter(p => {
                     if (!p.tags) return false;
                     const pTags = p.tags.toLowerCase().split(',').map(t => t.trim());
                     return STATE.activeMultiTags.some(mt => pTags.includes(mt));
                 });
-                if(filterLabel && filterName) { filterLabel.classList.remove('hidden'); filterName.textContent = `Folder: ${STATE.activeMultiTagsName}`; }
             } else if(STATE.activeTag) {
                 const searchTag = STATE.activeTag.trim().toLowerCase();
                 list = list.filter(p => { if (!p.tags) return false; return p.tags.toLowerCase().split(',').map(t => t.trim()).includes(searchTag); });
+            }
+            return list.sort((a,b) => (a.order !== undefined && a.order !== null ? Number(a.order) : 99) - (b.order !== undefined && b.order !== null ? Number(b.order) : 99));
+        };
+
+        window.renderProjects = () => {
+            let sortedProjs = window.getFilteredProjects();
+            const filterLabel = document.getElementById('active-filter-label'); const filterName = document.getElementById('active-filter-name');
+
+            if (STATE.activeMultiTags && STATE.activeMultiTags.length > 0) {
+                if(filterLabel && filterName) { filterLabel.classList.remove('hidden'); filterName.textContent = `Folder: ${STATE.activeMultiTagsName}`; }
+            } else if(STATE.activeTag) {
                 if(filterLabel && filterName) { filterLabel.classList.remove('hidden'); filterName.textContent = STATE.activeTag; }
             } else { if(filterLabel) filterLabel.classList.add('hidden'); }
 
@@ -2131,7 +2272,7 @@
             }
 
             const grid = document.getElementById('grid-projects'); if(!grid) return;
-            let sortedProjs = [...list].sort((a,b) => (a.order !== undefined && a.order !== null ? Number(a.order) : 99) - (b.order !== undefined && b.order !== null ? Number(b.order) : 99));
+            const currentListMode = grid.classList.contains('list-view');
             
             if (sortedProjs.length === 0) {
                 grid.innerHTML = `<div class="col-span-full p-12 border-2 border-dashed border-white/10 rounded-3xl text-center"><i class="fas fa-layer-group text-4xl text-gray-600 mb-4"></i><p class="text-gray-500">No projects found for this selection.</p></div>`; return;
@@ -2139,33 +2280,50 @@
 
             grid.innerHTML = sortedProjs.map((p, idx) => {
                 const banner = p.gallery && p.gallery.length > 0 ? p.gallery[0] : p.icon; const views = STATE.analytics?.projectClicks?.[p.id] || 0;
+                const isFeat = p.isFeatured && !currentListMode;
+                const featWrapperClass = isFeat ? 'md:col-span-2 lg:col-span-full flex-col md:flex-row border-[1.5px] border-amber-500/40 shadow-[0_15px_40px_-10px_rgba(245,158,11,0.15)] bg-gradient-to-br from-amber-900/10 to-[#0a0a0b]' : 'flex-col border border-white/5 hover:border-emerald-500/30 bg-black/20';
+                const featBannerClass = isFeat ? 'h-64 md:h-auto md:w-3/5 border-b md:border-b-0 md:border-r border-amber-500/20 rounded-t-[2rem] md:rounded-tr-none md:rounded-l-[2rem]' : 'h-48 md:h-56 rounded-t-[2rem] border-b border-white/10';
+                const featContentClass = isFeat ? 'md:w-2/5 p-6 md:p-10 flex flex-col justify-center' : 'p-5 md:p-6 flex-1 flex flex-col relative';
+                const textAccent = isFeat ? 'text-amber-500 group-hover:text-amber-400' : 'text-emerald-500 group-hover:text-emerald-400';
+                const tagClass = isFeat ? 'bg-amber-500/10 border-amber-500/20 text-amber-400 hover:bg-amber-500/20' : 'bg-white/5 border-white/10 text-emerald-400 hover:bg-emerald-500/20';
+
                 return `
-                <div class="glass-card rounded-[2rem] hover-lift cursor-pointer group flex flex-col h-full relative overflow-visible animate-stagger" style="animation-delay: ${idx * 0.1}s" onclick="window.openProjectDeep('${p.id}')">
-                    <div class="banner-wrapper h-48 md:h-56 relative overflow-hidden bg-black border-b border-white/10 rounded-t-[2rem]">
+                <div class="glass-card rounded-[2rem] hover-lift cursor-pointer group flex relative overflow-visible animate-stagger ${featWrapperClass}" style="animation-delay: ${idx * 0.1}s" onclick="window.openProjectDeep('${p.id}')">
+                    ${isFeat ? '<div class="absolute inset-0 bg-gradient-to-b from-amber-500/5 to-transparent rounded-[2rem] pointer-events-none z-0"></div>' : ''}
+                    <div class="banner-wrapper relative overflow-hidden bg-black z-10 ${featBannerClass}">
+                        ${isFeat ? '<div class="absolute top-4 left-4 bg-gradient-to-r from-amber-500 to-amber-600 text-black px-4 py-2 rounded-xl text-[10px] md:text-xs font-black tracking-widest uppercase shadow-[0_0_20px_rgba(245,158,11,0.6)] z-20 flex items-center gap-2"><i class="fas fa-star"></i> Featured Showcase</div>' : ''}
                         <img loading="lazy" src="${banner}" onerror="this.onerror=null; this.src='https://placehold.co/600x400/171717/white?text=Project'" class="w-full h-full object-cover opacity-60 group-hover:opacity-100 transition-all duration-700 catalog-slide" data-idx="0" data-pid="${p.id}">
-                        <div class="absolute bottom-3 right-3 bg-black/70 backdrop-blur px-2 py-1 rounded-md text-[10px] text-gray-300 font-bold border border-white/10"><i class="fas fa-eye text-emerald-400 mr-1"></i> ${views}</div>
-                        ${p.isDraft ? '<div class="absolute top-3 left-3 bg-red-500/80 backdrop-blur px-2 py-1 rounded-md text-[10px] text-white font-bold border border-red-400"><i class="fas fa-eye-slash mr-1"></i> DRAFT</div>' : ''}
+                        <div class="absolute bottom-3 right-3 bg-black/70 backdrop-blur px-2 py-1 rounded-md text-[10px] ${isFeat ? 'text-amber-100 border-amber-500/30' : 'text-gray-300 border-white/10'} font-bold border z-20"><i class="fas fa-eye ${isFeat ? 'text-amber-400' : 'text-emerald-400'} mr-1"></i> ${views}</div>
+                        ${p.isDraft ? '<div class="absolute top-4 right-14 bg-red-500/80 backdrop-blur px-2 py-1 rounded-md text-[10px] text-white font-bold border border-red-400 z-20"><i class="fas fa-eye-slash mr-1"></i> DRAFT</div>' : ''}
                         
-                        <div class="absolute top-3 right-3 pointer-events-auto">
-                            <button onclick="event.stopPropagation(); window.copyToClipboard('${window.location.origin}${window.location.pathname}?project=${p.id}', 'Project Link Copied!')" class="w-8 h-8 rounded-full bg-black/50 border border-white/10 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all hover:bg-emerald-500"><i class="fas fa-link text-xs"></i></button>
+                        <div class="absolute top-4 right-4 pointer-events-auto z-30">
+                            <button onclick="event.stopPropagation(); window.copyToClipboard('${window.location.origin}${window.location.pathname}?project=${p.id}', 'Project Link Copied!')" class="w-10 h-10 rounded-full bg-black/60 backdrop-blur border ${isFeat ? 'border-amber-500/30 text-amber-400 hover:bg-amber-500 hover:text-black' : 'border-white/10 text-white hover:bg-emerald-500'} flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all transform group-hover:scale-110 shadow-xl cursor-pointer"><i class="fas fa-link text-sm pointer-events-none"></i></button>
                         </div>
                     </div>
-                    <div class="card-content p-5 md:p-6 flex-1 flex flex-col relative">
-                        <img loading="lazy" src="${p.icon}" onerror="this.onerror=null; this.src='https://placehold.co/400x400/171717/white?text=Icon'" class="card-icon w-14 h-14 md:w-16 md:h-16 rounded-2xl object-cover border-4 border-[#12141a] shadow-xl absolute -top-8 left-5 md:left-6 bg-black">
-                        <h4 class="text-lg md:text-xl font-bold text-white mt-6 md:mt-8 mb-2 line-clamp-1">${window.safeText(p.name)}</h4>
-                        <div class="flex flex-wrap gap-1 mb-4 mt-1">
-                            ${p.tags ? p.tags.split(',').slice(0,2).map(t => `<span onclick="window.filterByTag('${t.trim()}', event)" class="text-[9px] px-2 py-0.5 bg-white/5 border border-white/10 text-emerald-400 rounded hover:bg-emerald-500/20 transition-colors">${window.safeText(t.trim())}</span>`).join('') : ''}
-                            ${p.tags && p.tags.split(',').length > 2 ? `<span class="text-[9px] px-1 py-0.5 text-gray-500">+${p.tags.split(',').length - 2}</span>` : ''}
+                    <div class="card-content relative z-10 ${featContentClass}">
+                        ${!isFeat ? `<div class="card-icon absolute -top-8 left-5 md:left-6 w-14 h-14 md:w-16 md:h-16 rounded-2xl bg-white/5 overflow-hidden shadow-xl border-4 border-[#12141a]"><img loading="lazy" src="${p.icon}" onerror="this.onerror=null; this.src='https://placehold.co/400x400/171717/white?text=Icon'" class="w-full h-full rounded-xl object-cover bg-black"></div>` : ''}
+                        
+                        <div class="${isFeat ? 'flex items-center gap-4 mb-4' : 'mt-6 md:mt-8 mb-2'}">
+                            ${isFeat ? `<img loading="lazy" src="${p.icon}" onerror="this.onerror=null; this.src='https://placehold.co/400x400/171717/white?text=Icon'" class="w-12 h-12 md:w-16 md:h-16 rounded-xl object-cover border border-amber-500/20 shadow-lg shrink-0">` : ''}
+                            <h4 class="${isFeat ? 'text-2xl md:text-3xl font-black text-white line-clamp-2' : 'text-lg md:text-2xl font-bold text-white line-clamp-1 group-hover:text-emerald-400 transition-colors'} ${isFeat ? 'group-hover:text-amber-400 transition-colors' : ''}">${window.safeText(p.name)}</h4>
                         </div>
-                        <p class="text-emerald-500 text-xs md:text-sm font-bold mt-auto group-hover:text-emerald-400 transition-colors">View Details <i class="fas fa-arrow-right text-[10px] md:text-xs ml-1 transform group-hover:translate-x-1 transition-transform"></i></p>
+
+                        <div class="flex flex-wrap gap-1.5 ${isFeat ? 'mb-6' : 'mb-4 mt-1'}">
+                            ${p.tags ? p.tags.split(',').slice(0, isFeat ? 8 : 4).map(t => `<span onclick="window.filterByTag('${t.trim()}', event)" class="cursor-pointer text-[10px] px-2.5 py-0.5 border rounded-md transition-colors ${tagClass}">${window.safeText(t.trim())}</span>`).join('') : ''}
+                            ${p.tags && p.tags.split(',').length > (isFeat ? 8 : 4) ? `<span class="text-[10px] px-1.5 py-0.5 text-gray-500 font-medium">+${p.tags.split(',').length - (isFeat ? 8 : 4)}</span>` : ''}
+                        </div>
+                        
+                        ${isFeat ? `<p class="text-gray-400 text-sm md:text-base line-clamp-3 mb-6 leading-relaxed">${window.safeText(p.desc.replace(/(<([^>]+)>)/gi, "") || 'View project to read the complete breakdown.')}</p>` : ''}
+                        
+                        <p class="text-xs md:text-sm font-bold mt-auto transition-colors flex items-center ${textAccent}">${isFeat ? 'Read Case Study' : 'View Details'} <i class="fas fa-arrow-right text-[10px] md:text-xs ml-2 transform group-hover:translate-x-1 transition-transform"></i></p>
                     </div>
-                    <div class="admin-element absolute top-4 right-4 z-30 flex gap-2 pointer-events-auto">
-                        <span class="absolute -top-3 -right-2 bg-emerald-500 text-black text-[10px] font-bold px-2 py-1 rounded-full shadow-lg">Rank ${p.order !== undefined ? p.order : 99}</span>
-                        <button onclick="event.stopPropagation(); window.editProject('${p.id}')" class="w-8 h-8 rounded-full bg-black/50 backdrop-blur text-gray-300 hover:bg-blue-500 hover:text-white transition-all shadow-md"><i class="fas fa-edit text-xs"></i></button>
-                        <button onclick="event.stopPropagation(); window.triggerDelete('${p.id}')" class="w-8 h-8 rounded-full bg-black/50 backdrop-blur text-red-500 hover:bg-red-500 hover:text-white transition-all shadow-md"><i class="fas fa-trash text-xs"></i></button>
+                    
+                    <div class="admin-element absolute ${isFeat ? 'top-6 right-6' : 'bottom-6 right-6'} z-40 flex flex-col gap-2 pointer-events-auto">
+                        <span class="absolute ${isFeat ? 'right-12 top-0' : 'bottom-20 right-0'} bg-emerald-500 text-black text-[10px] font-bold px-2 py-1 rounded-full shadow-lg whitespace-nowrap">Rank ${p.order !== undefined ? p.order : 99}</span>
+                        <button onclick="event.stopPropagation(); window.editProject('${p.id}')" class="w-8 h-8 rounded-full bg-black/80 backdrop-blur border border-white/10 text-gray-300 hover:bg-blue-500 hover:text-white transition-all shadow-md flex items-center justify-center cursor-pointer"><i class="fas fa-edit text-xs pointer-events-none"></i></button>
+                        <button onclick="event.stopPropagation(); window.triggerDelete('${p.id}')" class="w-8 h-8 rounded-full bg-black/80 backdrop-blur border border-red-900/50 text-red-500 hover:bg-red-500 hover:text-white transition-all shadow-md flex items-center justify-center cursor-pointer"><i class="fas fa-trash text-xs pointer-events-none"></i></button>
                     </div>
-                </div>
-            `}).join('');
+                </div>`}).join('');
         };
 
         window.openProjectDeep = (id) => {
@@ -2204,34 +2362,30 @@
             if(lnk) { if(p.link) { lnk.href = p.link.startsWith('http') ? p.link : `https://${p.link}`; lnk.style.display = 'flex'; } else { lnk.style.display = 'none'; } }
             
             STATE.currentSlideshow = (p.gallery && p.gallery.length ? p.gallery : [p.icon]).filter(img => img && img.trim() !== '');
-            STATE.slideIdx = 0; window.startModalSlideshow(); window.openModal('modal-details');
+            STATE.slideIdx = 0; 
+            window.startModalSlideshow(); 
+            window.openModal('modal-details');
         };
 
         window.nextProject = () => {
-            let list = STATE.activeCat ? STATE.projects.filter(p => p.catId === STATE.activeCat) : [...STATE.projects];
-            if(STATE.activeMultiTags && STATE.activeMultiTags.length > 0) { list = list.filter(p => p.tags && STATE.activeMultiTags.some(mt => p.tags.toLowerCase().includes(mt))); } 
-            else if(STATE.activeTag) { list = list.filter(p => p.tags && p.tags.toLowerCase().includes(STATE.activeTag.toLowerCase())); }
-            list.sort((a,b) => (a.order !== undefined && a.order !== null ? Number(a.order) : 99) - (b.order !== undefined && b.order !== null ? Number(b.order) : 99));
+            let list = window.getFilteredProjects();
             const idx = list.findIndex(p => p.id === STATE.activeProject);
             if(idx > -1 && idx < list.length - 1) { window.haptic(); window.openProjectDeep(list[idx+1].id); }
         };
 
         window.prevProject = () => {
-            let list = STATE.activeCat ? STATE.projects.filter(p => p.catId === STATE.activeCat) : [...STATE.projects];
-            if(STATE.activeMultiTags && STATE.activeMultiTags.length > 0) { list = list.filter(p => p.tags && STATE.activeMultiTags.some(mt => p.tags.toLowerCase().includes(mt))); } 
-            else if(STATE.activeTag) { list = list.filter(p => p.tags && p.tags.toLowerCase().includes(STATE.activeTag.toLowerCase())); }
-            list.sort((a,b) => (a.order !== undefined && a.order !== null ? Number(a.order) : 99) - (b.order !== undefined && b.order !== null ? Number(b.order) : 99));
+            let list = window.getFilteredProjects();
             const idx = list.findIndex(p => p.id === STATE.activeProject);
             if(idx > 0) { window.haptic(); window.openProjectDeep(list[idx-1].id); }
         };
 
-        // BUG FIX APPLIED: Replaced <canvas> mapping with dynamic <img> to support animated GIFs
         window.startModalSlideshow = () => {
-            window.renderSlideFrame();
             const gal = document.getElementById('det-gallery');
             if(gal) {
                 gal.innerHTML = STATE.currentSlideshow.map((img, i) => `
-                    <img loading="lazy" src="${img}" onerror="this.onerror=null; this.src='https://placehold.co/600x400/171717/white?text=Screenshot'" onclick="STATE.slideIdx=${i}; window.renderSlideFrame(); window.haptic();" class="w-24 h-16 md:w-32 md:h-20 lg:w-48 lg:h-28 rounded-xl object-cover cursor-pointer hover:ring-2 ring-emerald-500 transition-all shrink-0 snap-center shadow-lg border border-white/10 ${i === STATE.slideIdx ? 'ring-2 ring-emerald-500 opacity-100' : 'opacity-60 hover:opacity-100'}">
+                    <div class="cursor-pointer w-24 h-16 md:w-32 md:h-20 lg:w-48 lg:h-28 rounded-xl bg-white/5 animate-pulse shrink-0 snap-center shadow-lg border border-white/10 relative overflow-hidden transition-all duration-300">
+                        <img loading="lazy" src="${img}" style="opacity: 0; transition: opacity 0.5s ease-in-out;" onload="this.style.opacity=''; this.parentElement.classList.remove('animate-pulse', 'bg-white/5');" onerror="this.onerror=null; this.src='https://placehold.co/600x400/171717/white?text=Screenshot'" onclick="STATE.slideIdx=${i}; window.renderSlideFrame(); window.haptic();" class="w-full h-full object-cover cursor-pointer hover:ring-2 ring-emerald-500 transition-all ${i === STATE.slideIdx ? 'ring-2 ring-emerald-500 opacity-100' : 'opacity-60 hover:opacity-100'}">
+                    </div>
                 `).join('');
             }
             
@@ -2241,39 +2395,56 @@
                     <div class="w-1.5 h-1.5 rounded-full transition-all duration-300 ${i === STATE.slideIdx ? 'bg-emerald-500 w-4' : 'bg-white/30'}" onclick="STATE.slideIdx=${i}; window.renderSlideFrame(); window.haptic();"></div>
                 `).join('');
             }
-
-            window.updateDots();
-            clearInterval(window.slideTimer);
-            if(STATE.currentSlideshow.length > 1) { window.slideTimer = setInterval(() => { STATE.slideIdx = (STATE.slideIdx + 1) % STATE.currentSlideshow.length; window.renderSlideFrame(); }, 5000); }
+            window.renderSlideFrame();
         };
         
         window.renderSlideFrame = () => {
-            const imgEl = document.getElementById('slideshow-img'); if(!imgEl) return;
-            if(!STATE.currentSlideshow || STATE.currentSlideshow.length === 0) return;
+            const container = document.getElementById('slideshow-media-container'); 
+            if(!container || !STATE.currentSlideshow || STATE.currentSlideshow.length === 0) return;
+            
+            clearTimeout(window.slideTimerObj);
             STATE.slideIdx = STATE.slideIdx % Math.max(1, STATE.currentSlideshow.length); 
             
-            imgEl.onerror = () => { imgEl.onerror=null; imgEl.src = 'https://placehold.co/800x450/0f1115/4b5563?text=Load+Error'; window.updateDots(); };
-            imgEl.src = STATE.currentSlideshow[STATE.slideIdx];
-            window.updateDots();
+            const mediaUrl = STATE.currentSlideshow[STATE.slideIdx];
+            const isVideo = mediaUrl.match(/\.(mp4|webm|ogg)$/i) || mediaUrl.startsWith('data:video');
+            const isGif = mediaUrl.match(/\.(gif)$/i) || mediaUrl.startsWith('data:image/gif');
+            
+            container.style.opacity = '0';
+            
+            setTimeout(() => {
+                if(isVideo) {
+                    container.innerHTML = `<video src="${mediaUrl}" autoplay muted playsinline class="w-full h-full object-cover" onclick="window.openLightbox()" onended="window.nextSlideMedia(true)" oncanplay="this.parentElement.style.opacity='1';"></video>`;
+                } else {
+                    container.innerHTML = `<img src="${mediaUrl}" class="w-full h-full object-cover" onclick="window.openLightbox()" onload="this.parentElement.style.opacity='1';" onerror="this.onerror=null; this.src='https://placehold.co/800x450/0f1115/4b5563?text=Load+Error'; window.updateDots();">`;
+                    
+                    let delay = isGif ? 8000 : 5000;
+                    if (STATE.currentSlideshow.length > 1) {
+                        window.slideTimerObj = setTimeout(() => { window.nextSlideMedia(true); }, delay);
+                    }
+                }
+                window.updateDots();
+            }, 300);
         };
 
         window.updateDots = () => {
             const gal = document.getElementById('det-gallery');
             if(gal && gal.children[STATE.slideIdx]) {
-                Array.from(gal.children).forEach((child, i) => {
-                    if(i === STATE.slideIdx) { 
-                        child.classList.add('ring-2', 'ring-emerald-500', 'opacity-100'); child.classList.remove('opacity-60'); 
-                        const parent = child.parentNode; parent.scrollTo({ left: child.offsetLeft - parent.offsetLeft - (parent.clientWidth / 2) + (child.clientWidth / 2), behavior: 'smooth' });
-                    } else { child.classList.remove('ring-2', 'ring-emerald-500', 'opacity-100'); child.classList.add('opacity-60'); }
+                Array.from(gal.children).forEach((childWrap, i) => {
+                    const child = childWrap.querySelector('img');
+                    if(child) {
+                        if(i === STATE.slideIdx) { 
+                            child.classList.add('ring-2', 'ring-emerald-500', 'opacity-100'); child.classList.remove('opacity-60'); 
+                            const parent = childWrap.parentNode; parent.scrollTo({ left: childWrap.offsetLeft - parent.offsetLeft - (parent.clientWidth / 2) + (childWrap.clientWidth / 2), behavior: 'smooth' });
+                        } else { 
+                            child.classList.remove('ring-2', 'ring-emerald-500', 'opacity-100'); child.classList.add('opacity-60'); 
+                        }
+                    }
                 });
             }
             const dotsContainer = document.getElementById('slideshow-dots');
             if(dotsContainer) { Array.from(dotsContainer.children).forEach((dot, i) => { if(i === STATE.slideIdx) { dot.className = "w-4 h-1.5 rounded-full bg-emerald-500 transition-all duration-300 cursor-pointer"; } else { dot.className = "w-1.5 h-1.5 rounded-full bg-white/30 transition-all duration-300 cursor-pointer"; } }); }
-            const lbImg = document.getElementById('lightbox-img');
-            if(lbImg && !document.getElementById('lightbox').classList.contains('hidden')) { lbImg.src = STATE.currentSlideshow[STATE.slideIdx]; }
         };
 
-        // Background Catalog Slideshow
         setInterval(() => {
             const vProj = document.getElementById('view-projects');
             if (!vProj || !vProj.classList.contains('active')) return;
@@ -2287,7 +2458,6 @@
             });
         }, 4000);
 
-        // --- STREAMING_CHUNK: Form Submissions & Data Persistence ---
         window.openSkillEditModal = (id = null) => {
             const safeSet = (idName, val) => { const el = document.getElementById(idName); if(el) el.value = val; };
             if (id) {
@@ -2341,6 +2511,12 @@
                 const getVal = (id) => { const el = document.getElementById(id); return el ? el.value.trim() : ''; };
                 const sanitizeUrl = (url) => { if(!url) return ''; return url.startsWith('http') ? url : 'https://' + url; };
                 let finalImgUrl = getVal('edit-img-url') || STATE.profile?.img || null;
+                const imgFileInput = document.getElementById('edit-img');
+                if(imgFileInput && imgFileInput.files[0]) { finalImgUrl = await window.fileToBase64(imgFileInput.files[0], 600, 0.8, '1/1'); }
+
+                let finalCvFile = STATE.profile?.cvFile || null;
+                const cvFileInput = document.getElementById('edit-cv');
+                if(cvFileInput && cvFileInput.files[0]) { finalCvFile = await window.fileToBase64(cvFileInput.files[0], 1000, 1.0, null); }
 
                 const payload = {
                     logo: getVal('edit-logo'), prefix: getVal('edit-prefix'), title: nameEl.value.trim(), bio: getVal('edit-bio'),
@@ -2348,173 +2524,282 @@
                     accentColor: getVal('edit-accent') || '#10b981', accentColorRgb: getVal('edit-accent-rgb') || '16, 185, 129', accentColorDark: getVal('edit-accent-dark') || '#059669',
                     contact: { whatsapp: getVal('edit-whatsapp'), phone: getVal('edit-phone'), email: getVal('edit-email') },
                     socials: { github: sanitizeUrl(getVal('edit-github')), linkedin: sanitizeUrl(getVal('edit-linkedin')), twitter: sanitizeUrl(getVal('edit-twitter')), instagram: sanitizeUrl(getVal('edit-instagram')) },
-                    img: finalImgUrl, cvFile: STATE.profile?.cvFile || null
+                    img: finalImgUrl, cvFile: finalCvFile
                 };
                 
-                const imgFileInput = document.getElementById('edit-img'); if(imgFileInput && imgFileInput.files[0]) { payload.img = await window.fileToBase64(imgFileInput.files[0], 400, 0.7, '1/1'); }
-                const cvFileInput = document.getElementById('edit-cv'); if(cvFileInput && cvFileInput.files[0]) { if(cvFileInput.files[0].size > 800000) { window.showToast("CV exceeds 750KB", true); if(btn) { btn.disabled=false; btn.innerHTML="Save Identity Profile"; } return; } payload.cvFile = await window.fileToBase64(cvFileInput.files[0]); }
-                
-                if(window.getByteSize(JSON.stringify(payload)) > 1500000) { window.showToast("Profile identity exceeds data limits.", true); } 
-                else { STATE.profile = payload; if(await window.syncRemote('profile_main', payload)) { window.showToast("Profile Updated"); window.applyAccentStyle(payload.accentColor, payload.accentColorRgb, payload.accentColorDark); window.closeModals(); window.renderAll(); } }
-            } catch (err) { window.showToast("Failed to save profile: " + err.message, true); } finally { if(btn) { btn.disabled = false; btn.innerHTML = 'Save Identity Profile'; } }
+                if (window.getByteSize(JSON.stringify(payload)) > 1000000) { return window.showToast("Images or CV too large. Try compressing or using a link.", true); }
+                STATE.profile = payload;
+                if(await window.syncRemote('profile_main', STATE.profile)) {
+                    window.applyAccentStyle(STATE.profile.accentColor, STATE.profile.accentColorRgb, STATE.profile.accentColorDark);
+                    window.showToast("Profile Settings Saved"); window.closeModals(); window.renderHero();
+                }
+            } catch(e) { window.showToast("Failed to save: " + e.message, true); } 
+            finally { if(btn) { btn.disabled = false; btn.innerHTML = 'Save Identity Profile'; } }
         };
 
-        window.toggleExpCurrent = (el) => { const durEl = document.getElementById('exp-duration'); if(durEl) { durEl.disabled = el.checked; if(el.checked) durEl.classList.add('opacity-50'); else durEl.classList.remove('opacity-50'); } };
-
-        window.openExpModal = () => { 
+        window.openExpModal = () => {
             const safeSet = (id, val) => { const el = document.getElementById(id); if(el) el.value = val; };
-            safeSet('exp-id', ''); safeSet('exp-role', ''); safeSet('exp-company', ''); safeSet('exp-type', 'Full-Time'); safeSet('exp-location', ''); safeSet('exp-link', ''); safeSet('exp-duration', ''); safeSet('exp-icon-file', ''); safeSet('exp-tags', ''); safeSet('exp-order', '99'); safeSet('exp-icon-url', '');
-            const draftEl = document.getElementById('exp-draft'); if(draftEl) draftEl.checked = false;
-            const durEl = document.getElementById('exp-duration'); if(durEl) { durEl.disabled = false; durEl.classList.remove('opacity-50'); }
-            const curEl = document.getElementById('exp-current'); if(curEl) curEl.checked = false;
-            const descEl = document.getElementById('exp-desc'); if(descEl) descEl.innerHTML = ''; 
-            window.restoreDraftEditor('exp-desc', 'exp_draft'); window.openModal('modal-exp'); 
+            safeSet('exp-id', ''); safeSet('exp-role', ''); safeSet('exp-company', ''); safeSet('exp-location', ''); safeSet('exp-duration', ''); safeSet('exp-link', ''); safeSet('exp-tags', ''); safeSet('exp-order', '99'); safeSet('exp-type', 'Full-Time');
+            safeSet('exp-icon-url', ''); safeSet('exp-icon-file', '');
+            document.getElementById('exp-draft').checked = false; document.getElementById('exp-current').checked = false;
+            const ed = document.getElementById('exp-desc'); if(ed) ed.innerHTML = '';
+            window.openModal('modal-exp');
+        };
+
+        window.toggleExpCurrent = (el) => {
+            const d = document.getElementById('exp-duration');
+            if(el.checked) { if(!d.value.toLowerCase().includes('present')) d.value = d.value ? d.value.split('-')[0].trim() + ' - Present' : 'Present'; }
         };
 
         window.editExperience = (id) => {
             const e = STATE.experience.find(x => x.id === id); if(!e) return;
-            const safeSet = (id, val) => { const el = document.getElementById(id); if(el) el.value = val; };
-            safeSet('exp-id', e.id); safeSet('exp-role', e.role || ''); safeSet('exp-company', e.company || ''); safeSet('exp-type', e.type || 'Full-Time'); safeSet('exp-location', e.location || ''); safeSet('exp-link', e.link || ''); safeSet('exp-duration', e.duration || ''); safeSet('exp-icon-file', ''); safeSet('exp-tags', e.tags || ''); safeSet('exp-order', e.order !== undefined ? e.order : 99);
+            const safeSet = (idName, val) => { const el = document.getElementById(idName); if(el) el.value = val; };
+            safeSet('exp-id', e.id); safeSet('exp-role', e.role || ''); safeSet('exp-company', e.company || ''); safeSet('exp-location', e.location || ''); safeSet('exp-duration', e.duration || ''); safeSet('exp-link', e.link || ''); safeSet('exp-tags', e.tags || ''); safeSet('exp-order', e.order !== undefined ? e.order : 99); safeSet('exp-type', e.type || 'Full-Time');
             if(e.icon && e.icon.startsWith('http')) { safeSet('exp-icon-url', e.icon); } else { safeSet('exp-icon-url', ''); }
-            const draftEl = document.getElementById('exp-draft'); if(draftEl) draftEl.checked = e.isDraft || false;
-            const isCurrent = e.isCurrent || (e.duration && e.duration.toLowerCase().includes('present'));
-            const curEl = document.getElementById('exp-current'); if(curEl) curEl.checked = isCurrent;
-            const durEl = document.getElementById('exp-duration'); if(durEl) { durEl.disabled = isCurrent; if(isCurrent) durEl.classList.add('opacity-50'); else durEl.classList.remove('opacity-50'); }
-            const descEl = document.getElementById('exp-desc'); if(descEl) descEl.innerHTML = e.desc || ''; 
+            document.getElementById('exp-draft').checked = e.isDraft || false; document.getElementById('exp-current').checked = e.isCurrent || false;
+            const ed = document.getElementById('exp-desc'); if(ed) ed.innerHTML = e.desc || '';
             window.openModal('modal-exp');
         };
 
         window.saveExperience = async () => {
             if(!STATE.isAdmin) return;
             const getVal = (id) => { const el = document.getElementById(id); return el ? el.value.trim() : ''; };
-            const idInput = getVal('exp-id'); const roleEl = document.getElementById('exp-role'); const compEl = document.getElementById('exp-company');
-            let invalid = false;
-            if(!roleEl || !roleEl.value.trim()) { if(roleEl) { roleEl.classList.add('error-shake'); setTimeout(() => roleEl.classList.remove('error-shake'), 400); } invalid=true; }
-            if(!compEl || !compEl.value.trim()) { if(compEl) { compEl.classList.add('error-shake'); setTimeout(() => compEl.classList.remove('error-shake'), 400); } invalid=true; }
-            if(invalid) return window.showToast("Role & Company required", true);
-
-            const role = roleEl.value.trim(); const company = compEl.value.trim(); const type = getVal('exp-type'); const location = getVal('exp-location'); const link = getVal('exp-link'); const duration = getVal('exp-duration'); const tags = getVal('exp-tags'); const orderInput = parseInt(getVal('exp-order')) || 0;
-            const isDraft = document.getElementById('exp-draft')?.checked || false; const desc = document.getElementById('exp-desc')?.innerHTML || ''; const isCurrentWork = document.getElementById('exp-current')?.checked || false; const finalDuration = isCurrentWork ? "Present" : duration;
-
+            const role = getVal('exp-role'); const comp = getVal('exp-company');
+            if(!role || !comp) return window.showToast("Role and Company required", true);
             const btn = document.getElementById('save-exp-btn'); if(btn) { btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...'; }
             try {
-                let tempExp = JSON.parse(JSON.stringify(STATE.experience)); const existing = idInput ? tempExp.find(x => x.id === idInput) : null;
-                let icon = getVal('exp-icon-url') || (existing ? existing.icon : null); const iconFileInput = document.getElementById('exp-icon-file');
-                if(iconFileInput && iconFileInput.files[0]) icon = await window.fileToBase64(iconFileInput.files[0], 200, 0.7, '1/1');
-                const payload = { id: idInput || 'exp_' + Date.now(), role, company, type, location, link, icon, duration: finalDuration, isCurrent: isCurrentWork, tags, isDraft, order: orderInput, desc: window.sanitizeRichHTML(desc) };
-                if(existing) { const idx = tempExp.findIndex(x => x.id === idInput); if(idx > -1) tempExp[idx] = payload; } else { tempExp.push(payload); }
-                if (window.getByteSize(JSON.stringify(tempExp)) > 1500000) { window.showToast("Experience payload too large.", true); } 
-                else { STATE.experience = tempExp; sessionStorage.removeItem('exp_draft'); if(await window.syncRemote('experience_list', STATE.experience)) { window.showToast("Experience Saved"); window.closeModals(); window.renderExperience(); window.renderSkills(); } }
-            } catch(err) { console.error(err); window.showToast("Failed to save experience", true); } finally { if(btn) { btn.disabled = false; btn.innerHTML = 'Save Experience'; } }
+                const idInput = getVal('exp-id');
+                let imgData = getVal('exp-icon-url') || null;
+                const fileInput = document.getElementById('exp-icon-file');
+                if(fileInput && fileInput.files[0]) { imgData = await window.fileToBase64(fileInput.files[0], 200, 0.7, '1/1'); } 
+                else if(!imgData && idInput) { const existing = STATE.experience.find(x => x.id === idInput); if(existing) imgData = existing.icon; }
+                
+                const ed = document.getElementById('exp-desc');
+                const obj = {
+                    id: idInput || 'exp_' + Date.now(), role: role, company: comp, type: getVal('exp-type'), location: getVal('exp-location'),
+                    duration: getVal('exp-duration'), link: getVal('exp-link'), tags: getVal('exp-tags'), order: parseInt(getVal('exp-order')) || 99,
+                    desc: ed ? ed.innerHTML : '', icon: imgData,
+                    isDraft: document.getElementById('exp-draft').checked, isCurrent: document.getElementById('exp-current').checked
+                };
+                let temp = JSON.parse(JSON.stringify(STATE.experience));
+                if(idInput) { const idx = temp.findIndex(x => x.id === idInput); if(idx>-1) temp[idx] = obj; } else { temp.push(obj); }
+                
+                if (window.getByteSize(JSON.stringify(temp)) > 1500000) { window.showToast("Payload too large", true); }
+                else { STATE.experience = temp; if(await window.syncRemote('experience_list', STATE.experience)) { window.showToast("Experience Saved"); window.closeModals(); sessionStorage.removeItem('exp_draft'); window.renderExperience(); window.renderSkills(); } }
+            } catch(e) { window.showToast("Failed to save", true); }
+            finally { if(btn) { btn.disabled = false; btn.innerHTML = 'Save Experience'; } }
         };
 
-        window.openCategoryModal = () => { 
+        window.openCategoryModal = () => {
             const safeSet = (id, val) => { const el = document.getElementById(id); if(el) el.value = val; };
-            safeSet('cat-id', ''); safeSet('cat-name', ''); safeSet('cat-order', '99'); safeSet('cat-desc', ''); safeSet('cat-file', ''); safeSet('cat-file-url', '');
-            window.openModal('modal-cat'); 
+            safeSet('cat-id', ''); safeSet('cat-name', ''); safeSet('cat-order', '99'); safeSet('cat-desc', ''); safeSet('cat-file-url', ''); safeSet('cat-file', '');
+            window.openModal('modal-cat');
         };
-        
-        window.editCategory = (id) => { 
-            const c = STATE.categories.find(x => x.id === id); if(!c) return; 
-            const safeSet = (id, val) => { const el = document.getElementById(id); if(el) el.value = val; };
-            safeSet('cat-id', c.id); safeSet('cat-name', c.name); safeSet('cat-order', c.order !== undefined ? c.order : 99); safeSet('cat-desc', c.desc || ''); safeSet('cat-file', '');
+
+        window.editCategory = (id) => {
+            const c = STATE.categories.find(x => x.id === id); if(!c) return;
+            const safeSet = (idName, val) => { const el = document.getElementById(idName); if(el) el.value = val; };
+            safeSet('cat-id', c.id); safeSet('cat-name', c.name || ''); safeSet('cat-order', c.order !== undefined ? c.order : 99); safeSet('cat-desc', c.desc || '');
             if(c.img && c.img.startsWith('http')) { safeSet('cat-file-url', c.img); } else { safeSet('cat-file-url', ''); }
-            window.openModal('modal-cat'); 
+            window.openModal('modal-cat');
         };
-        
+
         window.saveCategory = async () => {
             if(!STATE.isAdmin) return;
             const nameEl = document.getElementById('cat-name');
-            if(!nameEl || !nameEl.value.trim()) { if(nameEl) { nameEl.classList.add('error-shake'); setTimeout(() => nameEl.classList.remove('error-shake'), 400); } return window.showToast("Name required", true); }
-            const getVal = (id) => { const el = document.getElementById(id); return el ? el.value.trim() : ''; };
-            const idInput = getVal('cat-id'); const name = nameEl.value.trim(); const orderInput = parseInt(getVal('cat-order')) || 0; const desc = getVal('cat-desc');
+            if(!nameEl || !nameEl.value.trim()) { if(nameEl) { nameEl.classList.add('error-shake'); setTimeout(() => nameEl.classList.remove('error-shake'), 400); } return window.showToast("Name is required", true); }
             const btn = document.getElementById('save-cat-btn'); if(btn) { btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...'; }
             try {
-                let imgData = getVal('cat-file-url') || null; const imgFileInput = document.getElementById('cat-file');
-                if(imgFileInput && imgFileInput.files[0]) { imgData = await window.fileToBase64(imgFileInput.files[0], 400, 0.7, '16/9'); } else if(!imgData && idInput) { const existing = STATE.categories.find(x => x.id === idInput); if(existing) imgData = existing.img; }
-                let tempCats = JSON.parse(JSON.stringify(STATE.categories));
-                if (idInput) { const idx = tempCats.findIndex(x => x.id === idInput); if(idx > -1) { tempCats[idx].name = name; tempCats[idx].desc = desc; tempCats[idx].order = orderInput; tempCats[idx].img = imgData; } } else { tempCats.push({ id: 'cat_' + Date.now(), name, desc, img: imgData, order: orderInput }); }
-                if (window.getByteSize(JSON.stringify(tempCats)) > 1500000) { window.showToast("Workspaces payload too large.", true); } else { STATE.categories = tempCats; if(await window.syncRemote('categories_list', STATE.categories)) { window.showToast("Workspace Saved"); window.closeModals(); window.renderCategories(); } }
-            } catch (err) { window.showToast("Failed to save workspace: " + err.message, true); } finally { if(btn) { btn.disabled = false; btn.innerHTML = 'Save Workspace'; } }
+                const getVal = (id) => { const el = document.getElementById(id); return el ? el.value.trim() : ''; };
+                const idInput = getVal('cat-id');
+                let imgData = getVal('cat-file-url') || null;
+                const fileInput = document.getElementById('cat-file');
+                if(fileInput && fileInput.files[0]) { imgData = await window.fileToBase64(fileInput.files[0], 600, 0.8, '16/9'); }
+                else if(!imgData && idInput) { const existing = STATE.categories.find(x => x.id === idInput); if(existing) imgData = existing.img; }
+
+                const obj = { id: idInput || 'cat_' + Date.now(), name: nameEl.value.trim(), desc: getVal('cat-desc'), order: parseInt(getVal('cat-order')) || 99, img: imgData };
+                let temp = JSON.parse(JSON.stringify(STATE.categories));
+                if(idInput) { const idx = temp.findIndex(x => x.id === idInput); if(idx>-1) temp[idx] = obj; } else { temp.push(obj); }
+                
+                if (window.getByteSize(JSON.stringify(temp)) > 1000000) { window.showToast("Payload too large", true); }
+                else { STATE.categories = temp; if(await window.syncRemote('categories_list', STATE.categories)) { window.showToast("Workspace Saved"); window.closeModals(); window.renderCategories(); } }
+            } catch(e) { window.showToast("Failed to save", true); }
+            finally { if(btn) { btn.disabled = false; btn.innerHTML = 'Save Workspace'; } }
         };
 
-        window.openProjectModal = () => { 
-            if(!STATE.activeCat) { window.showToast("Please select a workspace folder first to upload.", true); return; }
+        window.openProjectModal = () => {
             const safeSet = (id, val) => { const el = document.getElementById(id); if(el) el.value = val; };
-            safeSet('proj-id', ''); safeSet('proj-name', ''); safeSet('proj-order', '99'); safeSet('proj-link-in', ''); safeSet('proj-tags-in', ''); safeSet('proj-icon-file', ''); safeSet('proj-gallery-files', ''); safeSet('proj-clear-gallery', 'false'); safeSet('proj-icon-url', ''); safeSet('proj-gallery-urls', '');
-            const draftEl = document.getElementById('proj-draft'); if(draftEl) draftEl.checked = false;
-            const edEl = document.getElementById('proj-editor'); if(edEl) edEl.innerHTML = ''; window.restoreDraftEditor('proj-editor', 'proj_draft'); 
-            const catSelect = document.getElementById('proj-category-select'); if(catSelect) { catSelect.innerHTML = STATE.categories.map(c => `<option value="${c.id}">${c.name}</option>`).join(''); if(STATE.activeCat) catSelect.value = STATE.activeCat; }
-            window.openModal('modal-proj'); 
+            safeSet('proj-id', ''); safeSet('proj-name', ''); safeSet('proj-order', '99'); safeSet('proj-link-in', ''); safeSet('proj-tags-in', '');
+            safeSet('proj-icon-url', ''); safeSet('proj-gallery-urls', ''); safeSet('proj-clear-gallery', 'false');
+            const draftCb = document.getElementById('proj-draft'); if(draftCb) draftCb.checked = false;
+            const featCb = document.getElementById('proj-featured'); if(featCb) featCb.checked = false;
+            safeSet('proj-icon-file', ''); safeSet('proj-gallery-files', '');
+            const ed = document.getElementById('proj-editor'); if(ed) ed.innerHTML = '';
+            
+            const catSelect = document.getElementById('proj-category-select');
+            if(catSelect) {
+                catSelect.innerHTML = STATE.categories.map(c => `<option value="${c.id}">${window.safeText(c.name)}</option>`).join('');
+                if(STATE.activeCat) catSelect.value = STATE.activeCat;
+            }
+            window.openModal('modal-proj');
+            // DO NOT ADD ANY SESSIONSTORAGE REMOVAL HERE.
         };
 
-        window.editProject = (id) => { 
-            const p = STATE.projects.find(x => x.id === id); if(!p) return; 
-            const safeSet = (id, val) => { const el = document.getElementById(id); if(el) el.value = val; };
-            safeSet('proj-id', p.id); safeSet('proj-name', p.name); safeSet('proj-order', p.order !== undefined ? p.order : 99); safeSet('proj-link-in', p.link || ''); safeSet('proj-tags-in', p.tags || ''); safeSet('proj-icon-file', ''); safeSet('proj-gallery-files', ''); safeSet('proj-clear-gallery', 'false');
+        window.editProject = (id) => {
+            const p = STATE.projects.find(x => x.id === id); if(!p) return;
+            const safeSet = (idName, val) => { const el = document.getElementById(idName); if(el) el.value = val; };
+            
+            safeSet('proj-id', p.id); safeSet('proj-name', p.name || ''); safeSet('proj-order', p.order !== undefined ? p.order : 99);
+            safeSet('proj-link-in', p.link || ''); safeSet('proj-tags-in', p.tags || '');
+            safeSet('proj-clear-gallery', 'false');
+            
             if(p.icon && p.icon.startsWith('http')) { safeSet('proj-icon-url', p.icon); } else { safeSet('proj-icon-url', ''); }
-            if(p.gallery && p.gallery.length && p.gallery[0].startsWith('http')) { safeSet('proj-gallery-urls', p.gallery.join(', ')); } else { safeSet('proj-gallery-urls', ''); }
-            const edEl = document.getElementById('proj-editor'); if(edEl) edEl.innerHTML = p.desc || '';
-            const draftEl = document.getElementById('proj-draft'); if(draftEl) draftEl.checked = p.isDraft || false;
-            const catSelect = document.getElementById('proj-category-select'); if(catSelect) { catSelect.innerHTML = STATE.categories.map(c => `<option value="${c.id}">${c.name}</option>`).join(''); catSelect.value = p.catId; }
-            window.openModal('modal-proj'); 
+            if(p.gallery && p.gallery.length > 0 && p.gallery[0].startsWith('http')) { safeSet('proj-gallery-urls', p.gallery.filter(url => url && url.startsWith('http')).join(', ')); } else { safeSet('proj-gallery-urls', ''); }
+            
+            document.getElementById('proj-draft').checked = p.isDraft || false; document.getElementById('proj-featured').checked = p.isFeatured || false;
+            
+            const catSelect = document.getElementById('proj-category-select');
+            if(catSelect) {
+                catSelect.innerHTML = STATE.categories.map(c => `<option value="${c.id}">${window.safeText(c.name)}</option>`).join('');
+                catSelect.value = p.catId;
+            }
+            
+            const ed = document.getElementById('proj-editor'); if(ed) ed.innerHTML = p.desc || '';
+            window.openModal('modal-proj');
+            // DO NOT ADD ANY SESSIONSTORAGE REMOVAL HERE.
         };
-        
+
         window.saveProject = async () => {
             if(!STATE.isAdmin) return;
-            const nameEl = document.getElementById('proj-name');
-            if(!nameEl || !nameEl.value.trim()) { if(nameEl) { nameEl.classList.add('error-shake'); setTimeout(() => nameEl.classList.remove('error-shake'), 400); } return window.showToast("Title required", true); }
+            const titleEl = document.getElementById('proj-name');
+            if(!titleEl || !titleEl.value.trim()) { if(titleEl) { titleEl.classList.add('error-shake'); setTimeout(() => titleEl.classList.remove('error-shake'), 400); } return window.showToast("Project Title required", true); }
             const getVal = (id) => { const el = document.getElementById(id); return el ? el.value.trim() : ''; };
-            const idInput = getVal('proj-id'); const name = nameEl.value.trim(); const orderInput = parseInt(getVal('proj-order')) || 0; const tags = getVal('proj-tags-in'); const isDraft = document.getElementById('proj-draft')?.checked || false;
-            const catSelect = document.getElementById('proj-category-select'); const targetCatId = catSelect ? catSelect.value : STATE.activeCat;
-            if(!targetCatId) return window.showToast("No workspace selected", true);
-            const btn = document.getElementById('save-proj-btn'); if(btn) { btn.disabled = true; btn.innerHTML = '<i class=\"fas fa-spinner fa-spin\"></i> Uploading...'; }
+            
+            const btn = document.getElementById('save-proj-btn'); if(btn) { btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...'; }
+            
             try {
-                const existing = idInput ? STATE.projects.find(x => x.id === idInput) : null;
-                let icon = getVal('proj-icon-url') || (existing ? existing.icon : 'https://placehold.co/400x400/10b981/ffffff?text=App'); 
-                const iconFileInput = document.getElementById('proj-icon-file'); if(iconFileInput && iconFileInput.files[0]) icon = await window.fileToBase64(iconFileInput.files[0], 300, 0.7, '1/1');
-                let gallery = []; const clearGalEl = document.getElementById('proj-clear-gallery'); const clearGal = clearGalEl ? clearGalEl.value === 'true' : false; const gallFileInput = document.getElementById('proj-gallery-files'); const gallFiles = gallFileInput ? gallFileInput.files : [];
-                const rawGalleryUrls = getVal('proj-gallery-urls'); if (rawGalleryUrls) { gallery = rawGalleryUrls.split(',').map(url => url.trim()).filter(url => url !== ''); }
-                if(gallFiles.length > 0) { const scaleWidth = gallFiles.length > 3 ? 500 : 700; const scaleQuality = gallFiles.length > 3 ? 0.5 : 0.6; for(let f of gallFiles) { gallery.push(await window.fileToBase64(f, scaleWidth, scaleQuality, '16/9')); } } else if (gallery.length === 0 && !clearGal && existing && existing.gallery) { gallery = existing.gallery; }
-                if(!gallery.length) gallery = [icon];
-                let finalLink = getVal('proj-link-in'); if(finalLink && !finalLink.startsWith('http')) finalLink = 'https://' + finalLink;
-                const desc = document.getElementById('proj-editor')?.innerHTML || '';
-                const payload = { id: idInput || ('proj_' + Date.now()), catId: targetCatId, name, tags, isDraft, icon, gallery, order: orderInput, desc: window.sanitizeRichHTML(desc), link: finalLink };
-                let tempProjects = JSON.parse(JSON.stringify(STATE.projects));
-                if(existing) { const idx = tempProjects.findIndex(x => x.id === idInput); tempProjects[idx] = payload; } else { tempProjects.push(payload); }
+                const idInput = getVal('proj-id');
+                let existingP = idInput ? STATE.projects.find(x => x.id === idInput) : null;
                 
-                // BUG FIX APPLIED: Force skills UI to rerender stats on project save
-                if(window.getByteSize(JSON.stringify(tempProjects)) > 2000000) { window.showToast("Payload limit exceeded.", true); } 
-                else { STATE.projects = tempProjects; sessionStorage.removeItem('proj_draft'); if(await window.syncRemote('projects_list', STATE.projects)) { window.showToast("Project Saved"); window.closeModals(); window.renderProjects(); window.renderSkills(); } }
-            } catch (err) { window.showToast("Failed to save project: " + err.message, true); } finally { if(btn) { btn.disabled = false; btn.innerHTML = 'Save Project'; } }
+                let iconData = getVal('proj-icon-url') || null;
+                const iconFile = document.getElementById('proj-icon-file');
+                if (iconFile && iconFile.files[0]) iconData = await window.fileToBase64(iconFile.files[0], 400, 0.7, '1/1');
+                else if (!iconData && existingP) iconData = existingP.icon;
+
+                let galleryData = existingP && existingP.gallery ? [...existingP.gallery] : [];
+                if (getVal('proj-clear-gallery') === 'true') { galleryData = []; }
+                
+                const galUrls = getVal('proj-gallery-urls');
+                if (galUrls) {
+                    const parsedUrls = galUrls.split(',').map(s => s.trim()).filter(s => s.startsWith('http'));
+                    galleryData = [...galleryData, ...parsedUrls];
+                }
+                
+                const galFiles = document.getElementById('proj-gallery-files');
+                if (galFiles && galFiles.files.length > 0) {
+                    for(let i=0; i<galFiles.files.length; i++) {
+                        const b64 = await window.fileToBase64(galFiles.files[i], 1200, 0.8, '16/9');
+                        galleryData.push(b64);
+                    }
+                }
+                
+                const ed = document.getElementById('proj-editor');
+                const pObj = {
+                    id: idInput || 'proj_' + Date.now(),
+                    catId: getVal('proj-category-select'),
+                    name: titleEl.value.trim(),
+                    desc: ed ? ed.innerHTML : '',
+                    tags: getVal('proj-tags-in'),
+                    link: getVal('proj-link-in'),
+                    order: parseInt(getVal('proj-order')) || 99,
+                    icon: iconData,
+                    gallery: [...new Set(galleryData)].filter(Boolean),
+                    isDraft: document.getElementById('proj-draft').checked,
+                    isFeatured: document.getElementById('proj-featured').checked
+                };
+
+                let tempProjs = JSON.parse(JSON.stringify(STATE.projects));
+                if (idInput) { const idx = tempProjs.findIndex(x => x.id === idInput); if(idx>-1) tempProjs[idx] = pObj; } 
+                else { tempProjs.push(pObj); }
+
+                if (window.getByteSize(JSON.stringify(tempProjs)) > 1500000) { window.showToast("Payload too large. Use URL links for heavy images.", true); } 
+                else { 
+                    STATE.projects = tempProjs; 
+                    if(await window.syncRemote('projects_list', STATE.projects)) { 
+                        window.showToast("Project Saved!"); window.closeModals(); 
+                        sessionStorage.removeItem('proj_draft');
+                        window.renderProjects(); window.renderSkills(); 
+                    } 
+                }
+            } catch(e) { window.showToast("Failed to save: " + e.message, true); } 
+            finally { if(btn) { btn.disabled = false; btn.innerHTML = 'Save Project'; } }
         };
 
-        window.triggerDelete = (id) => { 
-            const safeSet = (idName, val) => { const el = document.getElementById(idName); if(el) el.value = val; };
-            safeSet('del-id', id); safeSet('del-pwd', ''); window.openModal('modal-confirm-delete'); 
+        window.triggerDelete = (id) => {
+            document.getElementById('del-id').value = id;
+            document.getElementById('del-pwd').value = '';
+            window.openModal('modal-confirm-delete');
         };
 
         window.executeDelete = async () => {
-            const pwdEl = document.getElementById('del-pwd'); 
-            if(!STATE.isAdmin || !pwdEl || !window.checkAuth(pwdEl.value)) { return window.showToast("Auth Failed", true); }
-            const btn = document.getElementById('btn-execute-del'); if(btn) { btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>'; }
-            const delIdEl = document.getElementById('del-id'); const id = delIdEl ? delIdEl.value : null; if(!id) return;
+            const pwd = document.getElementById('del-pwd').value;
+            if(!window.checkAuth(pwd)) return window.showToast("Authorization Failed", true);
+            const id = document.getElementById('del-id').value;
+            const btn = document.getElementById('btn-execute-del');
+            if(btn) { btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Purging...'; }
             
-            // BUG FIX APPLIED: Force skills UI to rerender stats on project delete
-            if(id.startsWith('cat_')) { STATE.categories = STATE.categories.filter(c => c.id !== id); STATE.projects = STATE.projects.filter(p => p.catId !== id); await window.syncRemote('categories_list', STATE.categories); await window.syncRemote('projects_list', STATE.projects); if(STATE.activeCat === id) window.switchView('view-home'); else window.renderCategories(); window.renderSkills(); } 
-            else if(id.startsWith('exp_')) { STATE.experience = STATE.experience.filter(e => e.id !== id); await window.syncRemote('experience_list', STATE.experience); window.renderExperience(); window.renderSkills(); }
-            else if(id.startsWith('sk_')) { STATE.skills = STATE.skills.filter(s => s.id !== id); await window.syncRemote('skills_list', STATE.skills); window.renderSkills(); }
-            else { STATE.projects = STATE.projects.filter(p => p.id !== id); await window.syncRemote('projects_list', STATE.projects); window.renderProjects(); window.renderSkills(); }
-            
-            window.closeModals(); window.showToast("Purged"); if(btn) { btn.disabled = false; btn.innerHTML = 'Authorize Deletion'; }
+            try {
+                if (id.startsWith('cat_')) {
+                    STATE.categories = STATE.categories.filter(c => c.id !== id);
+                    await window.syncRemote('categories_list', STATE.categories);
+                    STATE.projects = STATE.projects.filter(p => p.catId !== id);
+                    await window.syncRemote('projects_list', STATE.projects);
+                    window.renderCategories(); window.renderProjects(); window.renderSkills();
+                } else if (id.startsWith('proj_')) {
+                    STATE.projects = STATE.projects.filter(p => p.id !== id);
+                    await window.syncRemote('projects_list', STATE.projects);
+                    window.renderProjects(); window.renderSkills();
+                } else if (id.startsWith('exp_')) {
+                    STATE.experience = STATE.experience.filter(e => e.id !== id);
+                    await window.syncRemote('experience_list', STATE.experience);
+                    window.renderExperience(); window.renderSkills();
+                } else if (id.startsWith('sk_')) {
+                    STATE.skills = STATE.skills.filter(s => s.id !== id);
+                    await window.syncRemote('skills_list', STATE.skills);
+                    window.renderSkills();
+                }
+                window.showToast("Item deleted successfully.");
+                window.closeModals();
+            } catch(e) {
+                window.showToast("Deletion failed", true);
+            } finally {
+                if(btn) { btn.disabled = false; btn.innerHTML = 'Authorize Deletion'; }
+            }
         };
 
-        // Boot
-        try { 
-            console.log("Initializing Portfolio Engine...");
+        // Intercept Browser Back Button
+        window.addEventListener('popstate', (event) => {
+            // Close any open modals with proper cleanup
+            window.closeModals();
+            
+            if (event.state && event.state.view) {
+                // Navigate back to the previous view without re-pushing to history
+                window.switchView(event.state.view, false);
+            } else {
+                // Fallback to home
+                window.switchView('view-home', false);
+            }
+        });
+
+        // Set the initial history state on load
+        if(!window.location.hash) {
+            window.history.replaceState({ view: 'view-home' }, '', '#view-home');
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
             document.querySelectorAll('.hover-lift').forEach(el => el.dataset.tiltInit = 'true');
-            window.fetchRemote(); 
-        } catch(e) { console.error(e); }
+            window.fetchRemote();
+        });
     </script>
 </body>
 </html>
