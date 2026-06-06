@@ -21,6 +21,7 @@
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/vanilla-tilt/1.8.1/vanilla-tilt.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
@@ -64,6 +65,8 @@
         .from-emerald-500 { --tw-gradient-from: var(--primary-emerald) !important; --tw-gradient-to: rgba(var(--primary-emerald-rgb), 0) !important; --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to) !important; }
         .to-emerald-600 { --tw-gradient-to: var(--primary-emerald-dark) !important; }
         .ring-emerald-500 { --tw-ring-color: var(--primary-emerald) !important; }
+        .from-emerald-500\/20 { --tw-gradient-from: rgba(var(--primary-emerald-rgb), 0.2) !important; --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to) !important; }
+        .to-cyan-500\/20 { --tw-gradient-to: rgba(var(--primary-emerald-rgb), 0.1) !important; }
         
         .shadow-emerald-900\/30 { box-shadow: 0 10px 15px -3px rgba(var(--primary-emerald-rgb), 0.3) !important; }
         .shadow-emerald-500\/40 { box-shadow: 0 10px 15px -3px rgba(var(--primary-emerald-rgb), 0.4) !important; }
@@ -74,6 +77,18 @@
         .bg-emerald-900\/10 { background-color: rgba(var(--primary-emerald-rgb), 0.1) !important; }
         .file\:text-emerald-400::file-selector-button { color: var(--primary-emerald) !important; }
         .file\:bg-emerald-500\/10::file-selector-button { background-color: rgba(var(--primary-emerald-rgb), 0.1) !important; }
+
+        /* Force Theme Overrides for Tailwind Opacity Classes */
+        .border-emerald-500\/20, .hover\:border-emerald-500\/20:hover { border-color: rgba(var(--primary-emerald-rgb), 0.2) !important; }
+        .border-emerald-500\/30, .hover\:border-emerald-500\/30:hover { border-color: rgba(var(--primary-emerald-rgb), 0.3) !important; }
+        .border-emerald-500\/40, .hover\:border-emerald-500\/40:hover { border-color: rgba(var(--primary-emerald-rgb), 0.4) !important; }
+        .border-emerald-500\/50, .hover\:border-emerald-500\/50:hover { border-color: rgba(var(--primary-emerald-rgb), 0.5) !important; }
+        .focus-within\:border-emerald-500:focus-within { border-color: var(--primary-emerald) !important; }
+        .ring-emerald-500 { --tw-ring-color: var(--primary-emerald) !important; }
+
+        /* Custom Text Selection */
+        ::selection { background: var(--primary-emerald); color: #000; }
+        ::-moz-selection { background: var(--primary-emerald); color: #000; }
 
         .hover-glow { transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1), box-shadow 0.3s ease, border-color 0.3s ease, background-color 0.3s ease; }
         .hover-glow:hover {
@@ -242,6 +257,8 @@
 </head>
 <body class="antialiased relative min-h-screen flex flex-col pb-safe">
 
+
+
     <div id="bg-layer"></div>
     <div id="seo-meta-injection" class="hidden"></div>
     <div id="offline-banner" class="hidden w-full bg-red-600 text-white text-xs font-bold text-center py-1.5 z-[9999] relative shadow-md">
@@ -273,6 +290,10 @@
         <button onclick="window.switchView('view-experience')" data-target="view-experience" class="nav-btn p-3 w-12 h-12 flex items-center justify-center rounded-full text-gray-500 hover:text-white hover:bg-white/10 transition-all group relative cursor-pointer">
             <i class="fas fa-history text-lg pointer-events-none"></i>
             <span class="absolute -top-10 left-1/2 -translate-x-1/2 bg-black border border-white/10 text-white text-[10px] px-2 py-1 rounded-md opacity-0 group-hover:opacity-100 transition-opacity font-bold tracking-wider">Timeline</span>
+        </button>
+        <button onclick="window.switchView('view-journal')" data-target="view-journal" class="nav-btn p-3 w-12 h-12 flex items-center justify-center rounded-full text-gray-500 hover:text-white hover:bg-white/10 transition-all group relative cursor-pointer">
+            <i class="fas fa-book text-lg pointer-events-none"></i>
+            <span class="absolute -top-10 left-1/2 -translate-x-1/2 bg-black border border-white/10 text-white text-[10px] px-2 py-1 rounded-md opacity-0 group-hover:opacity-100 transition-opacity font-bold tracking-wider">Journal</span>
         </button>
     </nav>
 
@@ -333,7 +354,7 @@
                         </div>
                     </div>
 
-                    <div class="w-48 h-48 md:w-80 md:h-80 relative shrink-0 mt-6 md:mt-0 flex items-center justify-center group cursor-pointer">
+                    <div class="w-48 h-48 md:w-80 md:h-80 relative shrink-0 mt-6 md:mt-0 flex items-center justify-center group cursor-pointer" data-tilt data-tilt-max="15" data-tilt-speed="400" data-tilt-glare="true" data-tilt-max-glare="0.2">
                         <div class="absolute inset-0 bg-gradient-to-tr from-emerald-500/20 to-cyan-500/20 blob-profile z-0 pointer-events-none"></div>
                         <img id="hero-img" loading="lazy" src="https://placehold.co/600x600/171717/white?text=User" onerror="this.onerror=null; this.src='https://placehold.co/600x600/171717/white?text=User'" class="w-[calc(100%-20px)] h-[calc(100%-20px)] object-cover blob-profile border-2 border-emerald-500/30 z-20 relative shadow-2xl">
                     </div>
@@ -393,7 +414,7 @@
                         </h2>
                     </div>
                     <div class="flex gap-2">
-                        <button onclick="window.toggleAllExp(true)" class="hidden md:flex px-4 py-2.5 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl text-xs font-bold text-white transition-all hover-glow"><i class="fas fa-expand-alt mr-2"></i> Expand All</button>
+                        <button onclick="const isExp = this.innerText.includes('Expand'); window.toggleAllExp(isExp); this.innerHTML = isExp ? '<i class=\'fas fa-compress-alt mr-2\'></i> Collapse All' : '<i class=\'fas fa-expand-alt mr-2\'></i> Expand All';" class="hidden md:flex px-4 py-2.5 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl text-xs font-bold text-white transition-all hover-glow"><i class="fas fa-expand-alt mr-2"></i> Expand All</button>
                         <button onclick="window.openExpModal()" class="admin-element px-4 md:px-6 py-2.5 md:py-3 bg-emerald-600 hover:bg-emerald-500 rounded-xl text-xs md:text-sm font-bold transition-all shadow-lg flex items-center gap-2 hover-glow active:scale-95">
                             <i class="fas fa-plus"></i> <span class="hidden md:inline">Add Role</span>
                         </button>
@@ -442,6 +463,20 @@
                     </button>
                 </div>
                 <div id="grid-projects" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8"></div>
+            </main>
+
+            <main id="view-journal" class="view-section">
+                <div class="flex justify-between items-end mb-8 md:mb-12">
+                    <div>
+                        <button onclick="window.switchView('view-home')" class="text-gray-500 hover:text-white mb-4 flex items-center gap-2 hover-glow px-3 py-1 -ml-3 rounded-lg transition-colors"><i class="fas fa-arrow-left"></i> Back to Profile</button>
+                        <h2 class="text-3xl md:text-5xl font-bold text-white tracking-tight decode-text">Dev Journal</h2>
+                        <p class="text-sm text-gray-400 mt-2 max-w-xl">A technical log of my daily learnings, bug fixes, and system architectural changes.</p>
+                    </div>
+                    <button onclick="window.openJournalModal()" class="admin-element px-4 md:px-6 py-2.5 md:py-3 bg-emerald-600 hover:bg-emerald-500 rounded-xl text-xs md:text-sm font-bold transition-all shadow-lg flex items-center gap-2 hover-glow active:scale-95">
+                        <i class="fas fa-pen"></i> <span class="hidden md:inline">New Entry</span>
+                    </button>
+                </div>
+                <div id="journal-list" class="max-w-4xl mx-auto space-y-6 pb-10"></div>
             </main>
 
         </div>
@@ -587,7 +622,7 @@ Data Viz: Tableau, PowerBI"></textarea>
                             <a id="det-link" target="_blank" onclick="window.trackEvent('external_link', {type: 'project'})" class="flex-1 md:flex-none justify-center px-6 md:px-8 py-3 bg-emerald-600 text-white rounded-xl font-bold hover-glow shadow-lg flex items-center gap-2 transition-all active:scale-95">
                                 Launch Project <i class="fas fa-external-link-alt text-sm"></i>
                             </a>
-                            <button id="det-share-btn" onclick="window.copyToClipboard(window.location.href, 'Direct link copied!')" class="cursor-pointer w-12 h-12 bg-white/5 text-gray-300 border border-white/10 rounded-xl hover:bg-white/10 hover:text-white flex items-center justify-center transition-all hover:-translate-y-1" title="Copy Link"><i class="fas fa-link pointer-events-none text-sm"></i></button>
+                            <button id="det-share-btn" onclick="window.copyToClipboard(window.location.origin + window.location.pathname + '?project=' + STATE.activeProject, 'Direct link copied!')" class="cursor-pointer w-12 h-12 bg-white/5 text-gray-300 border border-white/10 rounded-xl hover:bg-white/10 hover:text-white flex items-center justify-center transition-all hover:-translate-y-1" title="Copy Link"><i class="fas fa-link pointer-events-none text-sm"></i></button>
                         </div>
                     </div>
                 </div>
@@ -620,7 +655,7 @@ Data Viz: Tableau, PowerBI"></textarea>
     </div>
 
     <div id="modal-analytics" class="modal-overlay" onclick="if(event.target===this) window.closeModals()">
-        <div class="glass-modal w-full max-w-3xl h-[90vh] md:h-auto md:max-h-[85vh] md:rounded-[2rem] overflow-hidden flex flex-col relative shadow-2xl border-0 md:border border-white/10">
+        <div class="glass-modal w-full max-w-3xl h-[90vh] md:h-auto md:max-h-[85vh] md:rounded-[2rem] overflow-hidden flex flex-col relative shadow-2xl border-0 md:border border-white/5" style="background: #000000 !important; box-shadow: inset 0 0 50px rgba(255,255,255,0.02);">
             <button onclick="window.closeModals()" class="mobile-close-btn absolute top-4 md:top-6 right-4 md:right-6 z-50 w-10 h-10 rounded-full bg-black/80 text-white flex items-center justify-center hover:bg-red-500 transition-colors shadow-lg">
                 <i class="fas fa-times"></i>
             </button>
@@ -879,6 +914,9 @@ Data Viz: Tableau, PowerBI"></textarea>
                     <div>
                         <div class="flex justify-between items-center mb-2">
                             <label class="text-xs text-gray-500 uppercase font-bold">Role Description</label>
+                            <div class="flex items-center gap-3">
+                                <button type="button" onmousedown="event.preventDefault();" onclick="window.restoreDraftEditor('exp-desc', 'exp_draft')" class="text-gray-500 text-xs font-bold hover:text-white transition-colors"><i class="fas fa-undo mr-1"></i> Restore</button>
+                            </div>
                         </div>
                         <div class="border border-white/10 rounded-xl overflow-hidden bg-black/50 focus-within:border-emerald-500 transition-colors">
                             <div class="p-2 border-b border-white/10 flex flex-wrap gap-2 bg-white/5 overflow-x-auto hide-scroll items-center">
@@ -1007,6 +1045,39 @@ Data Viz: Tableau, PowerBI"></textarea>
         </div>
     </div>
 
+    <div id="modal-journal" class="modal-overlay" onclick="if(event.target===this) window.closeModals()">
+        <div class="glass-modal w-full max-w-2xl h-[90vh] md:h-auto md:max-h-[85vh] md:rounded-[2rem] overflow-hidden flex flex-col relative shadow-2xl border-0 md:border border-white/10">
+            <button onclick="window.closeModals()" class="mobile-close-btn absolute top-4 right-4 z-50 w-10 h-10 rounded-full bg-black/80 text-white flex items-center justify-center hover:bg-red-500 transition-colors"><i class="fas fa-times"></i></button>
+            <div class="overflow-y-auto hide-scroll flex-1 p-6 md:p-8 pb-24 md:pb-12">
+                <h3 class="text-xl md:text-2xl font-bold text-white mb-6"><i class="fas fa-book text-emerald-500 mr-2"></i> Journal Entry</h3>
+                <div class="space-y-5">
+                    <input type="hidden" id="jr-id">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="text-xs text-gray-500 uppercase font-bold mb-2 block">Date or Range</label>
+                            <input type="text" id="jr-date" placeholder="e.g. Jun 1 - Jun 7 or 12/09/26" class="w-full bg-black/50 border border-white/10 rounded-lg px-4 py-3 text-sm text-white focus:border-emerald-500 outline-none transition-colors" required>
+                        </div>
+                        <div>
+                            <label class="text-xs text-gray-500 uppercase font-bold mb-2 block">Entry Type</label>
+                            <input type="text" id="jr-type" list="jr-type-list" placeholder="e.g. 💡 New Learning" class="w-full bg-black/50 border border-white/10 rounded-lg px-4 py-3 text-sm text-white focus:border-emerald-500 outline-none transition-colors">
+                            <datalist id="jr-type-list">
+                                <option value="💡 New Learning"></option>
+                                <option value="🚀 Feature Build"></option>
+                                <option value="🐛 Bug Fix"></option>
+                            </datalist>
+                        </div>
+                    </div>
+                    <div><label class="text-xs text-gray-500 uppercase font-bold mb-2 block">Subject / Skill</label><input type="text" id="jr-subject" class="w-full bg-black/50 border border-white/10 rounded-lg px-4 py-3 text-sm text-white focus:border-emerald-500 outline-none transition-colors" placeholder="e.g. React.js, Supabase, System Architecture"></div>
+                    <div>
+                        <label class="text-xs text-gray-500 uppercase font-bold mb-2 block">Log Notes</label>
+                        <textarea id="jr-notes" rows="6" class="w-full bg-black/50 border border-white/10 rounded-lg px-4 py-3 text-sm text-white focus:border-emerald-500 outline-none transition-colors" placeholder="What did you achieve today?"></textarea>
+                    </div>
+                    <button onclick="window.saveJournal()" id="save-jr-btn" class="w-full py-4 bg-emerald-600 hover:bg-emerald-500 rounded-xl font-bold text-white hover-glow shadow-lg mt-4 transition-all active:scale-95">Save Log Entry</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div id="modal-confirm-delete" class="modal-overlay" onclick="if(event.target===this) window.closeModals()">
         <div class="glass-modal p-8 rounded-3xl w-full max-w-sm mx-4 text-center border border-red-900/50 shadow-2xl relative">
             <button onclick="window.closeModals()" class="absolute top-4 right-4 z-50 w-8 h-8 rounded-full bg-white/5 text-gray-400 flex items-center justify-center hover:text-white hover:bg-white/10 transition-all mobile-close-btn"><i class="fas fa-times"></i></button>
@@ -1089,6 +1160,7 @@ Data Viz: Tableau, PowerBI"></textarea>
             projects: [],
             experience: [],
             skills: [],
+            journal: [],
             activeCat: null,
             activeTag: null,
             activeMultiTags: null,
@@ -1123,7 +1195,7 @@ Data Viz: Tableau, PowerBI"></textarea>
                 attribs.forEach(attr => { 
                     if (attr.name.toLowerCase().startsWith('on')) { el.removeAttribute(attr.name); } 
                     if (attr.name.toLowerCase() === 'href' || attr.name.toLowerCase() === 'src') {
-                        if (attr.value.toLowerCase().startsWith('javascript:') || attr.value.toLowerCase().startsWith('data:')) { el.removeAttribute(attr.name); }
+                        if (attr.value.toLowerCase().startsWith('javascript:') || (attr.value.toLowerCase().startsWith('data:') && !attr.value.toLowerCase().startsWith('data:image'))) { el.removeAttribute(attr.name); }
                     }
                 });
             }
@@ -1148,7 +1220,8 @@ Data Viz: Tableau, PowerBI"></textarea>
                 if(adminIdleTime > 900) {
                     STATE.isAdmin = false;
                     document.body.classList.remove('admin-active');
-                    window.showToast("Admin session timed out for security.");
+                    window.closeModals(); // Close any open modals to prevent silent data loss
+                    window.showToast("Admin session timed out. Please log in again.", true);
                     window.renderAll();
                 }
             }
@@ -1426,6 +1499,12 @@ Data Viz: Tableau, PowerBI"></textarea>
             if(iframe) iframe.src = ''; 
             
             document.title = STATE.profile?.title ? `${STATE.profile.title} | Portfolio` : "Live Portfolio";
+            
+            // Clear deep link parameter so page refresh doesn't pop old modals
+            if(window.location.search.includes('project=')) {
+                const newUrl = window.location.protocol + "//" + window.location.host + window.location.pathname + window.location.hash;
+                window.history.replaceState({ path: newUrl }, '', newUrl);
+            }
         };
 
         window.openModal = async (id) => {
@@ -1706,7 +1785,7 @@ Data Viz: Tableau, PowerBI"></textarea>
             const container = document.getElementById('lightbox-media-container');
             if(container && !document.getElementById('lightbox').classList.contains('hidden')) {
                 const mediaUrl = STATE.currentSlideshow[STATE.slideIdx];
-                const isVideo = mediaUrl.match(/\.(mp4|webm|ogg)$/i) || mediaUrl.startsWith('data:video');
+                const isVideo = mediaUrl.match(/\.(mp4|webm|ogg)(\?.*)?$/i) || mediaUrl.startsWith('data:video');
                 if(isVideo) {
                     container.innerHTML = `<video src="${mediaUrl}" controls autoplay playsinline class="max-w-[90vw] max-h-[90vh] object-contain rounded-xl"></video>`;
                 } else {
@@ -1716,8 +1795,8 @@ Data Viz: Tableau, PowerBI"></textarea>
         };
 
         window.nextSlideMedia = (e) => {
-            if(e) e.stopPropagation();
-            if(STATE.currentSlideshow.length > 1) {
+            if(e && typeof e.stopPropagation === 'function') e.stopPropagation();
+            if(STATE.currentSlideshow && STATE.currentSlideshow.length > 1) {
                 STATE.slideIdx = (STATE.slideIdx + 1) % STATE.currentSlideshow.length;
                 window.renderSlideFrame();
                 window.updateLightboxMedia();
@@ -1725,8 +1804,8 @@ Data Viz: Tableau, PowerBI"></textarea>
         };
 
         window.prevSlideMedia = (e) => {
-            if(e) e.stopPropagation();
-            if(STATE.currentSlideshow.length > 1) {
+            if(e && typeof e.stopPropagation === 'function') e.stopPropagation();
+            if(STATE.currentSlideshow && STATE.currentSlideshow.length > 1) {
                 STATE.slideIdx = (STATE.slideIdx - 1 + STATE.currentSlideshow.length) % STATE.currentSlideshow.length;
                 window.renderSlideFrame();
                 window.updateLightboxMedia();
@@ -1770,9 +1849,10 @@ Data Viz: Tableau, PowerBI"></textarea>
                 document.getElementById('app-loader').style.opacity = '0'; 
                 setTimeout(() => document.getElementById('app-loader').remove(), 700);
                 
-                // Pull dynamic links
+                // Pull dynamic links and sanitize URL schemes
                 const failEmail = localStorage.getItem('cfg_fail_email') || "your.email@example.com";
-                const failResume = localStorage.getItem('cfg_fail_resume') || "#";
+                let failResume = localStorage.getItem('cfg_fail_resume') || "#";
+                if(failResume !== '#' && !failResume.startsWith('http')) { failResume = 'https://' + failResume; }
 
                 const wrapper = document.getElementById('app-wrapper');
                 wrapper.classList.remove('opacity-0');
@@ -1784,8 +1864,8 @@ Data Viz: Tableau, PowerBI"></textarea>
                             <p class="text-gray-400 text-sm mb-8 leading-relaxed">It looks like a strict corporate network or ad-blocker is preventing the live database from connecting. Don't worry, you can still reach me directly.</p>
                             
                             <div class="flex flex-col gap-4">
-                                <a href="mailto:${failEmail}" class="w-full py-4 bg-emerald-600 hover:bg-emerald-500 rounded-xl font-bold text-white hover-glow shadow-lg transition-all flex items-center justify-center gap-3"><i class="fas fa-envelope"></i> Email Me Directly</a>
-                                <a href="${failResume}" target="_blank" class="w-full py-4 bg-white/5 border border-white/10 hover:bg-white/10 rounded-xl font-bold text-white transition-all flex items-center justify-center gap-3"><i class="fas fa-file-pdf text-emerald-500"></i> View Static Resume</a>
+                                <a href="mailto:${failEmail}" class="w-full py-4 bg-emerald-600 hover:bg-emerald-500 rounded-xl font-bold text-white hover-glow shadow-lg transition-all flex items-center justify-center gap-3 relative z-50 cursor-pointer pointer-events-auto"><i class="fas fa-envelope"></i> Email Me Directly</a>
+                                <a href="${failResume}" target="_blank" rel="noopener noreferrer" class="w-full py-4 bg-white/5 border border-white/10 hover:bg-white/10 rounded-xl font-bold text-white transition-all flex items-center justify-center gap-3 relative z-50 cursor-pointer pointer-events-auto"><i class="fas fa-file-pdf text-emerald-500"></i> View Static Resume</a>
                             </div>
                         </div>
                     </div>
@@ -1797,9 +1877,11 @@ Data Viz: Tableau, PowerBI"></textarea>
             if (!data) data = [];
             const pObj = data.find(i => i.id === 'profile_main'); const cObj = data.find(i => i.id === 'categories_list'); const prObj = data.find(i => i.id === 'projects_list');
             const stObj = data.find(i => i.id === 'analytics_main'); const expObj = data.find(i => i.id === 'experience_list'); const sysObj = data.find(i => i.id === 'system_config'); const skObj = data.find(i => i.id === 'skills_list');
+            const jrObj = data.find(i => i.id === 'journal_list');
 
             STATE.profile = pObj ? pObj.content : { logo: 'Mark', prefix: "Available for work", title: 'Mark Gray', role: 'Data Analyst', bio: 'Welcome to my digital workspace.', btnMain: 'Download CV', accentColor: '#10b981', accentColorRgb: '16, 185, 129', accentColorDark: '#059669' };
             STATE.categories = cObj ? cObj.content : []; STATE.projects = prObj ? prObj.content : []; STATE.experience = expObj ? expObj.content : []; STATE.skills = skObj ? skObj.content : [];
+            STATE.journal = jrObj ? jrObj.content : [];
             if (sysObj && sysObj.content) { STATE.sysConfig = sysObj.content; }
             STATE.analytics = (stObj && stObj.content) ? stObj.content : (JSON.parse(localStorage.getItem('portfolio_analytics_local')) || { views: 0, cvDownloads: 0, contacts: 0, projectClicks: {} });
             if (!STATE.analytics.projectClicks) STATE.analytics.projectClicks = {};
@@ -1905,10 +1987,17 @@ Data Viz: Tableau, PowerBI"></textarea>
             const btn = document.getElementById('export-sys-btn'); if(btn) { btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generating...'; }
             try {
                 let htmlStr = document.documentElement.outerHTML;
-                htmlStr = htmlStr.replace(/const SOURCE_URL = ".*"; \/\/ __URL_ANCHOR__/, `const SOURCE_URL = "${newUrl}"; // __URL_ANCHOR__`);
-                htmlStr = htmlStr.replace(/const SOURCE_KEY = ".*"; \/\/ __KEY_ANCHOR__/, `const SOURCE_KEY = "${newKey}"; // __KEY_ANCHOR__`);
-                
-                const blob = new Blob(['<!DOCTYPE html>\n' + htmlStr], { type: 'text/html' }); const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'portfolio_whitelabel.html';
+                htmlStr = htmlStr.replace(/const SOURCE_URL = .*; \/\/ __URL_ANCHOR__/, `const SOURCE_URL = "${newUrl}"; // __URL_ANCHOR__`);
+                htmlStr = htmlStr.replace(/const SOURCE_KEY = .*; \/\/ __KEY_ANCHOR__/, `const SOURCE_KEY = "${newKey}"; // __KEY_ANCHOR__`);
+
+                // Fix the blind spot: hardcode the failsafe links into the exported file
+                const failEmail = getVal('conf-fail-email') || "your.email@example.com";
+                const failResume = getVal('conf-fail-resume') || "#";
+                htmlStr = htmlStr.replace(/localStorage\.getItem\('cfg_fail_email'\) \|\| ".*?"/, `"${failEmail}"`);
+                htmlStr = htmlStr.replace(/localStorage\.getItem\('cfg_fail_resume'\) \|\| ".*?"/, `"${failResume}"`);
+
+                const blob = new Blob(['<!DOCTYPE html>\n' + htmlStr], { type: 'text/html' }); 
+                const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'portfolio_whitelabel.html';
                 document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(a.href);
                 window.showToast("White-Label Site Exported!"); window.haptic();
             } catch(e) { window.showToast("Export failed.", true); } 
@@ -1917,7 +2006,7 @@ Data Viz: Tableau, PowerBI"></textarea>
 
         window.renderAll = () => {
             document.title = STATE.profile?.title ? `${STATE.profile.title} | Portfolio` : "Live Portfolio"; window.updateSEOTags();
-            window.renderHero(); window.renderExperience(); window.renderCategories(); window.renderSkills();
+            window.renderHero(); window.renderExperience(); window.renderCategories(); window.renderSkills(); window.renderJournal();
             if(STATE.activeCat || STATE.activeTag || (STATE.activeMultiTags && STATE.activeMultiTags.length)) window.renderProjects();
         };
 
@@ -1989,7 +2078,7 @@ Data Viz: Tableau, PowerBI"></textarea>
             
             const typeColors = { 'Full-Time': 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20', 'Contract': 'bg-amber-500/10 text-amber-400 border-amber-500/20', 'Freelance': 'bg-purple-500/10 text-purple-400 border-purple-500/20', 'Internship': 'bg-blue-500/10 text-blue-400 border-blue-500/20' };
             const typeClass = typeColors[e.type] || 'bg-gray-500/10 text-gray-400 border-gray-500/20';
-            const locHTML = e.location ? `<a href="https://maps.google.com/?q=${encodeURIComponent(e.location)}" target="_blank" onclick="event.stopPropagation();" class="flex items-center gap-1.5 hover:text-white transition-colors"><span class="w-1 h-1 rounded-full bg-gray-500"></span> <i class="fas fa-map-marker-alt text-gray-500"></i> ${window.safeText(e.location)}</a>` : '';
+            const locHTML = e.location ? `<a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(e.location)}" target="_blank" onclick="event.stopPropagation();" class="flex items-center gap-1.5 hover:text-white transition-colors"><span class="w-1 h-1 rounded-full bg-gray-500"></span> <i class="fas fa-map-marker-alt text-gray-500"></i> ${window.safeText(e.location)}</a>` : '';
 
             return `
             <div class="glass-card p-6 md:p-8 rounded-3xl relative overflow-visible group cursor-pointer hover:border-emerald-500/30 transition-colors animate-stagger hover-lift" style="animation-delay: ${idx * 0.1}s" onclick="window.toggleExpDesc('${e.id}')">
@@ -2017,7 +2106,7 @@ Data Viz: Tableau, PowerBI"></textarea>
                             ${e.type ? `<span class="flex items-center gap-1.5"><span class="w-1 h-1 rounded-full bg-gray-500"></span> <span class="px-2 py-0.5 rounded-md border ${typeClass} text-[10px] font-bold uppercase tracking-wider">${window.safeText(e.type)}</span></span>` : ''}
                             ${locHTML}
                         </div>
-                        ${e.tags ? `<div class="flex flex-wrap gap-1 mb-2">${e.tags.split(',').map(t => `<span onclick="window.filterExpByTag('${t.trim()}', event)" class="text-[9px] px-2 py-0.5 bg-white/5 border border-white/10 hover:bg-emerald-500/20 text-emerald-500 rounded uppercase tracking-wider font-bold transition-colors">${window.safeText(t.trim())}</span>`).join('')}</div>` : ''}
+                        ${e.tags ? `<div class="flex flex-wrap gap-1 mb-2">${e.tags.split(',').map(t => `<span onclick="window.filterExpByTag('${t.trim().replace(/'/g, "\\'")}', event)" class="text-[9px] px-2 py-0.5 bg-white/5 border border-white/10 hover:bg-emerald-500/20 text-emerald-500 rounded uppercase tracking-wider font-bold transition-colors">${window.safeText(t.trim())}</span>`).join('')}</div>` : ''}
                     </div>
                 </div>
                 ${e.desc ? `
@@ -2090,7 +2179,7 @@ Data Viz: Tableau, PowerBI"></textarea>
                 
                 return `
                 <div class="glass-card p-5 md:p-6 rounded-3xl hover-lift cursor-pointer group relative overflow-hidden flex flex-col animate-stagger border border-white/5 hover:border-emerald-500/30 transition-all duration-500" style="animation-delay: ${idx * 0.1}s" onclick="window.openSkillView('${s.id}')">
-                    <div class="absolute -right-10 -top-10 w-32 h-32 bg-emerald-500/10 rounded-full blur-2xl group-hover:bg-emerald-500/20 transition-all duration-500 pointer-events-none"></div>
+                    <div class="absolute -right-10 -top-10 w-32 h-32 rounded-full blur-2xl transition-all duration-500 pointer-events-none group-hover:scale-125" style="background-color: rgba(var(--primary-emerald-rgb), 0.15);"></div>
                     <div class="flex items-center gap-4 mb-5 z-10">
                         <div class="relative w-12 h-12 md:w-14 md:h-14 shrink-0 group-hover:scale-105 transition-transform duration-300">
                             ${s.img ? `<img src="${s.img}" class="w-full h-full rounded-xl object-cover shadow-lg border border-white/10 bg-black">` : `<div class="w-full h-full rounded-xl bg-gradient-to-br from-gray-900 to-black border border-white/10 flex items-center justify-center text-xl text-emerald-500 shadow-lg"><i class="fas fa-folder"></i></div>`}
@@ -2103,10 +2192,10 @@ Data Viz: Tableau, PowerBI"></textarea>
                     <div class="mt-auto z-10 w-full bg-black/30 p-3 rounded-xl border border-white/5">
                         <div class="flex justify-between items-center mb-2">
                             <span class="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Skill Integrations</span>
-                            <span class="text-[10px] font-black text-emerald-500 bg-emerald-500/10 px-2 py-0.5 rounded-md">${s.usageCount} Used</span>
+                            <span class="text-[10px] font-black text-emerald-500 px-2 py-0.5 rounded-md" style="background-color: rgba(var(--primary-emerald-rgb), 0.15);">${s.usageCount} Used</span>
                         </div>
                         <div class="w-full h-1.5 bg-black/60 rounded-full overflow-hidden border border-white/5">
-                            <div class="h-full bg-gradient-to-r from-emerald-600 to-emerald-400 rounded-full group-hover:animate-pulse shadow-[0_0_10px_rgba(16,185,129,0.5)]" style="width: ${usagePercent}%"></div>
+                            <div class="h-full bg-emerald-500 rounded-full group-hover:animate-pulse" style="width: ${usagePercent}%; box-shadow: 0 0 10px rgba(var(--primary-emerald-rgb), 0.5);"></div>
                         </div>
                     </div>
                     <div class="admin-element absolute top-3 right-3 z-30 flex flex-col gap-2 pointer-events-auto">
@@ -2292,7 +2381,7 @@ Data Viz: Tableau, PowerBI"></textarea>
                     ${isFeat ? '<div class="absolute inset-0 bg-gradient-to-b from-amber-500/5 to-transparent rounded-[2rem] pointer-events-none z-0"></div>' : ''}
                     <div class="banner-wrapper relative overflow-hidden bg-black z-10 ${featBannerClass}">
                         ${isFeat ? '<div class="absolute top-4 left-4 bg-gradient-to-r from-amber-500 to-amber-600 text-black px-4 py-2 rounded-xl text-[10px] md:text-xs font-black tracking-widest uppercase shadow-[0_0_20px_rgba(245,158,11,0.6)] z-20 flex items-center gap-2"><i class="fas fa-star"></i> Featured Showcase</div>' : ''}
-                        <img loading="lazy" src="${banner}" onerror="this.onerror=null; this.src='https://placehold.co/600x400/171717/white?text=Project'" class="w-full h-full object-cover opacity-60 group-hover:opacity-100 transition-all duration-700 catalog-slide" data-idx="0" data-pid="${p.id}">
+                        <img loading="lazy" src="${banner}" onerror="this.onerror=null; this.src='https://placehold.co/600x400/171717/white?text=Project'; this.onerror=function(){this.style.display='none'};" class="w-full h-full object-cover opacity-60 group-hover:opacity-100 transition-all duration-700 catalog-slide" data-idx="0" data-pid="${p.id}">
                         <div class="absolute bottom-3 right-3 bg-black/70 backdrop-blur px-2 py-1 rounded-md text-[10px] ${isFeat ? 'text-amber-100 border-amber-500/30' : 'text-gray-300 border-white/10'} font-bold border z-20"><i class="fas fa-eye ${isFeat ? 'text-amber-400' : 'text-emerald-400'} mr-1"></i> ${views}</div>
                         ${p.isDraft ? '<div class="absolute top-4 right-14 bg-red-500/80 backdrop-blur px-2 py-1 rounded-md text-[10px] text-white font-bold border border-red-400 z-20"><i class="fas fa-eye-slash mr-1"></i> DRAFT</div>' : ''}
                         
@@ -2335,7 +2424,7 @@ Data Viz: Tableau, PowerBI"></textarea>
 
             const titleEl = document.getElementById('det-title'); if(titleEl) window.decodeTextEffect(titleEl, p.name);
             const iconEl = document.getElementById('det-icon'); if(iconEl) iconEl.src = p.icon;
-            const descEl = document.getElementById('det-desc'); if(descEl) descEl.innerHTML = p.desc || 'No description provided.';
+            const descEl = document.getElementById('det-desc'); if(descEl) descEl.innerHTML = window.sanitizeRichHTML(p.desc || 'No description provided.');
             const viewEl = document.getElementById('det-views'); if(viewEl) viewEl.textContent = STATE.analytics?.projectClicks?.[id] || 0;
             
             const tagsEl = document.getElementById('det-tags');
@@ -2345,7 +2434,7 @@ Data Viz: Tableau, PowerBI"></textarea>
                     const limit = 4;
                     window.renderProjectTags = (expanded) => {
                         const visibleTags = expanded ? tagArr : tagArr.slice(0, limit);
-                        let html = visibleTags.map(tag => `<span onclick="window.filterByTag('${window.safeText(tag)}', event); window.closeModals();" class="cursor-pointer hover:bg-emerald-500/30 bg-white/10 border border-white/10 text-emerald-400 px-3 py-1 text-[10px] font-bold rounded-lg uppercase tracking-wider transition-colors">${window.safeText(tag)}</span>`).join('');
+                        let html = visibleTags.map(tag => `<span onclick="window.filterByTag('${window.safeText(tag).replace(/'/g, "\\'")}', event); window.closeModals();" class="cursor-pointer hover:bg-emerald-500/30 bg-white/10 border border-white/10 text-emerald-400 px-3 py-1 text-[10px] font-bold rounded-lg uppercase tracking-wider transition-colors">${window.safeText(tag)}</span>`).join('');
                         if (tagArr.length > limit) {
                             if (expanded) { html += `<span onclick="window.renderProjectTags(false)" class="cursor-pointer hover:bg-red-500/30 bg-red-500/10 border border-red-500/20 text-red-400 px-3 py-1 text-[10px] font-bold rounded-lg uppercase tracking-wider transition-colors">Show Less <i class="fas fa-chevron-up ml-1"></i></span>`; } 
                             else { html += `<span onclick="window.renderProjectTags(true)" class="cursor-pointer hover:bg-emerald-500/30 bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 px-3 py-1 text-[10px] font-bold rounded-lg uppercase tracking-wider transition-colors">+${tagArr.length - limit} More <i class="fas fa-chevron-down ml-1"></i></span>`; }
@@ -2406,20 +2495,24 @@ Data Viz: Tableau, PowerBI"></textarea>
             STATE.slideIdx = STATE.slideIdx % Math.max(1, STATE.currentSlideshow.length); 
             
             const mediaUrl = STATE.currentSlideshow[STATE.slideIdx];
-            const isVideo = mediaUrl.match(/\.(mp4|webm|ogg)$/i) || mediaUrl.startsWith('data:video');
+            const isVideo = mediaUrl.match(/\.(mp4|webm|ogg)(\?.*)?$/i) || mediaUrl.startsWith('data:video');
             const isGif = mediaUrl.match(/\.(gif)$/i) || mediaUrl.startsWith('data:image/gif');
             
             container.style.opacity = '0';
             
             setTimeout(() => {
                 if(isVideo) {
-                    container.innerHTML = `<video src="${mediaUrl}" autoplay muted playsinline class="w-full h-full object-cover" onclick="window.openLightbox()" onended="window.nextSlideMedia(true)" oncanplay="this.parentElement.style.opacity='1';"></video>`;
+                    container.innerHTML = `<video src="${mediaUrl}" autoplay muted playsinline class="w-full h-full object-cover" onclick="window.openLightbox()" onended="window.nextSlideMedia(true)" onloadeddata="this.parentElement.style.opacity='1';"></video>`;
                 } else {
                     container.innerHTML = `<img src="${mediaUrl}" class="w-full h-full object-cover" onclick="window.openLightbox()" onload="this.parentElement.style.opacity='1';" onerror="this.onerror=null; this.src='https://placehold.co/800x450/0f1115/4b5563?text=Load+Error'; window.updateDots();">`;
                     
                     let delay = isGif ? 8000 : 5000;
                     if (STATE.currentSlideshow.length > 1) {
-                        window.slideTimerObj = setTimeout(() => { window.nextSlideMedia(true); }, delay);
+                        window.slideTimerObj = setTimeout(() => { 
+                            if(document.getElementById('lightbox').classList.contains('hidden')) {
+                                window.nextSlideMedia(true); 
+                            }
+                        }, delay);
                     }
                 }
                 window.updateDots();
@@ -2488,7 +2581,7 @@ Data Viz: Tableau, PowerBI"></textarea>
                 if (idInput) { const idx = tempSkills.findIndex(x => x.id === idInput); if(idx > -1) { tempSkills[idx].name = name; tempSkills[idx].items = items; tempSkills[idx].order = orderInput; tempSkills[idx].img = imgData; } } else { tempSkills.push({ id: 'sk_' + Date.now(), name, items, img: imgData, order: orderInput }); }
 
                 if (window.getByteSize(JSON.stringify(tempSkills)) > 1500000) { window.showToast("Payload too large.", true); } 
-                else { STATE.skills = tempSkills; if(await window.syncRemote('skills_list', STATE.skills)) { window.showToast("Skill Folder Saved"); window.closeModals(); window.renderSkills(); } }
+                else { if(await window.syncRemote('skills_list', tempSkills)) { STATE.skills = tempSkills; window.showToast("Skill Folder Saved"); window.closeModals(); window.renderSkills(); } else { window.showToast("Save failed. Storage limit reached.", true); } }
             } catch (err) { window.showToast("Failed to save: " + err.message, true); } 
             finally { if(btn) { btn.disabled = false; btn.innerHTML = 'Save Skill Folder'; } }
         };
@@ -2520,7 +2613,7 @@ Data Viz: Tableau, PowerBI"></textarea>
 
                 const payload = {
                     logo: getVal('edit-logo'), prefix: getVal('edit-prefix'), title: nameEl.value.trim(), bio: getVal('edit-bio'),
-                    btnMain: getVal('edit-btn-main'), cvLink: getVal('edit-cv-link'),
+                    btnMain: getVal('edit-btn-main'), cvLink: sanitizeUrl(getVal('edit-cv-link')),
                     accentColor: getVal('edit-accent') || '#10b981', accentColorRgb: getVal('edit-accent-rgb') || '16, 185, 129', accentColorDark: getVal('edit-accent-dark') || '#059669',
                     contact: { whatsapp: getVal('edit-whatsapp'), phone: getVal('edit-phone'), email: getVal('edit-email') },
                     socials: { github: sanitizeUrl(getVal('edit-github')), linkedin: sanitizeUrl(getVal('edit-linkedin')), twitter: sanitizeUrl(getVal('edit-twitter')), instagram: sanitizeUrl(getVal('edit-instagram')) },
@@ -2528,10 +2621,12 @@ Data Viz: Tableau, PowerBI"></textarea>
                 };
                 
                 if (window.getByteSize(JSON.stringify(payload)) > 1000000) { return window.showToast("Images or CV too large. Try compressing or using a link.", true); }
-                STATE.profile = payload;
-                if(await window.syncRemote('profile_main', STATE.profile)) {
+                if(await window.syncRemote('profile_main', payload)) {
+                    STATE.profile = payload;
                     window.applyAccentStyle(STATE.profile.accentColor, STATE.profile.accentColorRgb, STATE.profile.accentColorDark);
                     window.showToast("Profile Settings Saved"); window.closeModals(); window.renderHero();
+                } else {
+                    window.showToast("Save failed. Storage limit reached.", true);
                 }
             } catch(e) { window.showToast("Failed to save: " + e.message, true); } 
             finally { if(btn) { btn.disabled = false; btn.innerHTML = 'Save Identity Profile'; } }
@@ -2585,7 +2680,7 @@ Data Viz: Tableau, PowerBI"></textarea>
                 if(idInput) { const idx = temp.findIndex(x => x.id === idInput); if(idx>-1) temp[idx] = obj; } else { temp.push(obj); }
                 
                 if (window.getByteSize(JSON.stringify(temp)) > 1500000) { window.showToast("Payload too large", true); }
-                else { STATE.experience = temp; if(await window.syncRemote('experience_list', STATE.experience)) { window.showToast("Experience Saved"); window.closeModals(); sessionStorage.removeItem('exp_draft'); window.renderExperience(); window.renderSkills(); } }
+                else { if(await window.syncRemote('experience_list', temp)) { STATE.experience = temp; window.showToast("Experience Saved"); window.closeModals(); sessionStorage.removeItem('exp_draft'); window.renderExperience(); window.renderSkills(); } else { window.showToast("Save failed. Storage limit reached.", true); } }
             } catch(e) { window.showToast("Failed to save", true); }
             finally { if(btn) { btn.disabled = false; btn.innerHTML = 'Save Experience'; } }
         };
@@ -2622,7 +2717,7 @@ Data Viz: Tableau, PowerBI"></textarea>
                 if(idInput) { const idx = temp.findIndex(x => x.id === idInput); if(idx>-1) temp[idx] = obj; } else { temp.push(obj); }
                 
                 if (window.getByteSize(JSON.stringify(temp)) > 1000000) { window.showToast("Payload too large", true); }
-                else { STATE.categories = temp; if(await window.syncRemote('categories_list', STATE.categories)) { window.showToast("Workspace Saved"); window.closeModals(); window.renderCategories(); } }
+                else { if(await window.syncRemote('categories_list', temp)) { STATE.categories = temp; window.showToast("Workspace Saved"); window.closeModals(); window.renderCategories(); } else { window.showToast("Save failed. Storage limit reached.", true); } }
             } catch(e) { window.showToast("Failed to save", true); }
             finally { if(btn) { btn.disabled = false; btn.innerHTML = 'Save Workspace'; } }
         };
@@ -2674,6 +2769,12 @@ Data Viz: Tableau, PowerBI"></textarea>
             const titleEl = document.getElementById('proj-name');
             if(!titleEl || !titleEl.value.trim()) { if(titleEl) { titleEl.classList.add('error-shake'); setTimeout(() => titleEl.classList.remove('error-shake'), 400); } return window.showToast("Project Title required", true); }
             const getVal = (id) => { const el = document.getElementById(id); return el ? el.value.trim() : ''; };
+            const catVal = getVal('proj-category-select');
+            if(!catVal) {
+                const catSelect = document.getElementById('proj-category-select');
+                if(catSelect) { catSelect.classList.add('error-shake'); setTimeout(() => catSelect.classList.remove('error-shake'), 400); }
+                return window.showToast("Please create a Workspace Folder first.", true);
+            }
             
             const btn = document.getElementById('save-proj-btn'); if(btn) { btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...'; }
             
@@ -2724,12 +2825,14 @@ Data Viz: Tableau, PowerBI"></textarea>
 
                 if (window.getByteSize(JSON.stringify(tempProjs)) > 1500000) { window.showToast("Payload too large. Use URL links for heavy images.", true); } 
                 else { 
-                    STATE.projects = tempProjs; 
-                    if(await window.syncRemote('projects_list', STATE.projects)) { 
+                    if(await window.syncRemote('projects_list', tempProjs)) { 
+                        STATE.projects = tempProjs;
                         window.showToast("Project Saved!"); window.closeModals(); 
                         sessionStorage.removeItem('proj_draft');
                         window.renderProjects(); window.renderSkills(); 
-                    } 
+                    } else {
+                        window.showToast("Save failed. Storage limit reached.", true);
+                    }
                 }
             } catch(e) { window.showToast("Failed to save: " + e.message, true); } 
             finally { if(btn) { btn.disabled = false; btn.innerHTML = 'Save Project'; } }
@@ -2767,6 +2870,10 @@ Data Viz: Tableau, PowerBI"></textarea>
                     STATE.skills = STATE.skills.filter(s => s.id !== id);
                     await window.syncRemote('skills_list', STATE.skills);
                     window.renderSkills();
+                } else if (id.startsWith('jr_')) {
+                    STATE.journal = STATE.journal.filter(j => j.id !== id);
+                    await window.syncRemote('journal_list', STATE.journal);
+                    window.renderJournal();
                 }
                 window.showToast("Item deleted successfully.");
                 window.closeModals();
@@ -2775,6 +2882,125 @@ Data Viz: Tableau, PowerBI"></textarea>
             } finally {
                 if(btn) { btn.disabled = false; btn.innerHTML = 'Authorize Deletion'; }
             }
+        };
+
+        window.renderJournal = () => {
+            const listEl = document.getElementById('journal-list'); if(!listEl) return;
+
+            let sortedJr = [...STATE.journal].sort((a,b) => {
+                let dA = new Date(a.date.split('-')[0]); 
+                let dB = new Date(b.date.split('-')[0]);
+                return (isNaN(dB) ? 0 : dB) - (isNaN(dA) ? 0 : dA);
+            });
+
+            if(sortedJr.length === 0) {
+                listEl.innerHTML = `<div class="p-12 border-2 border-dashed border-white/10 rounded-3xl text-center"><i class="fas fa-book-open text-4xl text-gray-600 mb-4"></i><p class="text-gray-500">No journal logs recorded yet.</p></div>`; return;
+            }
+
+            // Luxury Auto-Formatter: Turns raw text into sleek IDE-style UI
+            const formatLuxuryText = (text) => {
+                if(!text) return '';
+                let formatted = window.safeText(text);
+                // Convert manual bullets into stylized arrows
+                formatted = formatted.replace(/•\s(.*?)(?=&lt;br&gt;|$)/g, '<span class="flex items-start gap-2 mt-2"><i class="fas fa-arrow-right text-emerald-500 mt-1 text-[10px] shrink-0"></i><span class="text-gray-300">$1</span></span>');
+                // Auto-highlight technical keywords (ALL CAPS words longer than 2 chars)
+                formatted = formatted.replace(/\b([A-Z_]{2,})\b/g, '<span class="text-emerald-400 font-mono text-[10px] md:text-xs tracking-wider bg-emerald-500/10 px-1.5 py-0.5 rounded border border-emerald-500/20">$1</span>');
+                return formatted;
+            };
+
+            // Construct the continuous vertical timeline 
+            listEl.innerHTML = `<div class="relative pl-6 md:pl-10 border-l-[1.5px] border-white/10 space-y-8">` + 
+            sortedJr.map((j, idx) => {
+                const colorMap = { '💡 New Learning': 'text-blue-400 bg-blue-400/10 shadow-[0_0_15px_rgba(96,165,250,0.15)] border-blue-400/20', '🚀 Feature Build': 'text-emerald-400 bg-emerald-400/10 shadow-[0_0_15px_rgba(16,185,129,0.15)] border-emerald-400/20', '🐛 Bug Fix': 'text-amber-400 bg-amber-400/10 shadow-[0_0_15px_rgba(251,191,36,0.15)] border-amber-400/20' };
+                const badgeStyle = colorMap[j.type] || 'text-white bg-white/10 shadow-[0_0_15px_rgba(255,255,255,0.1)] border-white/20';
+
+                return `
+                <div class="relative group animate-stagger" style="animation-delay: ${idx * 0.05}s">
+                    <div class="absolute -left-[32px] md:-left-[49px] top-6 w-4 h-4 rounded-full bg-[#050505] border-[3px] border-emerald-500 shadow-[0_0_15px_rgba(16,185,129,0.6)] group-hover:scale-125 transition-transform duration-300 z-10"></div>
+
+                    <div class="glass-card p-6 md:p-8 rounded-[2rem] border border-white/5 hover:border-emerald-500/30 transition-all duration-300 cursor-pointer hover-lift shadow-lg" onclick="window.toggleJournalDesc('${j.id}')">
+
+                        <div class="admin-element absolute top-4 right-4 z-30 flex gap-2 pointer-events-auto">
+                            <button onclick="event.stopPropagation(); window.editJournal('${j.id}')" class="w-8 h-8 rounded-full bg-white/10 text-gray-300 hover:bg-blue-500 hover:text-white transition-all shadow-md"><i class="fas fa-edit text-xs"></i></button>
+                            <button onclick="event.stopPropagation(); window.triggerDelete('${j.id}')" class="w-8 h-8 rounded-full bg-red-500/20 text-red-500 hover:bg-red-500 hover:text-white transition-all shadow-md"><i class="fas fa-trash text-xs"></i></button>
+                        </div>
+
+                        <div class="flex flex-wrap items-center gap-3 mb-5 pr-16">
+                            <span class="text-xs font-bold text-gray-400 bg-black/60 px-3 py-1.5 rounded-lg border border-white/5 font-mono shadow-inner"><i class="far fa-calendar-alt text-emerald-500 mr-1.5"></i> ${window.safeText(j.date)}</span>
+                            <span class="text-[10px] font-black uppercase px-3 py-1.5 rounded-lg border ${badgeStyle}">${window.safeText(j.type)}</span>
+                        </div>
+
+                        <h4 class="text-xl md:text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-white to-gray-400 group-hover:from-emerald-400 group-hover:to-cyan-400 transition-all duration-300 tracking-tight">${window.safeText(j.subject)}</h4>
+
+                        <div id="jr-desc-${j.id}" class="exp-accordion">
+                            <div class="exp-accordion-inner pt-5 mt-4 border-t border-white/5">
+                                <div class="p-5 rounded-2xl bg-[#0a0b0e] border border-white/5 font-mono text-sm leading-loose shadow-inner relative overflow-hidden">
+                                    <div class="absolute left-0 top-0 bottom-0 w-1 bg-emerald-500/20"></div>
+                                    ${formatLuxuryText(j.notes.replace(/\n/g, '<br>'))}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mt-5 text-gray-500 text-[10px] font-bold uppercase tracking-widest flex items-center gap-2 group-hover:text-emerald-400 transition-colors">
+                            <span class="bg-white/5 px-2 py-1 rounded shadow-sm border border-white/5">View Data</span> <i id="jr-arrow-${j.id}" class="fas fa-chevron-down transition-transform duration-300"></i>
+                        </div>
+                    </div>
+                </div>`;
+            }).join('') + `</div>`;
+        };
+
+        window.toggleJournalDesc = (id) => {
+            const content = document.getElementById('jr-desc-' + id); 
+            const icon = document.getElementById('jr-arrow-' + id); 
+            if(!content || !icon) return;
+            if(content.classList.contains('open')) { 
+                content.classList.remove('open'); 
+                icon.style.transform = 'rotate(0deg)'; 
+            } else { 
+                content.classList.add('open'); 
+                icon.style.transform = 'rotate(180deg)'; 
+            }
+        };
+
+        window.openJournalModal = () => {
+            document.getElementById('jr-id').value = '';
+            document.getElementById('jr-date').value = new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+            document.getElementById('jr-type').value = '💡 New Learning';
+            document.getElementById('jr-subject').value = '';
+            document.getElementById('jr-notes').value = '';
+            window.openModal('modal-journal');
+        };
+
+        window.editJournal = (id) => {
+            const j = STATE.journal.find(x => x.id === id); if(!j) return;
+            document.getElementById('jr-id').value = j.id;
+            document.getElementById('jr-date').value = j.date;
+            document.getElementById('jr-type').value = j.type;
+            document.getElementById('jr-subject').value = j.subject || '';
+            document.getElementById('jr-notes').value = j.notes || '';
+            window.openModal('modal-journal');
+        };
+
+        window.saveJournal = async () => {
+            if(!STATE.isAdmin) return;
+            const btn = document.getElementById('save-jr-btn'); btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+            try {
+                const id = document.getElementById('jr-id').value || 'jr_' + Date.now();
+                const obj = {
+                    id: id,
+                    date: document.getElementById('jr-date').value,
+                    type: document.getElementById('jr-type').value,
+                    subject: document.getElementById('jr-subject').value,
+                    notes: document.getElementById('jr-notes').value
+                };
+                let temp = JSON.parse(JSON.stringify(STATE.journal));
+                const idx = temp.findIndex(x => x.id === id);
+                if(idx > -1) temp[idx] = obj; else temp.push(obj);
+                
+                if(await window.syncRemote('journal_list', temp)) {
+                    STATE.journal = temp; window.showToast("Log Saved!"); window.closeModals(); window.renderJournal();
+                }
+            } catch(e) {} finally { btn.disabled = false; btn.innerHTML = 'Save Log Entry'; }
         };
 
         // Intercept Browser Back Button
