@@ -354,7 +354,7 @@
                         </div>
                     </div>
 
-                    <div class="w-48 h-48 md:w-80 md:h-80 relative shrink-0 mt-6 md:mt-0 flex items-center justify-center group cursor-pointer" data-tilt data-tilt-max="15" data-tilt-speed="400" data-tilt-glare="true" data-tilt-max-glare="0.2">
+                    <div class="w-48 h-48 md:w-80 md:h-80 relative shrink-0 mt-6 md:mt-0 flex items-center justify-center group cursor-pointer" data-tilt data-tilt-max="15" data-tilt-speed="400">
                         <div class="absolute inset-0 bg-gradient-to-tr from-emerald-500/20 to-cyan-500/20 blob-profile z-0 pointer-events-none"></div>
                         <img id="hero-img" loading="lazy" src="https://placehold.co/600x600/171717/white?text=User" onerror="this.onerror=null; this.src='https://placehold.co/600x600/171717/white?text=User'" class="w-[calc(100%-20px)] h-[calc(100%-20px)] object-cover blob-profile border-2 border-emerald-500/30 z-20 relative shadow-2xl">
                     </div>
@@ -3110,7 +3110,7 @@ Data Viz: Tableau, PowerBI"></textarea>
             // Actually initialise Vanilla Tilt on the hero image element
             const tiltEls = document.querySelectorAll('[data-tilt]');
             if(tiltEls.length && typeof VanillaTilt !== 'undefined') {
-                VanillaTilt.init(tiltEls, { max: 15, speed: 400, glare: true, 'max-glare': 0.2 });
+                VanillaTilt.init(tiltEls, { max: 15, speed: 400 });
             }
             window.fetchRemote();
         });
