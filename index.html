@@ -624,8 +624,11 @@ Data Viz: Tableau, PowerBI"></textarea>
                         </div>
 
                         <div class="flex flex-wrap gap-3 md:gap-4 items-center w-full">
-                            <a id="det-link" target="_blank" onclick="window.trackEvent('external_link', {type: 'project'})" class="flex-1 md:flex-none justify-center px-6 md:px-8 py-3 bg-emerald-600 text-white rounded-xl font-bold hover-glow shadow-lg flex items-center gap-2 transition-all active:scale-95">
-                                Launch Project <i class="fas fa-external-link-alt text-sm"></i>
+                            <a id="det-link" target="_blank" onclick="window.trackEvent('external_link', {type: 'project'})" class="flex-1 md:flex-none justify-center px-6 md:px-8 py-3 bg-emerald-600 text-white rounded-xl font-bold hover-glow shadow-lg hidden items-center gap-2 transition-all active:scale-95">
+                                Launch Project <i class="fas fa-rocket text-sm"></i>
+                            </a>
+                            <a id="det-link2" target="_blank" onclick="window.trackEvent('external_link', {type: 'project_secondary'})" class="flex-1 md:flex-none justify-center px-6 md:px-8 py-3 bg-white/10 text-white border border-white/10 rounded-xl font-bold hover-glow shadow-lg hidden items-center gap-2 transition-all active:scale-95">
+                                Source / Alt Link <i class="fas fa-external-link-alt text-sm"></i>
                             </a>
                             <button id="det-share-btn" onclick="window.copyToClipboard(window.location.origin + window.location.pathname + '?project=' + STATE.activeProject, 'Direct link copied!')" class="cursor-pointer w-12 h-12 bg-white/5 text-gray-300 border border-white/10 rounded-xl hover:bg-white/10 hover:text-white flex items-center justify-center transition-all hover:-translate-y-1" title="Copy Link"><i class="fas fa-link pointer-events-none text-sm"></i></button>
                         </div>
@@ -999,8 +1002,19 @@ Data Viz: Tableau, PowerBI"></textarea>
                     </div>
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div><label class="text-xs text-gray-500 uppercase font-bold mb-2 block">Live Link</label><input type="url" id="proj-link-in" class="w-full bg-black/50 border border-white/10 rounded-lg px-4 py-3 text-sm text-white focus:border-emerald-500 outline-none transition-colors" placeholder="https://..."></div>
-                        <div><label class="text-xs text-gray-500 uppercase font-bold mb-2 block">Skill Tags (Comma separated)</label><input type="text" id="proj-tags-in" onblur="window.applyAutoCaps(this)" class="w-full bg-black/50 border border-white/10 rounded-lg px-4 py-3 text-sm text-white focus:border-emerald-500 outline-none transition-colors" placeholder="React, Tailwind, Node.js"></div>
+                        <div><label class="text-xs text-gray-500 uppercase font-bold mb-2 block">Primary Link (Live Site)</label><input type="url" id="proj-link-in" class="w-full bg-black/50 border border-white/10 rounded-lg px-4 py-3 text-sm text-white focus:border-emerald-500 outline-none transition-colors" placeholder="https://..."></div>
+                        <div class="flex gap-2">
+                            <div class="w-1/3"><label class="text-xs text-gray-500 uppercase font-bold mb-2 block text-emerald-400">Btn 2 Name</label><input type="text" id="proj-link2-name-in" class="w-full bg-black/50 border border-emerald-500/30 rounded-lg px-3 py-3 text-sm text-white focus:border-emerald-500 outline-none transition-colors" placeholder="GitHub"></div>
+                            <div class="w-2/3"><label class="text-xs text-gray-500 uppercase font-bold mb-2 block">Secondary Link</label><input type="url" id="proj-link2-in" class="w-full bg-black/50 border border-white/10 rounded-lg px-4 py-3 text-sm text-white focus:border-emerald-500 outline-none transition-colors" placeholder="https://..."></div>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="text-xs text-gray-500 uppercase font-bold mb-2 block">Skill Tags (Comma separated)</label>
+                        <input type="text" id="proj-tags-in" onblur="window.applyAutoCaps(this); window.removeDuplicateTags(this);" class="w-full bg-black/50 border border-white/10 rounded-lg px-4 py-3 text-sm text-white focus:border-emerald-500 outline-none transition-colors mb-3" placeholder="React, Tailwind, Node.js">
+                        <div class="bg-black/30 border border-white/5 rounded-lg p-3 max-h-64 overflow-y-auto hide-scroll">
+                            <p class="text-[10px] text-gray-400 font-bold uppercase mb-3"><i class="fas fa-hand-pointer text-emerald-500 mr-1"></i> Add saved skills (Or add new ones to folders):</p>
+                            <div id="proj-available-tags" class="flex flex-col gap-3"></div>
+                        </div>
                     </div>
                     
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 bg-black/30 rounded-xl border border-white/5">
@@ -1125,6 +1139,7 @@ Data Viz: Tableau, PowerBI"></textarea>
         </div>
     </div>
 
+
     <script>
         window.parseSkills = (itemsStr) => {
             if (!itemsStr) return [];
@@ -1235,6 +1250,8 @@ Data Viz: Tableau, PowerBI"></textarea>
             let finalHtml = temp.innerHTML;
             // Parse -=text=- to create a glowing highlight badge
             finalHtml = finalHtml.replace(/-=(.*?)=-/g, '<span class="bg-amber-500/20 text-amber-300 px-1.5 py-0.5 rounded font-bold border border-amber-500/30 shadow-[0_0_10px_rgba(245,158,11,0.15)]">$1</span>');
+            // Parse --text-- to bold and color text globally without forming a box
+            finalHtml = finalHtml.replace(/--(.*?)--/g, '<strong class="text-emerald-400 font-bold">$1</strong>');
             return finalHtml;
         };
 
@@ -2427,7 +2444,7 @@ Data Viz: Tableau, PowerBI"></textarea>
                 const banner = p.gallery && p.gallery.length > 0 ? p.gallery[0] : p.icon; const views = STATE.analytics?.projectClicks?.[p.id] || 0;
                 const isFeat = p.isFeatured && !currentListMode;
                 const featWrapperClass = isFeat ? 'md:col-span-2 lg:col-span-full flex-col md:flex-row border-[1.5px] border-amber-500/40 shadow-[0_15px_40px_-10px_rgba(245,158,11,0.15)] bg-gradient-to-br from-amber-900/10 to-[#0a0a0b]' : 'flex-col border border-white/5 hover:border-emerald-500/30 bg-black/20';
-                const featBannerClass = isFeat ? 'h-64 md:h-auto md:w-3/5 border-b md:border-b-0 md:border-r border-amber-500/20 rounded-t-[2rem] md:rounded-tr-none md:rounded-l-[2rem]' : 'h-48 md:h-56 rounded-t-[2rem] border-b border-white/10';
+                const featBannerClass = isFeat ? 'h-64 md:h-80 md:w-3/5 border-b md:border-b-0 md:border-r border-amber-500/20 rounded-t-[2rem] md:rounded-tr-none md:rounded-l-[2rem]' : 'h-48 md:h-56 rounded-t-[2rem] border-b border-white/10';
                 const featContentClass = isFeat ? 'md:w-2/5 p-6 md:p-10 flex flex-col justify-center' : 'p-5 md:p-6 flex-1 flex flex-col relative';
                 const textAccent = isFeat ? 'text-amber-500 group-hover:text-amber-400' : 'text-emerald-500 group-hover:text-emerald-400';
                 const tagClass = isFeat ? 'bg-amber-500/10 border-amber-500/20 text-amber-400 hover:bg-amber-500/20' : 'bg-white/5 border-white/10 text-emerald-400 hover:bg-emerald-500/20';
@@ -2506,6 +2523,17 @@ Data Viz: Tableau, PowerBI"></textarea>
             const lnk = document.getElementById('det-link');
             if(lnk) { if(p.link) { lnk.href = p.link.startsWith('http') ? p.link : `https://${p.link}`; lnk.style.display = 'flex'; } else { lnk.style.display = 'none'; } }
             
+            const lnk2 = document.getElementById('det-link2');
+            if(lnk2) { 
+                if(p.link2) { 
+                    lnk2.href = p.link2.startsWith('http') ? p.link2 : `https://${p.link2}`; 
+                    lnk2.style.display = 'flex'; 
+                    lnk2.innerHTML = `${window.safeText(p.link2Name || 'Source / Alt Link')} <i class="fas fa-external-link-alt text-sm"></i>`;
+                } else { 
+                    lnk2.style.display = 'none'; 
+                } 
+            }
+            
             STATE.currentSlideshow = (p.gallery && p.gallery.length ? p.gallery : [p.icon]).filter(img => img && img.trim() !== '');
             STATE.slideIdx = 0; 
             window.startModalSlideshow(); 
@@ -2558,9 +2586,9 @@ Data Viz: Tableau, PowerBI"></textarea>
             
             setTimeout(() => {
                 if(isVideo) {
-                    container.innerHTML = `<video src="${mediaUrl}" autoplay muted playsinline class="w-full h-full object-cover" onclick="window.openLightbox()" onended="window.nextSlideMedia(true)" onloadeddata="this.parentElement.style.opacity='1';"></video>`;
+                    container.innerHTML = `<video src="${mediaUrl}" autoplay muted playsinline class="w-full h-full object-contain" onclick="window.openLightbox()" onended="window.nextSlideMedia(true)" onloadeddata="this.parentElement.style.opacity='1';"></video>`;
                 } else {
-                    container.innerHTML = `<img src="${mediaUrl}" class="w-full h-full object-cover" onclick="window.openLightbox()" onload="this.parentElement.style.opacity='1';" onerror="this.onerror=null; this.src='https://placehold.co/800x450/0f1115/4b5563?text=Load+Error'; window.updateDots();">`;
+                    container.innerHTML = `<img src="${mediaUrl}" class="w-full h-full object-contain" onclick="window.openLightbox()" onload="this.parentElement.style.opacity='1';" onerror="this.onerror=null; this.src='https://placehold.co/800x450/0f1115/4b5563?text=Load+Error'; window.updateDots();">`;
                     
                     let delay = isGif ? 8000 : 5000;
                     if (STATE.currentSlideshow.length > 1) {
@@ -2778,9 +2806,76 @@ Data Viz: Tableau, PowerBI"></textarea>
             finally { if(btn) { btn.disabled = false; btn.innerHTML = 'Save Workspace'; } }
         };
 
+        window.removeDuplicateTags = (inputEl) => {
+            if(!inputEl || !inputEl.value) return;
+            const tags = inputEl.value.split(',').map(t => t.trim()).filter(t => t);
+            const seen = new Set(); const unique = [];
+            for (const t of tags) {
+                const lower = t.toLowerCase();
+                if (!seen.has(lower)) { seen.add(lower); unique.push(t); }
+            }
+            inputEl.value = unique.join(', ');
+        };
+
+        window.addTagToProject = (tag) => {
+            const inp = document.getElementById('proj-tags-in'); if(!inp) return;
+            let current = inp.value.trim();
+            if(current && !current.endsWith(',')) current += ', ';
+            inp.value = current + tag;
+            window.applyAutoCaps(inp);
+            window.removeDuplicateTags(inp);
+        };
+
+        window.addNewSkillToFolder = async (folderId) => {
+            const inputEl = document.getElementById('new-skill-' + folderId); if(!inputEl) return;
+            const newSkill = inputEl.value.trim(); if(!newSkill) return;
+            const folderIdx = STATE.skills.findIndex(s => s.id === folderId); if(folderIdx === -1) return;
+
+            let items = STATE.skills[folderIdx].items || '';
+            if(items && !items.endsWith(',')) items += ', ';
+            items += newSkill;
+            STATE.skills[folderIdx].items = items;
+
+            const btn = document.getElementById('btn-add-skill-' + folderId);
+            if(btn) btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+
+            await window.syncRemote('skills_list', STATE.skills);
+            window.populateProjectTagHelper();
+            window.addTagToProject(newSkill);
+            window.showToast(`Added ${newSkill} to folder!`);
+        };
+
+        window.populateProjectTagHelper = () => {
+            const container = document.getElementById('proj-available-tags'); if(!container) return;
+            if (!STATE.skills || STATE.skills.length === 0) { container.innerHTML = '<span class="text-xs text-gray-600">No skill folders mapped yet. Go to Technical Expertise to create one.</span>'; return; }
+
+            let html = '';
+            STATE.skills.forEach(folder => {
+                const flatTags = window.getFlatSkillTags(folder.items);
+                const uniqueTags = [...new Set(flatTags)].sort();
+                
+                html += `
+                <div class="bg-black/40 border border-white/5 rounded-xl p-3">
+                    <h5 class="text-emerald-400 font-bold text-[10px] uppercase mb-2 flex items-center gap-1.5"><i class="fas fa-folder-open text-gray-500"></i> ${window.safeText(folder.name)}</h5>
+                    <div class="flex flex-wrap gap-1.5 mb-3">
+                        ${uniqueTags.map(t => {
+                            const safeT = t.replace(/'/g, "\\'");
+                            return `<span onclick="window.addTagToProject('${safeT}')" class="cursor-pointer bg-white/10 hover:bg-emerald-500/20 text-gray-300 hover:text-emerald-400 px-2.5 py-1 rounded-md text-[10px] font-bold uppercase transition-colors shadow-sm">${window.safeText(t)}</span>`;
+                        }).join('')}
+                    </div>
+                    <div class="flex gap-2 items-center">
+                        <input type="text" id="new-skill-${folder.id}" placeholder="Type new skill missing from folder..." class="flex-1 bg-black/50 border border-white/10 rounded-md px-3 py-1.5 text-[10px] text-white focus:border-emerald-500 outline-none transition-colors">
+                        <button id="btn-add-skill-${folder.id}" onclick="window.addNewSkillToFolder('${folder.id}')" class="bg-white/10 hover:bg-emerald-500 text-gray-300 hover:text-white rounded-md px-3 py-1.5 text-[10px] font-bold transition-colors shadow-sm">Add</button>
+                    </div>
+                </div>`;
+            });
+            container.innerHTML = html;
+        };
+
         window.openProjectModal = () => {
             const safeSet = (id, val) => { const el = document.getElementById(id); if(el) el.value = val; };
-            safeSet('proj-id', ''); safeSet('proj-name', ''); safeSet('proj-order', '99'); safeSet('proj-link-in', ''); safeSet('proj-tags-in', '');
+            safeSet('proj-id', ''); safeSet('proj-name', ''); safeSet('proj-order', '99'); safeSet('proj-link-in', ''); safeSet('proj-link2-in', ''); safeSet('proj-link2-name-in', ''); safeSet('proj-tags-in', '');
+            window.populateProjectTagHelper();
             safeSet('proj-icon-url', ''); safeSet('proj-gallery-urls', ''); safeSet('proj-clear-gallery', 'false');
             const draftCb = document.getElementById('proj-draft'); if(draftCb) draftCb.checked = false;
             const featCb = document.getElementById('proj-featured'); if(featCb) featCb.checked = false;
@@ -2801,7 +2896,8 @@ Data Viz: Tableau, PowerBI"></textarea>
             const safeSet = (idName, val) => { const el = document.getElementById(idName); if(el) el.value = val; };
             
             safeSet('proj-id', p.id); safeSet('proj-name', p.name || ''); safeSet('proj-order', p.order !== undefined ? p.order : 99);
-            safeSet('proj-link-in', p.link || ''); safeSet('proj-tags-in', p.tags || '');
+            safeSet('proj-link-in', p.link || ''); safeSet('proj-link2-in', p.link2 || ''); safeSet('proj-link2-name-in', p.link2Name || ''); safeSet('proj-tags-in', p.tags || '');
+            window.populateProjectTagHelper();
             safeSet('proj-clear-gallery', 'false');
             
             if(p.icon && p.icon.startsWith('http')) { safeSet('proj-icon-url', p.icon); } else { safeSet('proj-icon-url', ''); }
@@ -2868,6 +2964,8 @@ Data Viz: Tableau, PowerBI"></textarea>
                     desc: ed ? ed.innerHTML : '',
                     tags: getVal('proj-tags-in'),
                     link: getVal('proj-link-in'),
+                    link2: getVal('proj-link2-in'),
+                    link2Name: getVal('proj-link2-name-in'),
                     order: parseInt(getVal('proj-order')) || 99,
                     icon: iconData,
                     gallery: [...new Set(galleryData)].filter(Boolean),
@@ -3027,10 +3125,9 @@ Data Viz: Tableau, PowerBI"></textarea>
                 // 3. Optional plain-text linebreaks
                 formatted = formatted.replace(/\n/g, '<br>');
 
-                // 4. Custom highlighting & bullets (updated to handle HTML tags)
+                // 4. Custom highlighting & bullets
+                // Note: -=text=- and --text-- are both handled globally in window.sanitizeRichHTML
                 formatted = formatted.replace(/•\s(.*?)(?=<br>|<\/p>|<\/div>|$)/g, '<span class="flex items-start gap-2 mt-2"><i class="fas fa-arrow-right text-emerald-500 mt-1 text-[10px] shrink-0"></i><span class="text-gray-300">$1</span></span>');
-                formatted = formatted.replace(/-=(.*?)=-/g, '<span class="bg-amber-500/20 text-amber-300 px-1.5 py-0.5 rounded font-bold border border-amber-500/30 shadow-[0_0_10px_rgba(245,158,11,0.15)]">$1</span>');
-                formatted = formatted.replace(/--(.*?)--/g, '<span class="text-emerald-400 font-mono text-[10px] md:text-xs tracking-wider bg-emerald-500/10 px-1.5 py-0.5 rounded border border-emerald-500/20 shadow-[0_0_10px_rgba(16,185,129,0.1)]">$1</span>');
                 formatted = formatted.replace(/#(\w+)/g, '<span class="inline-block mt-1 mr-1 text-[9px] font-black uppercase tracking-widest text-cyan-400 bg-cyan-500/10 border border-cyan-500/30 px-2 py-0.5 rounded shadow-[0_0_10px_rgba(6,182,212,0.2)]">#$1</span>');
                 
                 return formatted;
