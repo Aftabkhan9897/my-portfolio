@@ -1230,7 +1230,7 @@ Data Viz: Tableau, PowerBI"></textarea>
             STATE.dbActive = true;
         }
 
-        window.sanitizeRichHTML = (html) => {
+      window.sanitizeRichHTML = (html) => {
             if (!html) return '';
             let temp = document.createElement('div');
             temp.innerHTML = html;
@@ -1245,9 +1245,20 @@ Data Viz: Tableau, PowerBI"></textarea>
                     if (attr.name.toLowerCase() === 'href' || attr.name.toLowerCase() === 'src') {
                         if (attr.value.toLowerCase().startsWith('javascript:') || (attr.value.toLowerCase().startsWith('data:') && !attr.value.toLowerCase().startsWith('data:image'))) { el.removeAttribute(attr.name); }
                     }
+                    // THE NEW FIX: Automatically destroy invisible styles pasted from other websites
+                    if (attr.name.toLowerCase() === 'style' || attr.name.toLowerCase() === 'class') { el.removeAttribute(attr.name); }
                 });
             }
           let finalHtml = temp.innerHTML;
+            // Safely parse -=text=- and --text-- ONLY outside of HTML tags to prevent breaking inline CSS
+            finalHtml = finalHtml.replace(/(>|^)([^<]*?)(?=<|$)/g, function(match, p1, p2) {
+                let text = p2;
+                text = text.replace(/-=(.*?)=-/g, '<span class="bg-amber-500/20 text-amber-300 px-1.5 py-0.5 rounded font-bold border border-amber-500/30 shadow-[0_0_10px_rgba(245,158,11,0.15)]">$1</span>');
+                text = text.replace(/--(.*?)--/g, '<strong class="text-emerald-400 font-bold">$1</strong>');
+                return p1 + text;
+            });
+            return finalHtml;
+        };
             // Safely parse -=text=- and --text-- ONLY outside of HTML tags to prevent breaking inline CSS
             finalHtml = finalHtml.replace(/(>|^)([^<]*?)(?=<|$)/g, function(match, p1, p2) {
                 let text = p2;
